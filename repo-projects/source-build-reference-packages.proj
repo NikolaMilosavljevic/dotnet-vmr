@@ -19,13 +19,18 @@
     <BuildArgs>$(BuildArgs) /p:LocalNuGetPackageCacheDirectory=$(LocalNuGetPackageCacheDirectory)</BuildArgs>
   </PropertyGroup>
 
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
   <Target Name="AddLocalNuGetPackageCacheDirectory"
-          BeforeTargets="Build">
+          BeforeTargets="
+            Build;
+            UpdateNuGetConfig"
+          AfterTargets="CopyNuGetConfig">
     <MakeDir Condition="'$(LocalNuGetPackageCacheDirectory)' != ''"
              Directories="$(LocalNuGetPackageCacheDirectory)" />
 
     <AddSourceToNuGetConfig
-      NuGetConfigFile="$(NuGetConfigFile)"
+      NuGetConfigFile="%(NuGetConfigFiles.Identity)"
       SourceName="source-build-reference-package-cache"
       SourcePath="$(LocalNuGetPackageCacheDirectory)" />
   </Target>

@@ -87,7 +87,7 @@
       <PreviouslySourceBuiltNuGetSourceName>previously-source-built</PreviouslySourceBuiltNuGetSourceName>
       <ReferencePackagesNuGetSourceName>reference-packages</ReferencePackagesNuGetSourceName>
       <SourceBuildSources>$(SourceBuildSources);$(PrebuiltNuGetSourceName);$(PreviouslySourceBuiltNuGetSourceName);$(ReferencePackagesNuGetSourceName)</SourceBuildSources>
-      <StandardSourceBuildArgs>$(StandardSourceBuildArgs) /p:RestoreConfigFile=@(NuGetConfigFiles)</StandardSourceBuildArgs>
+      <BuildCommand>$(BuildCommand) /p:RestoreConfigFile=@(NuGetConfigFiles)</BuildCommand>
     </PropertyGroup>
 
     <RemoveInternetSourcesFromNuGetConfig
