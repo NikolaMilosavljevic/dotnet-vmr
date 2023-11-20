@@ -88,7 +88,12 @@
       <ReferencePackagesNuGetSourceName>reference-packages</ReferencePackagesNuGetSourceName>
       <SourceBuildSources>$(SourceBuildSources);$(PrebuiltNuGetSourceName);$(PreviouslySourceBuiltNuGetSourceName);$(ReferencePackagesNuGetSourceName)</SourceBuildSources>
       <BuildCommand>$(BuildCommand) /p:RestoreConfigFile=@(NuGetConfigFiles)</BuildCommand>
+      <RestoreConfigFile>@(NuGetConfigFiles)</RestoreConfigFile>
     </PropertyGroup>
+
+    <ItemGroup>
+      <EnvironmentVariables Include="RestoreConfigFile=$(RestoreConfigFile)" />
+    </ItemGroup>
 
     <RemoveInternetSourcesFromNuGetConfig
       NuGetConfigFile="%(NuGetConfigFiles.Identity)"
