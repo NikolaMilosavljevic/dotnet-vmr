@@ -107,6 +107,7 @@
       <ReferencePackagesNuGetSourceName>reference-packages</ReferencePackagesNuGetSourceName>
       <SourceBuildSources>$(SourceBuildSources);$(PrebuiltNuGetSourceName);$(PreviouslySourceBuiltNuGetSourceName);$(ReferencePackagesNuGetSourceName)</SourceBuildSources>
       <BuildCommand>$(BuildCommand) /p:RestoreConfigFile=@(NuGetConfigFiles)</BuildCommand>
+      <RestoreConfigFile>@(NuGetConfigFiles)</RestoreConfigFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(DotNetBuildSourceOnly)' != 'true'">
@@ -124,6 +125,10 @@
       <NetSdkSupportingFeedName>net-sdk-supporting-feed</NetSdkSupportingFeedName>
       <NetSdkSupportingFeed>https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet9/nuget/v3/index.json</NetSdkSupportingFeed>
     </PropertyGroup>
+
+    <ItemGroup>
+      <EnvironmentVariables Include="RestoreConfigFile=$(RestoreConfigFile)" />
+    </ItemGroup>
 
     <RemoveInternetSourcesFromNuGetConfig
       NuGetConfigFile="%(NuGetConfigFiles.Identity)"
