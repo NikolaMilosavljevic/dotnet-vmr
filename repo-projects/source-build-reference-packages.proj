@@ -14,15 +14,5 @@
     <UseBootstrapArcade>true</UseBootstrapArcade>
   </PropertyGroup>
 
-  <Target Name="AddLocalNuGetPackageCacheDirectory" BeforeTargets="Build">
-    <MakeDir Condition="'$(LocalNuGetPackageCacheDirectory)' != ''"
-             Directories="$(LocalNuGetPackageCacheDirectory)" />
-
-    <AddSourceToNuGetConfig
-      NuGetConfigFile="$(NuGetConfigFile)"
-      SourceName="source-build-reference-package-cache"
-      SourcePath="$(LocalNuGetPackageCacheDirectory)" />
-  </Target>
-
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
