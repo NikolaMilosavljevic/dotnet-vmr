@@ -42,46 +42,30 @@
       <SourceBuildSources Condition="'$(ExtraRestoreSourcePath)' != ''">$(SourceBuildSources);$(ExtraSourcesNuGetSourceName)</SourceBuildSources>
     </PropertyGroup>
 
+    <PropertyGroup>
+       <AdditionalProjectSources></AdditionalProjectSources>
+       <AdditionalProjectSources>$(AdditionalProjectSources);$(PrebuiltPackagesPath)</AdditionalProjectSources>
+       <AdditionalProjectSources>$(AdditionalProjectSources);$(PrebuiltSourceBuiltPackagesPath)</AdditionalProjectSources>
+       <AdditionalProjectSources>$(AdditionalProjectSources);$(ReferencePackagesDir)</AdditionalProjectSources>
+       <AdditionalProjectSources>$(AdditionalProjectSources);$(SourceBuiltPackagesPath)</AdditionalProjectSources>
+       <AdditionalProjectSources>$(AdditionalProjectSources);$(ExtraRestoreSourcePath)</AdditionalProjectSources>
+       <AdditionalProjectSources Condition="'$(RepositoryName)' == 'source-build-reference-packages'">$(AdditionalProjectSources);$(LocalNuGetPackageCacheDirectory)</AdditionalProjectSources>
+       <BuildCommand>$(BuildCommand) /p:RestoreAdditionalProjectSources=$(AdditionalProjectSources)</BuildCommand>
+    </PropertyGroup>
+
     <!-- Update the detected or manually specified NuGetConfigFile, but also allow multiple. -->
     <ItemGroup>
       <NuGetConfigFiles Include="$(NuGetConfigFile)" />
     </ItemGroup>
 
+    <!-- TODO: This should be moved to only run once per build, not ence for every repo
+         because we only have one NuGet.config file now, in the top-level directory (src). -->
     <RemoveInternetSourcesFromNuGetConfig
+      Condition="'$(DotNetBuildOffline) == 'true'"
       NuGetConfigFile="%(NuGetConfigFiles.Identity)"
       BuildWithOnlineSources="$(BuildWithOnlineSources)"
       KeepFeedPrefixes="@(KeepFeedPrefixes)" />
 
-    <AddSourceToNuGetConfig NuGetConfigFile="%(NuGetConfigFiles.Identity)"
-                            SourceName="$(PrebuiltNuGetSourceName)"
-                            SourcePath="$(PrebuiltPackagesPath)"
-                            />
-
-    <AddSourceToNuGetConfig NuGetConfigFile="%(NuGetConfigFiles.Identity)"
-                            SourceName="$(PreviouslySourceBuiltNuGetSourceName)"
-                            SourcePath="$(PrebuiltSourceBuiltPackagesPath)"
-                            />
-
-    <AddSourceToNuGetConfig NuGetConfigFile="%(NuGetConfigFiles.Identity)"
-                            SourceName="$(ReferencePackagesNuGetSourceName)"
-                            SourcePath="$(ReferencePackagesDir)"
-                            />
-
-    <AddSourceToNuGetConfig NuGetConfigFile="%(NuGetConfigFiles.Identity)"
-                            SourceName="$(SourceBuiltNuGetSourceName)"
-                            SourcePath="$(SourceBuiltPackagesPath)" />
-
-    <AddSourceToNuGetConfig NuGetConfigFile="%(NuGetConfigFiles.Identity)"
-                            SourceName="$(ExtraSourcesNuGetSourceName)"
-                            SourcePath="$(ExtraRestoreSourcePath)"
-                            Condition="'$(ExtraRestoreSourcePath)' != ''" />
-
-    <UpdateNuGetConfigPackageSourcesMappings
-      NuGetConfigFile="%(NuGetConfigFiles.Identity)"
-      BuildWithOnlineSources="$(BuildWithOnlineSources)"
-      SourceBuildSources="$(SourceBuildSources)" />
-
-    <WriteLinesToFile File="$(RepoCompletedSemaphorePath)UpdateNuGetConfig.complete" Overwrite="true" />
   </Target>
 
   <Target Name="UpdateGlobalJsonVersions"
