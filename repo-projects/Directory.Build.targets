@@ -43,13 +43,13 @@
     </PropertyGroup>
 
     <PropertyGroup>
-       <AdditionalProjectSources>$(PrebuiltPackagesPath)</AdditionalProjectSources>
-       <AdditionalProjectSources>$(AdditionalProjectSources);$(PrebuiltSourceBuiltPackagesPath)</AdditionalProjectSources>
-       <AdditionalProjectSources>$(AdditionalProjectSources);$(ReferencePackagesDir)</AdditionalProjectSources>
-       <AdditionalProjectSources>$(AdditionalProjectSources);$(SourceBuiltPackagesPath)</AdditionalProjectSources>
-       <AdditionalProjectSources Condition="'$(ExtraRestoreSourcePath)' != ''">$(AdditionalProjectSources);$(ExtraRestoreSourcePath)</AdditionalProjectSources>
-       <AdditionalProjectSources Condition="'$(RepositoryName)' == 'source-build-reference-packages'">$(AdditionalProjectSources);$(LocalNuGetPackageCacheDirectory)</AdditionalProjectSources>
-       <BuildCommand>$(BuildCommand) /p:RestoreAdditionalProjectSources=&quot;$(AdditionalProjectSources)&quot;</BuildCommand>
+       <AdditionalProjectSources>"$(PrebuiltPackagesPath)"</AdditionalProjectSources>
+       <AdditionalProjectSources>$(AdditionalProjectSources);"$(PrebuiltSourceBuiltPackagesPath)"</AdditionalProjectSources>
+       <AdditionalProjectSources>$(AdditionalProjectSources);"$(ReferencePackagesDir)"</AdditionalProjectSources>
+       <AdditionalProjectSources>$(AdditionalProjectSources);"$(SourceBuiltPackagesPath)"</AdditionalProjectSources>
+       <AdditionalProjectSources Condition="'$(ExtraRestoreSourcePath)' != ''">$(AdditionalProjectSources);"$(ExtraRestoreSourcePath)"</AdditionalProjectSources>
+       <AdditionalProjectSources Condition="'$(RepositoryName)' == 'source-build-reference-packages'">$(AdditionalProjectSources);"$(LocalNuGetPackageCacheDirectory)"</AdditionalProjectSources>
+       <BuildCommand>$(BuildCommand) /p:RestoreAdditionalProjectSources=$(AdditionalProjectSources)</BuildCommand>
     </PropertyGroup>
 
     <!-- Update the detected or manually specified NuGetConfigFile, but also allow multiple. -->
