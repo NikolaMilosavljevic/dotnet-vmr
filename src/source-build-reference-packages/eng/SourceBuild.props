@@ -12,13 +12,15 @@
           BeforeTargets="Execute">
     <PropertyGroup>
       <LocalNuGetPackageCacheDirectory Condition="'$(LocalNuGetPackageCacheDirectory)' == ''">$(CurrentRepoSourceBuiltNupkgCacheDir)</LocalNuGetPackageCacheDirectory>
+      <_AdditionalDependencyProjectsBuildArgs />
+      <_AdditionalDependencyProjectsBuildArgs Condition="'$(RestoreAdditionalProjectSources)' != ''" >$(_AdditionalRepoTaskBuildArgs) /p:RestoreAdditionalProjectSources=$(RestoreAdditionalProjectSources)</_AdditionalDependencyProjectsBuildArgs>
     </PropertyGroup>
 
     <MakeDir Condition="'$(LocalNuGetPackageCacheDirectory)' != ''"
              Directories="$(LocalNuGetPackageCacheDirectory)" />
 
     <Exec
-      Command="./build.sh --configuration $(Configuration) /bl:$(ArtifactsDir)sourcebuild-dependency-projects.binlog /p:LocalNuGetPackageCacheDirectory=$(LocalNuGetPackageCacheDirectory) /p:BuildDependencyPackageProjects=true /p:SetUpSourceBuildIntermediateNupkgCache=true /p:DotNetBuildFromSource=true /p:ArcadeInnerBuildFromSource=true /p:MicrosoftNetCoreIlasmPackageRuntimeId=$(MicrosoftNetCoreIlasmPackageRuntimeId)"
+      Command="./build.sh --configuration $(Configuration) /bl:$(ArtifactsDir)sourcebuild-dependency-projects.binlog /p:LocalNuGetPackageCacheDirectory=$(LocalNuGetPackageCacheDirectory) /p:BuildDependencyPackageProjects=true /p:SetUpSourceBuildIntermediateNupkgCache=true /p:DotNetBuildFromSource=true /p:ArcadeInnerBuildFromSource=true /p:MicrosoftNetCoreIlasmPackageRuntimeId=$(MicrosoftNetCoreIlasmPackageRuntimeId) $(_AdditionalDependencyProjectsBuildArgs)"
       WorkingDirectory="$(InnerSourceBuildRepoRoot)"
       EnvironmentVariables="@(InnerBuildEnv)" />
   </Target>
