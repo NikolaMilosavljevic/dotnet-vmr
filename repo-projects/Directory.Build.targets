@@ -61,7 +61,7 @@
     <!-- TODO: This should be moved to only run once per build, not ence for every repo
          because we only have one NuGet.config file now, in the top-level directory (src). -->
     <RemoveInternetSourcesFromNuGetConfig
-      Condition="'$(DotNetBuildOffline) == 'true'"
+      Condition="'$(BuildWithOnlineSources)' != 'true'"
       NuGetConfigFile="%(NuGetConfigFiles.Identity)"
       BuildWithOnlineSources="$(BuildWithOnlineSources)"
       KeepFeedPrefixes="@(KeepFeedPrefixes)" />
