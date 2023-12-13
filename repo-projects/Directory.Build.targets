@@ -49,7 +49,7 @@
        <AdditionalProjectSources>$(AdditionalProjectSources);"$(SourceBuiltPackagesPath)"</AdditionalProjectSources>
        <AdditionalProjectSources Condition="'$(ExtraRestoreSourcePath)' != ''">$(AdditionalProjectSources);"$(ExtraRestoreSourcePath)"</AdditionalProjectSources>
        <AdditionalProjectSources Condition="'$(RepositoryName)' == 'source-build-reference-packages'">$(AdditionalProjectSources);"$(LocalNuGetPackageCacheDirectory)"</AdditionalProjectSources>
-       <BuildCommand>$(BuildCommand) /p:RestoreAdditionalProjectSources=$(AdditionalProjectSources)</BuildCommand>
+       <!--BuildCommand>$(BuildCommand) '/p:RestoreAdditionalProjectSources="/src/git/dotnet2/prereqs/packages/previously-source-built/"'</BuildCommand-->
     </PropertyGroup>
 
     <!-- Update the detected or manually specified NuGetConfigFile, but also allow multiple. -->
