@@ -28,8 +28,11 @@
       Keep artifacts/ inside source dir so that ancestor-based file lookups find the inner repo, not
       the outer repo. The inner repo global.json and NuGet.config files may have been modified by
       source-build, and we want projects inside the artifacts/ dir to respect that.
+
+      Inner-clone removal - in VMR use regular artifacts dir.
     -->
     <CurrentRepoSourceBuildArtifactsDir>$([MSBuild]::NormalizeDirectory('$(CurrentRepoSourceBuildSourceDir)', 'artifacts'))</CurrentRepoSourceBuildArtifactsDir>
+    <CurrentRepoSourceBuildArtifactsDir Condition="'$(DotNetBuildFromSourceFlavor)' == 'Product'">$([MSBuild]::NormalizeDirectory('$(ArtifactsDir)'))</CurrentRepoSourceBuildArtifactsDir>
     <CurrentRepoSourceBuildArtifactsPackagesDir>$([MSBuild]::NormalizeDirectory('$(CurrentRepoSourceBuildArtifactsDir)', 'packages', '$(Configuration)'))</CurrentRepoSourceBuildArtifactsPackagesDir>
 
     <CurrentRepoSourceBuildNuGetSourceName>source-build-int-nupkg-cache</CurrentRepoSourceBuildNuGetSourceName>
