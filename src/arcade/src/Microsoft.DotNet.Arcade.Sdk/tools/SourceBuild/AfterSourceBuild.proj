@@ -15,7 +15,8 @@
           Condition="'$(ArcadeInnerBuildFromSource)' != 'true'"
           DependsOnTargets="
             ReportPrebuiltUsage;
-            PackSourceBuildIntermediateNupkgs" />
+            PackSourceBuildIntermediateNupkgs;
+            CopyRepoArtifacts" />
 
   <Target Name="WritePrebuiltUsageData">
     <ItemGroup>
@@ -115,11 +116,50 @@
       DestinationFiles="$(SourceBuildIntermediateNupkgLicenseFile)" />
   </Target>
 
+  <!-- In VMR build we copy repo artifacts directly, without using the intermediate nupkgs. -->
+  <Target Name="CopyRepoArtifacts"
+          Condition="'$(DotNetBuildFromSourceFlavor)' == 'Product'"
+          DependsOnTargets="GetCategorizedIntermediateNupkgContents">
+
+    <PropertyGroup>
+      <_NupkgsDestination>$(SourceBuiltPackagesPath)</_NupkgsDestination>
+      <_NupkgsDestination Condition="'$(GitHubRepositoryName)' == 'source-build-reference-packages'">$(ReferencePackagesDir)</_NupkgsDestination>
+      <_AssetsDestination>$(SourceBuiltAssetsDir)</_AssetsDestination>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_AssetsToCopy Include="@(IntermediateNupkgFile)" Condition="'%(Extension)' != '.nupkg'" />
+      <_NugetPackagesToCopy Include="@(IntermediateNupkgFile)" Condition="'%(Extension)' == '.nupkg'"/>
+    </ItemGroup>
+
+    <!-- Copy non-shipping package list -->
+    <Copy
+      Condition="'@(NonShippingPackagesList)' != ''"
+      SourceFiles="@(NonShippingPackagesList)"
+      DestinationFolder="$(PackageListsDir)" />
+
+    <!-- Copy nupkgs -->
+    <Copy
+      Condition="'@(_NugetPackagesToCopy)' != ''"
+      SourceFiles="@(_NugetPackagesToCopy)"
+      DestinationFolder="$(_NupkgsDestination)" />
+
+    <!-- Copy assets -->
+    <Copy
+      Condition="'@(_AssetsToCopy)' != ''"
+      SourceFiles="@(_AssetsToCopy)"
+      DestinationFolder="$(_AssetsDestination)" />
+
+  </Target>
+
   <!--
     Create source-build intermediate NuGet package and supplemental intermediate NuGet packages (if
     necessary) for dependency transport to downstream repos.
+
+    In VMR build we do not use the intermediate nupkgs, so we skip this step.
   -->
   <Target Name="PackSourceBuildIntermediateNupkgs"
+          Condition="'$(DotNetBuildFromSourceFlavor)' != 'Product'"
           DependsOnTargets="
             CopyIntermediateNupkgProjToProjectDirectory;
             GetLicenseFileForIntermediateNupkgPack;

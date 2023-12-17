@@ -108,6 +108,18 @@
       <IntermediateNonShippingNupkgFile Include="@(IntermediatePackageFile)" Condition="$([System.Text.RegularExpressions.Regex]::Match(%(Identity),'[\\\\/]NonShipping[\\\\/]').Success)"/>
       <SupplementalIntermediateNupkgCategory Include="%(IntermediatePackageFile.Category)" />
     </ItemGroup>
+
+    <PropertyGroup>
+      <!-- The prefix needs to match what's defined in tarball source-build infra. Consider using a single property, in the future. -->
+      <NonShippingPackagesListPrefix>NonShipping.Packages.</NonShippingPackagesListPrefix>
+      <NonShippingPackagesList>$(CurrentRepoSourceBuildArtifactsPackagesDir)$(NonShippingPackagesListPrefix)$(GitHubRepositoryName).lst</NonShippingPackagesList>
+    </PropertyGroup>
+
+    <WriteLinesToFile
+      File="$(NonShippingPackagesList)"
+      Lines="@(IntermediateNonShippingNupkgFile->'%(Filename)%(Extension)')"
+      Overwrite="true" />
+
   </Target>
 
 </Project>

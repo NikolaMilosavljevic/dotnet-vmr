@@ -244,7 +244,9 @@
     </ItemGroup>
   </Target>
 
+  <!-- Extract intemediate packages - in repo source-build only. In VMR build we copy the content directly. -->
   <Target Name="ExtractIntermediatePackages"
+          Condition="'$(DotNetBuildFromSourceFlavor)' != 'Product'"
           AfterTargets="Package">
     <ItemGroup>
       <_BuiltIntermediatePackages Condition="'$(PackagesOutput)' != ''" Include="$(PackagesOutput)/Microsoft.SourceBuild.Intermediate.*.nupkg" Exclude="$(PackagesOutput)/*.symbols.nupkg"/>
