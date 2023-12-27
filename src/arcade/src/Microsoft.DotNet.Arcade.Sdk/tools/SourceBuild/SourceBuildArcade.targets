@@ -109,8 +109,11 @@
     <ItemGroup>
       <IntermediateNupkgFile Include="@(IntermediateNupkgArtifactFile)" PackagePath="artifacts" />
 
-      <!-- Report goes into the 'main' intermediate nupkg. -->
-      <IntermediateNupkgFile Include="$(SourceBuildSelfPrebuiltReportDir)**\*" PackagePath="prebuilt-report" />
+      <!--
+        Report goes into the 'main' intermediate nupkg.
+        We do not need to collect the prebuilt report in VMR build.
+       -->
+      <IntermediateNupkgFile Condition="'$(DotNetBuildFromSourceFlavor)' != 'Product'" Include="$(SourceBuildSelfPrebuiltReportDir)**\*" PackagePath="prebuilt-report" />
     </ItemGroup>
 
     <RemoveDuplicates Inputs="@(IntermediateNupkgFile)">

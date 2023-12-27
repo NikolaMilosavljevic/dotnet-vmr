@@ -166,7 +166,7 @@
     <StandardSourceBuildArgs>$(StandardSourceBuildArgs) /p:SourceBuildUseMonoRuntime=$(SourceBuildUseMonoRuntime)</StandardSourceBuildArgs>
     <StandardSourceBuildArgs>$(StandardSourceBuildArgs) /p:DotNetBuildVertical=$(DotNetBuildVertical)</StandardSourceBuildArgs>
     <StandardSourceBuildArgs>$(StandardSourceBuildArgs) /p:CrossBuild=$(CrossBuild)</StandardSourceBuildArgs>
-    <StandardSourceBuildArgs>$(StandardSourceBuildArgs) /p:SourceBuiltPackagesPath="$(SourceBuiltPackagesPath)"</StandardSourceBuildArgs>
+    <StandardSourceBuildArgs>$(StandardSourceBuildArgs) /p:CurrentSourceBuiltPackagesDir="$(SourceBuiltPackagesPath)"</StandardSourceBuildArgs>
     <StandardSourceBuildArgs>$(StandardSourceBuildArgs) /p:ReferencePackagesDir="$(ReferencePackagesDir)"</StandardSourceBuildArgs>
     <StandardSourceBuildArgs>$(StandardSourceBuildArgs) /p:SourceBuiltAssetsDir="$(SourceBuiltAssetsDir)"</StandardSourceBuildArgs>
     <StandardSourceBuildArgs>$(StandardSourceBuildArgs) /p:PackageListsDir="$(PackageListsDir)"</StandardSourceBuildArgs>
