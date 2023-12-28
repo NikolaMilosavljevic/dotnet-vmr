@@ -128,10 +128,11 @@
     <PropertyGroup>
       <!-- The prefix needs to match what's defined in tarball source-build infra. Consider using a single property, in the future. -->
       <NonShippingPackagesListPrefix>NonShipping.Packages.</NonShippingPackagesListPrefix>
-      <NonShippingPackagesList>$(CurrentRepoSourceBuildArtifactsPackagesDir)$(NonShippingPackagesListPrefix)$(GitHubRepositoryName).lst</NonShippingPackagesList>
+      <NonShippingPackagesList Condition="'@(IntermediateNonShippingNupkgFile)' != ''">$(CurrentRepoSourceBuildArtifactsPackagesDir)$(NonShippingPackagesListPrefix)$(GitHubRepositoryName).lst</NonShippingPackagesList>
     </PropertyGroup>
 
     <WriteLinesToFile
+      Condition="'$(NonShippingPackagesList)' != ''"
       File="$(NonShippingPackagesList)"
       Lines="@(IntermediateNonShippingNupkgFile->'%(Filename)%(Extension)')"
       Overwrite="true" />

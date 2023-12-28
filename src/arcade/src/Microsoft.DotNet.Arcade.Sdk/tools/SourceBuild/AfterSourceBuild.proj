@@ -136,8 +136,8 @@
 
     <!-- Copy non-shipping package list -->
     <Copy
-      Condition="'@(NonShippingPackagesList)' != ''"
-      SourceFiles="@(NonShippingPackagesList)"
+      Condition="'$(NonShippingPackagesList)' != ''"
+      SourceFiles="$(NonShippingPackagesList)"
       DestinationFolder="$(PackageListsDir)" />
 
     <!-- Copy nupkgs -->
