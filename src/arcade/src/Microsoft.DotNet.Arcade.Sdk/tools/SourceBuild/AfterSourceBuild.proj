@@ -121,7 +121,9 @@
   <!-- In VMR build we copy repo artifacts directly, without using the intermediate nupkgs. -->
   <Target Name="CopyRepoArtifacts"
           Condition="'$(DotNetBuildFromSourceFlavor)' == 'Product'"
-          DependsOnTargets="GetCategorizedIntermediateNupkgContents">
+          DependsOnTargets="
+            GetCategorizedIntermediateNupkgContents;
+            CreateRepoSymbolsArchive">
 
     <PropertyGroup>
       <_NupkgsDestination>$(CurrentSourceBuiltPackagesDir)</_NupkgsDestination>
@@ -151,7 +153,6 @@
       Condition="'@(_AssetsToCopy)' != ''"
       SourceFiles="@(_AssetsToCopy)"
       DestinationFolder="$(_AssetsDestination)" />
-
   </Target>
 
   <!--
@@ -166,6 +167,7 @@
             CopyIntermediateNupkgProjToProjectDirectory;
             GetLicenseFileForIntermediateNupkgPack;
             GetCategorizedIntermediateNupkgContents;
+            CreateRepoSymbolsArchive;
             GetSourceBuildIntermediateNupkgNameConvention">
     <ItemGroup>
       <IntermediateNupkgProject Include="$(SourceBuildIntermediateProjTargetFile)" />
