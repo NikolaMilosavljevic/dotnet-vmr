@@ -139,4 +139,44 @@
 
   </Target>
 
+  <!--
+    Create symbols archive.
+
+    Conditioning out for Windows as the tar execution below doesn't work cross-plat.
+  -->
+  <Target Name="CreateRepoSymbolsArchive" Condition="'$(OS)' != 'Windows_NT'">
+    <PropertyGroup>
+      <SymbolsRoot>$(CurrentRepoSourceBuildArtifactsDir)</SymbolsRoot>
+      <!-- Fall back to repo root for source-build-externals or repos that don't have the regular SymbolsRoot as defined above -->
+      <SymbolsRoot Condition="!Exists('$(SymbolsRoot)') or '$(GitHubRepositoryName)' == 'source-build-externals'">$(RepoRoot)</SymbolsRoot>
+      <SymbolsArchiveLocation>$(CurrentRepoSourceBuildArtifactsPackagesDir)</SymbolsArchiveLocation>
+      <SymbolsArchiveLocation Condition="'$(GitHubRepositoryName)' == 'nuget-client'">$(PackageOutputPath)</SymbolsArchiveLocation>
+      <!-- If doing full product source-build, create symbols archive in blob-feed assets folder - no intermediate package to carry this. -->
+      <SymbolsArchiveLocation Condition="'$(DotNetBuildFromSourceFlavor)' == 'Product'">$(SourceBuiltAssetsDir)</SymbolsArchiveLocation>
+      <SymbolsList>$(SymbolsArchiveLocation)\symbols.lst</SymbolsList>
+      <SymbolsArchivePrefix>Symbols.</SymbolsArchivePrefix>
+      <SymbolsArchiveSuffix>.$(Version).$(TargetRid)</SymbolsArchiveSuffix>
+      <SymbolsArchiveName>$(SymbolsArchiveLocation)$(SymbolsArchivePrefix)$(GitHubRepositoryName)$(SymbolsArchiveSuffix)$(ArchiveExtension)</SymbolsArchiveName>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <AbsoluteSymbolPath Include="$(SymbolsRoot)\**\obj\**\*.pdb" />
+      <AbsoluteSymbolPath Update="@(AbsoluteSymbolPath)" Condition="'@(AbsoluteSymbolPath)' != ''">
+        <RelativePath>$([MSBuild]::MakeRelative($(SymbolsRoot), %(FullPath)))</RelativePath>
+      </AbsoluteSymbolPath>
+    </ItemGroup>
+
+    <WriteLinesToFile
+      File="$(SymbolsList)"
+      Lines="@(AbsoluteSymbolPath->'%(RelativePath)')"
+      Overwrite="true"
+      Condition="'@(AbsoluteSymbolPath)' != ''" />
+
+    <Exec Command="tar --numeric-owner -czf $(SymbolsArchiveName) --files-from=$(SymbolsList)"
+          WorkingDirectory="$(SymbolsRoot)" Condition="Exists($(SymbolsList))" />
+    <Message Importance="High" Text="Packaged symbols to $(SymbolsArchiveName)" Condition="Exists($(SymbolsArchiveName))" />
+
+    <Delete Files="$(SymbolsList)" Condition="Exists($(SymbolsList))" />
+  </Target>
+
 </Project>
