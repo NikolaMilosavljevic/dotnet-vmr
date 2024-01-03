@@ -8,8 +8,6 @@
   <Import Project="SourceBuildArcade.targets" />
 
   <PropertyGroup>
-    <UseInnerClone Condition="'$(DotNetBuildFromSourceFlavor)' != 'Product'">true</UseInnerClone>
-
     <CurrentRepoSourceBuildBinlogFile>$([MSBuild]::NormalizePath('$(CurrentRepoSourceBuildArtifactsDir)', 'sourcebuild.binlog'))</CurrentRepoSourceBuildBinlogFile>
 
     <InnerSourceBuildRepoRoot Condition="'$(InnerSourceBuildRepoRoot)' == ''">$(CurrentRepoSourceBuildSourceDir)</InnerSourceBuildRepoRoot>
