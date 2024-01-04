@@ -126,7 +126,6 @@
     <PropertyGroup>
       <_NupkgsDestination>$(CurrentSourceBuiltPackagesDir)</_NupkgsDestination>
       <_NupkgsDestination Condition="'$(GitHubRepositoryName)' == 'source-build-reference-packages'">$(ReferencePackagesDir)</_NupkgsDestination>
-      <_AssetsDestination>$(SourceBuiltAssetsDir)</_AssetsDestination>
     </PropertyGroup>
 
     <ItemGroup>
@@ -150,7 +149,7 @@
     <Copy
       Condition="'@(_AssetsToCopy)' != ''"
       SourceFiles="@(_AssetsToCopy)"
-      DestinationFolder="$(_AssetsDestination)" />
+      DestinationFolder="$(SourceBuiltAssetsDir)" />
   </Target>
 
   <!--
