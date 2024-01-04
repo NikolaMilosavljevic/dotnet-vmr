@@ -257,9 +257,12 @@
     </ItemGroup>
   </Target>
 
-  <!-- Extract intemediate packages - in repo source-build only. In VMR build we copy the content directly. -->
+  <!--
+    This target can be removed after source-build picks up version of Arcade that has
+    source-build infra changes for removal od inner-clone in VMR build. Until then the target
+    is needed for building source-build-reference-packages and arcade repos.
+  -->
   <Target Name="ExtractIntermediatePackages"
-          Condition="'$(DotNetBuildFromSourceFlavor)' != 'Product'"
           AfterTargets="Package">
     <ItemGroup>
       <_BuiltIntermediatePackages Condition="'$(PackagesOutput)' != ''" Include="$(PackagesOutput)/Microsoft.SourceBuild.Intermediate.*.nupkg" Exclude="$(PackagesOutput)/*.symbols.nupkg"/>
