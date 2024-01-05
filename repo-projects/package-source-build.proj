@@ -20,7 +20,8 @@
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
-  <Target Name="RepoBuild">
+  <Target Name="RepoBuild"
+          DependsOnTargets="DetermineSourceBuiltSdkVersion">
     <!-- Copy PVP to packages dir in order to package them together -->
     <Copy SourceFiles="$(IncludedPackageVersionPropsFile)" DestinationFiles="$(SourceBuiltPackagesPath)PackageVersions.props" />
 
@@ -53,13 +54,13 @@
       Directories="$(SourceBuildReferencePackagesDestination)extractArtifacts/" />
 
     <PropertyGroup>
-      <SourceBuiltTarballName>$(OutputPath)$(SourceBuiltArtifactsTarballName).$(sdkOutputPackageVersion).$(TargetRid).tar.gz</SourceBuiltTarballName>
+      <SourceBuiltTarballName>$(OutputPath)$(SourceBuiltArtifactsTarballName).$(SourceBuiltSdkVersion).$(TargetRid).tar.gz</SourceBuiltTarballName>
       <SourceBuiltVersionFileName>.version</SourceBuiltVersionFileName>
     </PropertyGroup>
 
     <!-- Content of the .version file to include in the tarball -->
     <ItemGroup>
-      <VersionFileContent Include="$(RepositoryCommit);$(sdkOutputPackageVersion)" />
+      <VersionFileContent Include="$(RepositoryCommit);$(SourceBuiltSdkVersion)" />
     </ItemGroup>
 
     <WriteLinesToFile

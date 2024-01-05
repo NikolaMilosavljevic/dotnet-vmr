@@ -1,5 +1,34 @@
 <Project>
 
+  <Target Name="DetermineSourceBuiltSdkVersion">
+    <ItemGroup>
+      <SdkTarballItem Include="$(SourceBuiltAssetsDir)dotnet-sdk-*$(TarBallExtension)" />
+    </ItemGroup>
+    <PropertyGroup>
+      <SdkTarball>%(SdkTarballItem.Identity)</SdkTarball>
+      <SdkLayout>$(ArtifactsTmpDir)Sdk</SdkLayout>
+      <BundledVersionsPropsRelativePath>sdk/*/Microsoft.NETCoreSdk.BundledVersions.props</BundledVersionsPropsRelativePath>
+    </PropertyGroup>
+
+    <MakeDir Directories="$(SdkLayout)" />
+    <Exec Command="tar -xzf $(SdkTarball) -C $(SdkLayout)"
+          WorkingDirectory="$(SdkLayout)" />
+
+    <ItemGroup>
+      <BundledVersionsPropsFile Include="$(SdkLayout)/$(BundledVersionsPropsRelativePath)" />
+    </ItemGroup>
+
+    <XmlPeek XmlInputPath="@(BundledVersionsPropsFile)"
+             Query="Project/PropertyGroup/NETCoreSdkVersion/text()">
+        <Output TaskParameter="Result" ItemName="SourceBuiltSdkVersionItem" />
+    </XmlPeek>
+    <PropertyGroup>
+      <SourceBuiltSdkVersion>@(SourceBuiltSdkVersionItem)</SourceBuiltSdkVersion>
+    </PropertyGroup>
+
+    <RemoveDir Directories="$(SdkLayout)" />
+  </Target>
+
   <Import Condition="'$(SkipArcadeSdkImport)' != 'true'" Project="Sdk.targets" Sdk="Microsoft.DotNet.Arcade.Sdk" />
 
 </Project>
