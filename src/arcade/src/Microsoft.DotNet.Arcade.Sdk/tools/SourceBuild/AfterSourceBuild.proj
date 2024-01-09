@@ -172,7 +172,6 @@
             CopyIntermediateNupkgProjToProjectDirectory;
             GetLicenseFileForIntermediateNupkgPack;
             GetCategorizedIntermediateNupkgContents;
-            CreateRepoSymbolsArchive;
             GetSourceBuildIntermediateNupkgNameConvention">
     <ItemGroup>
       <IntermediateNupkgProject Include="$(SourceBuildIntermediateProjTargetFile)" />
