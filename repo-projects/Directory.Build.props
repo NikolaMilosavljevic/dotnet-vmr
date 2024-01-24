@@ -92,6 +92,11 @@
     <EnvironmentVariables Include="DOTNET_PATH=$(DotNetRoot)" />
     <EnvironmentVariables Include="DOTNET_HOST_PATH=$(DotNetTool)" />
 
+    <!-- Local SDKs -->
+    <EnvironmentVariables Include="SOURCE_BUILT_SDK_ID_TRAVERSAL=Microsoft.Build.Traversal" />
+    <EnvironmentVariables Include="SOURCE_BUILT_SDK_DIR_TRAVERSAL=/src/feed/microsoft.build.traversal/3.4.0/" />
+    <EnvironmentVariables Include="SOURCE_BUILT_SDK_VERSION_TRAVERSAL=3.4.0" />
+
     <!-- _InitializeDotNetCli is used by websdk and templating to decide whether to init the SDK -->
     <EnvironmentVariables Include="_InitializeDotNetCli=$(DotNetRoot)" />
     <EnvironmentVariables Include="_DotNetInstallDir=$(DotNetRoot)" />
