@@ -19,6 +19,11 @@
     <BuildArgs>$(BuildArgs) /p:LocalNuGetPackageCacheDirectory=$(LocalNuGetPackageCacheDirectory)</BuildArgs>
   </PropertyGroup>
 
+  <ItemGroup>
+    <BuiltSdkPackageOverride Include="@(NoTargetsSdkOverride)" />
+    <BuiltSdkPackageOverride Include="@(TraversalSdkOverride)" />
+  </ItemGroup>
+
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
   <Target Name="AddLocalNuGetPackageCacheDirectory"
