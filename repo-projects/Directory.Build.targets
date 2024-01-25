@@ -47,7 +47,7 @@
     </ItemGroup>
 
     <PropertyGroup>
-      <ModifiedNugetConfigFilesIntermediateRoot>$(IntermediatePath)nuget.config/</ModifiedNugetConfigFilesIntermediateRoot>
+      <ModifiedNugetConfigFilesIntermediateRoot>$(IntermediateOutputPath)nuget.config/</ModifiedNugetConfigFilesIntermediateRoot>
     </PropertyGroup>
 
     <ItemGroup>
