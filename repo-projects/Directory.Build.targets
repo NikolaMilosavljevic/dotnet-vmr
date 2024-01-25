@@ -620,8 +620,28 @@
         Id="%(BuiltSdkPackageOverride.Identity)" />
     </ItemGroup>
 
-    <Unzip SourceFiles="%(_ToolPackage.Identity)"
+    <!-- If we did not find any tool packages in SourceBuiltPackagesPath check ReferencePackagesDir (for SBRPs) -->
+    <ItemGroup Condition="'@(_ToolPackage)' == ''">
+      <_ToolPackage
+        Condition="'%(BuiltSdkPackageOverride.Version)' == ''"
+        Include="$(ReferencePackagesDir)%(BuiltSdkPackageOverride.Identity)*.nupkg"
+        Exclude="$(ReferencePackagesDir)%(BuiltSdkPackageOverride.Identity)*.symbols.nupkg"
+        Id="%(BuiltSdkPackageOverride.Identity)" />
+      <_ToolPackage
+        Condition="'%(BuiltSdkPackageOverride.Version)' != ''"
+        Include="$(ReferencePackagesDir)%(BuiltSdkPackageOverride.Identity).%(BuiltSdkPackageOverride.Version).nupkg"
+        Exclude="$(ReferencePackagesDir)%(BuiltSdkPackageOverride.Identity).%(BuiltSdkPackageOverride.Version).symbols.nupkg"
+        Id="%(BuiltSdkPackageOverride.Identity)" />
+    </ItemGroup>
+
+    <Unzip Condition="'%(BuiltSdkPackageOverride.Version)' == ''"
+           SourceFiles="%(_ToolPackage.Identity)"
            DestinationFolder="$(SourceBuiltSdksDir)%(_ToolPackage.Id)\"
+           SkipUnchangedFiles="true" />
+
+    <Unzip Condition="'%(BuiltSdkPackageOverride.Version)' != ''"
+           SourceFiles="%(_ToolPackage.Identity)"
+           DestinationFolder="$(SourceBuiltSdksDir)%(_ToolPackage.Id)\%(BuiltSdkPackageOverride.Version)\"
            SkipUnchangedFiles="true" />
 
     <ItemGroup>

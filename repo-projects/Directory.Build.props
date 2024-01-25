@@ -88,11 +88,6 @@
     <EnvironmentVariables Include="DOTNET_PATH=$(DotNetRoot)" />
     <EnvironmentVariables Include="DOTNET_HOST_PATH=$(DotNetTool)" />
 
-    <!-- Local SDKs -->
-    <EnvironmentVariables Include="SOURCE_BUILT_SDK_ID_TRAVERSAL=Microsoft.Build.Traversal" />
-    <EnvironmentVariables Include="SOURCE_BUILT_SDK_DIR_TRAVERSAL=/src/feed/microsoft.build.traversal/3.4.0/" />
-    <EnvironmentVariables Include="SOURCE_BUILT_SDK_VERSION_TRAVERSAL=3.4.0" />
-
     <!-- _InitializeDotNetCli is used by websdk and templating to decide whether to init the SDK -->
     <EnvironmentVariables Include="_InitializeDotNetCli=$(DotNetRoot)" />
     <EnvironmentVariables Include="_DotNetInstallDir=$(DotNetRoot)" />
@@ -164,6 +159,24 @@
     <EnvironmentVariables Include="RAZORBUILDSERVER_LOG=$(AspNetRazorBuildServerLogFile)" />
   </ItemGroup>
 
+  <!-- Discover all versions of Microsoft.Build.Traversal and Microsoft.Build.NoTargets built in SBRP. -->
+  <ItemGroup>
+    <_TraversalSdkProject Include="$(SrcDir)source-build-reference-packages/**/microsoft.build.traversal.*.csproj"/>
+    <_TraversalSdkFilename Include="@(_TraversalSdkProject->'%(Filename)')" />
+    <_TraversalSdkVersion Include="$([System.String]::Copy('%(_TraversalSdkFilename.Identity)').Replace('microsoft.build.traversal.',''))"/>
+    <_NoTargetsSdkProject Include="$(SrcDir)source-build-reference-packages/**/microsoft.build.notargets.*.csproj"/>
+    <_NoTargetsSdkDir Include="@(_NoTargetsSdkProject->'%(RelativeDir)')"/>
+    <_NoTargetsParentDir Include="$([System.IO.Path]::GetDirectoryName(@(_NoTargetsSdkProject->'%(RelativeDir)')))" />
+    <_NoTargetsSdkVersion Include="$([System.String]::Copy('%(_NoTargetsSdkProject.Filename)').ToLower().Replace('microsoft.build.notargets.',''))"/>
+  </ItemGroup>
+
+  <ItemGroup>
+      <_TraversalSdkVersion2 Include="$([MSBuild]::ValueOrDefault(`%(_TraversalSdkFilename.Identity)`, ``).ToLower().Replace(`microsoft.build.traversal.`,``))"/>
+      <_TraversalSdkVersion3 Include="%(_TraversalSdkFilename.Identity).Replace(`microsoft.build.traversal.`,``)"/>
+      <_TraversalSdkVersion4 Include="$([MSBuild]::ValueOrDefault('%(_TraversalSdkFilename.Identity)', '').ToLower().Replace('microsoft.build.traversal.',''))"/>
+      <_TraversalSdkVersion5 Include="%(_TraversalSdkFilename.Identity).Replace('microsoft.build.traversal.','')"/>
+  </ItemGroup>
+
   <ItemGroup>
     <!-- The Arcade SDK is automatically registered while the others are opt-in for the repo projects. -->
     <ArcadeSdkOverride Include="Microsoft.DotNet.Arcade.Sdk" Group="ARCADE" Version="$(arcadeOutputPackageVersion)" />
@@ -175,6 +188,11 @@
 
     <ArcadeSharedFrameworkSdkOverride Include="Microsoft.DotNet.SharedFramework.Sdk" Group="ARCADE_SHARED_FX_SDK" Version="$(arcadeOutputPackageVersion)" />
     <WindowsDesktopSdkOverride Include="Microsoft.Net.Sdk.WindowsDesktop" Group="WINDOWS_DESKTOP" Location="$(ToolsDir)EmptySdk" Condition="'$(DotNetBuildSourceOnly)' == 'true'" />
+    <TraversalSdkOverride Include="Microsoft.Build.Traversal" Group="TRAVERSAL%(_TraversalSdkVersion.Identity)" Version="%(_TraversalSdkVersion.Identity)" Condition="'@(_TraversalSdkVersion)' != ''" />
+    <NoTargetsSdkOverride Include="Microsoft.Build.NoTargets" Group="NOTARGETS%(_NoTargetsSdkVersion.Identity)" Version="%(_NoTargetsSdkVersion.Identity)" Condition="'@(_TraversalSdkVersion)' != ''" />
+    <!-- Always override Microsoft.Build.Traversal and Microsoft.Build.NoTargets SDKs - we build them in SBRP -->
+    <SourceBuiltSdkOverride Include="@(TraversalSdkOverride)" />
+    <SourceBuiltSdkOverride Include="@(NoTargetsSdkOverride)" />
   </ItemGroup>
 
     <!-- CLI internal version is statically set by us to a version that will never show up in the wild.
