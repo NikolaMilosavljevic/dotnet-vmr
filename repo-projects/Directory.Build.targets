@@ -603,7 +603,7 @@
          non-windows systems: https://github.com/NuGet/Home/issues/13121. -->
     <Exec Command="chmod 755 git-clone-to-dir.sh"
       Condition=" '%(_ToolPackage.Id)' == 'Microsoft.DotNet.Arcade.Sdk' and !$([MSBuild]::IsOSPlatform(Windows))"
-      WorkingDirectory="$(SourceBuiltSdksDir)%(_ToolPackage.Id)/tools/SourceBuild/" />
+      WorkingDirectory="$(SourceBuiltSdksDir)%(_ToolPackage.Id)/%(_ToolPackage.Version)/tools/SourceBuild/" />
 
     <MakeDir Directories="$(BaseIntermediateOutputPath)" />
     <Touch Files="$(BaseIntermediateOutputPath)ExtractToolPackage.complete" AlwaysCreate="true">
@@ -654,7 +654,8 @@
       <EnvironmentVariables Include="SOURCE_BUILT_SDK_ID_%(SourceBuiltSdkOverride.Group)=%(SourceBuiltSdkOverride.Identity)" />
       <EnvironmentVariables Include="SOURCE_BUILT_SDK_VERSION_%(SourceBuiltSdkOverride.Group)=%(SourceBuiltSdkOverride.Version)" />
       <EnvironmentVariables Condition="'%(SourceBuiltSdkOverride.Location)' != ''" Include="SOURCE_BUILT_SDK_DIR_%(SourceBuiltSdkOverride.Group)=%(SourceBuiltSdkOverride.Location)/" />
-      <EnvironmentVariables Condition="'%(SourceBuiltSdkOverride.Location)' == ''" Include="SOURCE_BUILT_SDK_DIR_%(SourceBuiltSdkOverride.Group)=$(SourceBuiltSdksDir)%(SourceBuiltSdkOverride.Identity)/" />
+      <EnvironmentVariables Condition="'%(SourceBuiltSdkOverride.Location)' == '' and '%(SourceBuiltSdkOverride.Version)' == ''" Include="SOURCE_BUILT_SDK_DIR_%(SourceBuiltSdkOverride.Group)=$(SourceBuiltSdksDir)%(SourceBuiltSdkOverride.Identity)/" />
+      <EnvironmentVariables Condition="'%(SourceBuiltSdkOverride.Location)' == '' and '%(SourceBuiltSdkOverride.Version)' != ''" Include="SOURCE_BUILT_SDK_DIR_%(SourceBuiltSdkOverride.Group)=$(SourceBuiltSdksDir)%(SourceBuiltSdkOverride.Identity)/%(SourceBuiltSdkOverride.Version)/" />
     </ItemGroup>
   </Target>
 
