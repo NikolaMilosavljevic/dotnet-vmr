@@ -177,12 +177,11 @@
 
     <ArcadeSharedFrameworkSdkOverride Include="Microsoft.DotNet.SharedFramework.Sdk" Group="ARCADE_SHARED_FX_SDK" Version="$(arcadeOutputPackageVersion)" />
     <WindowsDesktopSdkOverride Include="Microsoft.Net.Sdk.WindowsDesktop" Group="WINDOWS_DESKTOP" Location="$(ToolsDir)EmptySdk" Condition="'$(DotNetBuildFromSource)' == 'true'" />
-    <TraversalSdkOverride Include="Microsoft.Build.Traversal" Group="TRAVERSAL_2.0.34" Version="2.0.34" UseVersion="true" />
-    <TraversalSdkOverride Include="Microsoft.Build.Traversal" Group="TRAVERSAL_3.4.0" Version="3.4.0" UseVersion="true" />
-    <NoTargetsSdkOverride Include="Microsoft.Build.NoTargets" Group="NOTARGETS_2.0.1" Version="2.0.1" UseVersion="true" />
-    <NoTargetsSdkOverride Include="Microsoft.Build.NoTargets" Group="NOTARGETS_3.5.0" Version="3.5.0" UseVersion="true" />
-    <NoTargetsSdkOverride Include="Microsoft.Build.NoTargets" Group="NOTARGETS_3.7.0" Version="3.7.0" UseVersion="true" />
-    <!-- Always override Microsoft.Build.Traversal and Microsoft.Build.NoTargets SDKs - we build them in SBRP -->
+    <TraversalSdkOverride Include="Microsoft.Build.Traversal" Group="TRAVERSAL" Version="2.0.34" UseVersion="true" Condition="'$(RepositoryName)' == 'source-build-reference-packages' or '$(RepositoryName)' == 'deployment-tools'" />
+    <TraversalSdkOverride Include="Microsoft.Build.Traversal" Group="TRAVERSAL" Version="3.4.0" UseVersion="true" Condition="'$(RepositoryName)' == 'source-build-reference-packages' or '$(RepositoryName)' == 'emsdk' or '$(RepositoryName)' == 'runtime' or '$(RepositoryName)' == 'roslyn'" />
+    <NoTargetsSdkOverride Include="Microsoft.Build.NoTargets" Group="NOTARGETS" Version="2.0.1" UseVersion="true" Condition="'$(RepositoryName)' == 'source-build-reference-packages' or '$(RepositoryName)' == 'razor'" />
+    <NoTargetsSdkOverride Include="Microsoft.Build.NoTargets" Group="NOTARGETS" Version="3.5.0" UseVersion="true" Condition="'$(RepositoryName)' == 'source-build-reference-packages' or '$(RepositoryName)' == 'diagnostics' or '$(RepositoryName)' == 'cecil'" />
+    <NoTargetsSdkOverride Include="Microsoft.Build.NoTargets" Group="NOTARGETS" Version="3.7.0" UseVersion="true" Condition="'$(RepositoryName)' == 'source-build-reference-packages' or '$(RepositoryName)' == 'nuget-client' or '$(RepositoryName)' == 'runtime' or '$(RepositoryName)' == 'sourcelink' or '$(RepositoryName)' == 'arcade' or '$(RepositoryName)' == 'aspire' or '$(RepositoryName)' == 'sdk'" />
     <SourceBuiltSdkOverride Include="@(TraversalSdkOverride)" Condition="'$(RepositoryName)' != 'source-build-reference-packages'" />
     <SourceBuiltSdkOverride Include="@(NoTargetsSdkOverride)" Condition="'$(RepositoryName)' != 'source-build-reference-packages'" />
   </ItemGroup>
