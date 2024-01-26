@@ -607,41 +607,33 @@
           Condition="'@(BuiltSdkPackageOverride)' != ''"
           Inputs="$(MSBuildProjectFullPath)"
           Outputs="$(BaseIntermediateOutputPath)ExtractToolPackage.complete">
+    <PropertyGroup>
+      <_ToolPackagesRoot Condition="'$(RepositoryName)' != 'source-build-reference-packages'">$(SourceBuiltPackagesPath)</_ToolPackagesRoot>
+      <_ToolPackagesRoot Condition="'$(RepositoryName)' == 'source-build-reference-packages'">$(ReferencePackagesDir)</_ToolPackagesRoot>
+    </PropertyGroup>
+
     <ItemGroup>
       <_ToolPackage
         Condition="'%(BuiltSdkPackageOverride.Version)' == ''"
-        Include="$(SourceBuiltPackagesPath)%(BuiltSdkPackageOverride.Identity)*.nupkg"
-        Exclude="$(SourceBuiltPackagesPath)%(BuiltSdkPackageOverride.Identity)*.symbols.nupkg"
+        Include="$(_ToolPackagesRoot)%(BuiltSdkPackageOverride.Identity)*.nupkg"
+        Exclude="$(_ToolPackagesRoot)%(BuiltSdkPackageOverride.Identity)*.symbols.nupkg"
         Id="%(BuiltSdkPackageOverride.Identity)" />
       <_ToolPackage
         Condition="'%(BuiltSdkPackageOverride.Version)' != ''"
-        Include="$(SourceBuiltPackagesPath)%(BuiltSdkPackageOverride.Identity).%(BuiltSdkPackageOverride.Version).nupkg"
-        Exclude="$(SourceBuiltPackagesPath)%(BuiltSdkPackageOverride.Identity).%(BuiltSdkPackageOverride.Version).symbols.nupkg"
-        Id="%(BuiltSdkPackageOverride.Identity)" />
+        Include="$(_ToolPackagesRoot)%(BuiltSdkPackageOverride.Identity).%(BuiltSdkPackageOverride.Version).nupkg"
+        Exclude="$(_ToolPackagesRoot)%(BuiltSdkPackageOverride.Identity).%(BuiltSdkPackageOverride.Version).symbols.nupkg"
+        Id="%(BuiltSdkPackageOverride.Identity)"
+        Version="%(BuiltSdkPackageOverride.Version)" />
     </ItemGroup>
 
-    <!-- If we did not find any tool packages in SourceBuiltPackagesPath check ReferencePackagesDir (for SBRPs) -->
-    <ItemGroup Condition="'@(_ToolPackage)' == ''">
-      <_ToolPackage
-        Condition="'%(BuiltSdkPackageOverride.Version)' == ''"
-        Include="$(ReferencePackagesDir)%(BuiltSdkPackageOverride.Identity)*.nupkg"
-        Exclude="$(ReferencePackagesDir)%(BuiltSdkPackageOverride.Identity)*.symbols.nupkg"
-        Id="%(BuiltSdkPackageOverride.Identity)" />
-      <_ToolPackage
-        Condition="'%(BuiltSdkPackageOverride.Version)' != ''"
-        Include="$(ReferencePackagesDir)%(BuiltSdkPackageOverride.Identity).%(BuiltSdkPackageOverride.Version).nupkg"
-        Exclude="$(ReferencePackagesDir)%(BuiltSdkPackageOverride.Identity).%(BuiltSdkPackageOverride.Version).symbols.nupkg"
-        Id="%(BuiltSdkPackageOverride.Identity)" />
-    </ItemGroup>
-
-    <Unzip Condition="'%(BuiltSdkPackageOverride.Version)' == ''"
+    <Unzip Condition="'%(_ToolPackage.Version)' == ''"
            SourceFiles="%(_ToolPackage.Identity)"
            DestinationFolder="$(SourceBuiltSdksDir)%(_ToolPackage.Id)\"
            SkipUnchangedFiles="true" />
 
-    <Unzip Condition="'%(BuiltSdkPackageOverride.Version)' != ''"
+    <Unzip Condition="'%(_ToolPackage.Version)' != ''"
            SourceFiles="%(_ToolPackage.Identity)"
-           DestinationFolder="$(SourceBuiltSdksDir)%(_ToolPackage.Id)\%(BuiltSdkPackageOverride.Version)\"
+           DestinationFolder="$(SourceBuiltSdksDir)%(_ToolPackage.Id)\%(_ToolPackage.Version)\"
            SkipUnchangedFiles="true" />
 
     <ItemGroup>
