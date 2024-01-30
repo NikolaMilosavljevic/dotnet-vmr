@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <UsingTask AssemblyFile="$(XPlatSourceBuildTasksAssembly)" TaskName="AddSourceToNuGetConfig" />
+  <UsingTask AssemblyFile="$(XPlatSourceBuildTasksAssembly)" TaskName="GetJSonAttributeValue" />
   <UsingTask AssemblyFile="$(XPlatSourceBuildTasksAssembly)" TaskName="ReadNuGetPackageInfos" />
   <UsingTask AssemblyFile="$(XPlatSourceBuildTasksAssembly)" TaskName="RemoveInternetSourcesFromNuGetConfig" />
   <UsingTask AssemblyFile="$(XPlatSourceBuildTasksAssembly)" TaskName="UpdateJson" />
@@ -624,15 +625,15 @@
         Exclude="$(_ToolPackagesRoot)%(BuiltSdkPackageOverride.Identity).%(BuiltSdkPackageOverride.Version).symbols.nupkg"
         Id="%(BuiltSdkPackageOverride.Identity)"
         Version="%(BuiltSdkPackageOverride.Version)"
-        UseVersion="%(BuiltSdkPackageOverride.UseVersion)" />
+        SupportMultipleVersions="%(BuiltSdkPackageOverride.SupportMultipleVersions)" />
     </ItemGroup>
 
-    <Unzip Condition="'%(_ToolPackage.UseVersion)' != 'true'"
+    <Unzip Condition="'%(_ToolPackage.SupportMultipleVersions)' != 'true'"
            SourceFiles="%(_ToolPackage.Identity)"
            DestinationFolder="$(SourceBuiltSdksDir)%(_ToolPackage.Id)\"
            SkipUnchangedFiles="true" />
 
-    <Unzip Condition="'%(_ToolPackage.UseVersion)' == 'true'"
+    <Unzip Condition="'%(_ToolPackage.SupportMultipleVersions)' == 'true'"
            SourceFiles="%(_ToolPackage.Identity)"
            DestinationFolder="$(SourceBuiltSdksDir)%(_ToolPackage.Id)\%(_ToolPackage.Version)\"
            SkipUnchangedFiles="true" />
@@ -691,6 +692,47 @@
     </Touch>
   </Target>
 
+  <!--
+    Add Microsoft.Build.NoTargets and Microsoft.Build.Traversal SDK overrides, for all repos that utilize them,
+    except source-build-reference-packages repo, that builds these packages.
+
+    Also skip if building utility projects.
+  -->
+  <Target Name="AddSdkOverrides"
+          BeforeTargets="SetSourceBuiltSdkOverrides"
+          Condition="'$(RepositoryName)' != 'source-build-reference-packages' and '$(IsUtilityProject)' != 'true'">
+    <PropertyGroup>
+      <MicrosoftBuildNoTargetsJsonPath>msbuild-sdks:Microsoft.Build.NoTargets</MicrosoftBuildNoTargetsJsonPath>
+      <MicrosoftBuildTraversalJsonPath>msbuild-sdks:Microsoft.Build.Traversal</MicrosoftBuildTraversalJsonPath>
+    </PropertyGroup>
+
+    <!-- Get Microsoft.Build.NoTargets package version from global.json - msbuild-sdks section -->
+    <GetJSonAttributeValue JsonFilePath="$(GlobalJsonFile)"
+                           PathToAttribute="$(MicrosoftBuildNoTargetsJsonPath)">
+        <Output TaskParameter="Result" ItemName="_JSonAttributeValueNoTargets" />
+    </GetJSonAttributeValue>
+    <!-- Get Microsoft.Build.NoTargets package version from global.json - msbuild-sdks section -->
+    <GetJSonAttributeValue JsonFilePath="$(GlobalJsonFile)"
+                           PathToAttribute="$(MicrosoftBuildTraversalJsonPath)">
+        <Output TaskParameter="Result" ItemName="_JSonAttributeValueTraversal" />
+    </GetJSonAttributeValue>
+    <PropertyGroup>
+      <_MicrosoftBuildNoTargetsPackageVersion>@(_JSonAttributeValueNoTargets)</_MicrosoftBuildNoTargetsPackageVersion>
+      <_MicrosoftBuildTraversalPackageVersion>@(_JSonAttributeValueTraversal)</_MicrosoftBuildTraversalPackageVersion>
+    </PropertyGroup>
+ 
+    <ItemGroup>
+     <SourceBuiltSdkOverride
+        Include="@(NoTargetsSdkOverride)"
+        Condition="'$(_MicrosoftBuildNoTargetsPackageVersion)' != '' and
+                   '%(NoTargetsSdkOverride.Version)' == '$(_MicrosoftBuildNoTargetsPackageVersion)'" />
+     <SourceBuiltSdkOverride
+        Include="@(TraversalSdkOverride)"
+        Condition="'$(_MicrosoftBuildTraversalPackageVersion)' != '' and
+                   '%(TraversalSdkOverride.Version)' == '$(_MicrosoftBuildTraversalPackageVersion)'" />
+    </ItemGroup>
+  </Target>
+
   <Target Name="SetSourceBuiltSdkOverrides"
           Condition="'@(SourceBuiltSdkOverride)' != ''">
     <ItemGroup>
@@ -698,7 +740,7 @@
       <EnvironmentVariables Include="SOURCE_BUILT_SDK_VERSION_%(SourceBuiltSdkOverride.Group)=%(SourceBuiltSdkOverride.Version)" />
       <EnvironmentVariables Condition="'%(SourceBuiltSdkOverride.Location)' != ''" Include="SOURCE_BUILT_SDK_DIR_%(SourceBuiltSdkOverride.Group)=%(SourceBuiltSdkOverride.Location)/" />
       <EnvironmentVariables Condition="'%(SourceBuiltSdkOverride.Location)' == ''" Include="SOURCE_BUILT_SDK_DIR_%(SourceBuiltSdkOverride.Group)=$(SourceBuiltSdksDir)%(SourceBuiltSdkOverride.Identity)/" />
-      <EnvironmentVariables Condition="'%(SourceBuiltSdkOverride.Location)' == '' and '%(SourceBuiltSdkOverride.UseVersion)' == 'true'" Include="SOURCE_BUILT_SDK_DIR_%(SourceBuiltSdkOverride.Group)=$(SourceBuiltSdksDir)%(SourceBuiltSdkOverride.Identity)/%(SourceBuiltSdkOverride.Version)/" />
+      <EnvironmentVariables Condition="'%(SourceBuiltSdkOverride.Location)' == '' and '%(SourceBuiltSdkOverride.SupportMultipleVersions)' == 'true'" Include="SOURCE_BUILT_SDK_DIR_%(SourceBuiltSdkOverride.Group)=$(SourceBuiltSdksDir)%(SourceBuiltSdkOverride.Identity)/%(SourceBuiltSdkOverride.Version)/" />
     </ItemGroup>
   </Target>
 
