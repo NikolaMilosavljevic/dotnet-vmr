@@ -24,8 +24,6 @@
     <BuiltSdkPackageOverride Include="@(TraversalSdkOverride)" />
   </ItemGroup>
 
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-
   <Target Name="AddLocalNuGetPackageCacheDirectory"
           AfterTargets="CopyNuGetConfig"
           BeforeTargets="UpdateNuGetConfig">
