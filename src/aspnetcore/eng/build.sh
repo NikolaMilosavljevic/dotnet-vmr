@@ -311,10 +311,6 @@ if [ ! -z "$runtime_source_feed$runtime_source_feed_key" ]; then
     toolset_build_args[${#toolset_build_args[*]}]=$runtimeFeedKeyArg
 fi
 
-  if [[ "${RestoreConfigFile:-x}" != "x" ]]; then
-    toolset_build_args[${#toolset_build_args[*]}]="-p:RestoreConfigFile=$RestoreConfigFile"
-  fi
-
 # Initialize global variables need to be set before the import of Arcade is imported
 restore=$run_restore
 
