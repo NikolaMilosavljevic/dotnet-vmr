@@ -60,39 +60,25 @@
           BeforeTargets="
             UpdateNuGetConfig;
             Build"
-          Condition="'$(NuGetConfigFile)' != '' or '@(NuGetConfigFiles)' != ''">
-
-    <!-- Update the detected or manually specified NuGetConfigFile, but also allow multiple. -->
-    <ItemGroup>
-      <NuGetConfigFiles Include="$(NuGetConfigFile)" />
-    </ItemGroup>
+          Condition="'$(NuGetConfigFile)' != ''">
 
     <PropertyGroup>
-      <ModifiedNugetConfigFilesIntermediateRoot>$(IntermediateOutputPath)nuget.config/</ModifiedNugetConfigFilesIntermediateRoot>
+      <NugetConfigFileIntermediateRoot>$(IntermediateOutputPath)nuget.config/</NugetConfigFileIntermediateRoot>
+      <OriginalNuGetConfigFile>$(NuGetConfigFile)</OriginalNuGetConfigFile>
+      <NuGetConfigFile>$(NugetConfigFileIntermediateRoot)$([System.IO.Path]::GetFileName('$(OriginalNuGetConfigFile)'))</NuGetConfigFile>
     </PropertyGroup>
 
-    <ItemGroup>
-      <UpdatedNuGetConfigFiles Include="@(NuGetConfigFiles->'%(FullPath)'->Replace($(RepoRoot), $(ModifiedNugetConfigFilesIntermediateRoot)))" Condition="'@(NuGetConfigFiles)' != ''">
-        <OriginalPath>%(FullPath)</OriginalPath>
-      </UpdatedNuGetConfigFiles>
-    </ItemGroup>
-
-    <MakeDir Directories="@(UpdatedNuGetConfigFiles -> '%(RootDir)%(Directory)')" />
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(NuGetConfigFile)'))" />
 
     <Copy
-      SourceFiles="@(UpdatedNuGetConfigFiles -> '%(OriginalPath)')"
-      DestinationFiles="@(UpdatedNuGetConfigFiles -> '%(FullPath)')" />
-
-    <ItemGroup>
-      <NuGetConfigFiles Remove="@(NuGetConfigFiles)" />
-      <NuGetConfigFiles Include="@(UpdatedNuGetConfigFiles)" />
-    </ItemGroup>
+      SourceFiles="$(OriginalNuGetConfigFile)"
+      DestinationFiles="$(NuGetConfigFile)" />
 
   </Target>
 
   <Target Name="UpdateNuGetConfig"
           AfterTargets="CopyNuGetConfig"
-          Condition="'$(NuGetConfigFile)' != '' or '@(NuGetConfigFiles)' != ''"
+          Condition="'$(NuGetConfigFile)' != ''"
           Inputs="$(MSBuildProjectFullPath)"
           Outputs="$(BaseIntermediateOutputPath)UpdateNuGetConfig.complete">
     <PropertyGroup>
@@ -100,8 +86,8 @@
       <ExtraSourcesNuGetSourceName>ExtraSources</ExtraSourcesNuGetSourceName>
       <SourceBuildSources>$(SourceBuiltNuGetSourceName)</SourceBuildSources>
       <SourceBuildSources Condition="'$(ExtraRestoreSourcePath)' != ''">$(SourceBuildSources);$(ExtraSourcesNuGetSourceName)</SourceBuildSources>
-      <BuildCommand>$(BuildCommand) /p:RestoreConfigFile=@(NuGetConfigFiles)</BuildCommand>
-      <RestoreConfigFile>@(NuGetConfigFiles)</RestoreConfigFile>
+      <BuildCommand>$(BuildCommand) /p:RestoreConfigFile=$(NuGetConfigFile)</BuildCommand>
+      <RestoreConfigFile>$(NuGetConfigFile)</RestoreConfigFile>
     </PropertyGroup>
   
     <PropertyGroup Condition="'$(DotNetBuildSourceOnly)' == 'true'">
@@ -132,43 +118,43 @@
     </ItemGroup>
 
     <RemoveInternetSourcesFromNuGetConfig
-      NuGetConfigFile="%(NuGetConfigFiles.Identity)"
+      NuGetConfigFile="$(NuGetConfigFile)"
       BuildWithOnlineFeeds="$(DotNetBuildWithOnlineFeeds)"
       KeepFeedPrefixes="@(KeepFeedPrefixes)"
       Condition="'$(DotNetBuildSourceOnly)' == 'true'" />
 
-    <AddSourceToNuGetConfig NuGetConfigFile="%(NuGetConfigFiles.Identity)"
+    <AddSourceToNuGetConfig NuGetConfigFile="$(NuGetConfigFile)"
                             SourceName="$(PrebuiltNuGetSourceName)"
                             SourcePath="$(PrebuiltPackagesPath)"
                             Condition="'$(DotNetBuildSourceOnly)' == 'true'" />
 
-    <AddSourceToNuGetConfig NuGetConfigFile="%(NuGetConfigFiles.Identity)"
+    <AddSourceToNuGetConfig NuGetConfigFile="$(NuGetConfigFile)"
                             SourceName="$(PreviouslySourceBuiltNuGetSourceName)"
                             SourcePath="$(PrebuiltSourceBuiltPackagesPath)"
                             Condition="'$(DotNetBuildSourceOnly)' == 'true'" />
 
-    <AddSourceToNuGetConfig NuGetConfigFile="%(NuGetConfigFiles.Identity)"
+    <AddSourceToNuGetConfig NuGetConfigFile="$(NuGetConfigFile)"
                             SourceName="$(ReferencePackagesNuGetSourceName)"
                             SourcePath="$(ReferencePackagesDir)"
                             Condition="'$(DotNetBuildSourceOnly)' == 'true'" />
 
-    <AddSourceToNuGetConfig NuGetConfigFile="%(NuGetConfigFiles.Identity)"
+    <AddSourceToNuGetConfig NuGetConfigFile="$(NuGetConfigFile)"
                             SourceName="$(SourceBuiltNuGetSourceName)"
                             SourcePath="$(SourceBuiltPackagesPath)" />
 
-    <AddSourceToNuGetConfig NuGetConfigFile="%(NuGetConfigFiles.Identity)"
+    <AddSourceToNuGetConfig NuGetConfigFile="$(NuGetConfigFile)"
                             SourceName="$(ExtraSourcesNuGetSourceName)"
                             SourcePath="$(ExtraRestoreSourcePath)"
                             Condition="'$(ExtraRestoreSourcePath)' != ''" />
 
     <!-- See root Directory.Build.props for value. -->
-    <AddSourceToNuGetConfig NuGetConfigFile="%(NuGetConfigFiles.Identity)"
+    <AddSourceToNuGetConfig NuGetConfigFile="$(NuGetConfigFile)"
                             SourceName="$(NetSdkSupportingFeedName)"
                             SourcePath="$(NetSdkSupportingFeed)"
                             Condition="'$(AddNetSdkSupportingFeed)' == 'true'" />
 
     <UpdateNuGetConfigPackageSourcesMappings
-      NuGetConfigFile="%(NuGetConfigFiles.Identity)"
+      NuGetConfigFile="$(NuGetConfigFile)"
       BuildWithOnlineFeeds="$(DotNetBuildWithOnlineFeeds)"
       SourceBuildSources="$(SourceBuildSources)" />
 
