@@ -711,11 +711,11 @@
      <SourceBuiltSdkOverride
         Include="@(NoTargetsSdkOverride)"
         Condition="'$(_MicrosoftBuildNoTargetsPackageVersion)' != '' and
-                   '%(NoTargetsSdkOverride.Version)' == '$(_MicrosoftBuildNoTargetsPackageVersion)'" />
+                   '%(NoTargetsSdkOverride.Version)' == '$(PrivateSourceBuiltNoTargetsSdkVersion)'" />
      <SourceBuiltSdkOverride
         Include="@(TraversalSdkOverride)"
         Condition="'$(_MicrosoftBuildTraversalPackageVersion)' != '' and
-                   '%(TraversalSdkOverride.Version)' == '$(_MicrosoftBuildTraversalPackageVersion)'" />
+                   '%(TraversalSdkOverride.Version)' == '$(PrivateSourceBuiltTraversalSdkVersion)'" />
     </ItemGroup>
   </Target>
 
