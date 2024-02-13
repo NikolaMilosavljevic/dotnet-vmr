@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.DotNet.SourceBuild.Tasks" Version="$(MicrosoftDotNetSourceBuildTasksVersion)" IsImplicitlyDefined="true" />
     <PackageReference Include="Microsoft.DotNet.Build.Tasks.Feed" Version="$(MicrosoftDotNetBuildTasksFeedVersion)" IsImplicitlyDefined="true" />
+    <PackageReference Include="Microsoft.SymbolUploader.Build.Task" Version="$(MicrosoftSymbolUploaderBuildTaskVersion)" IsImplicitlyDefined="true" />
   </ItemGroup>
 
   <!-- Because the condition here is rather complex, it should read as the following:
