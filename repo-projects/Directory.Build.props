@@ -72,6 +72,9 @@
     <!-- Only pass when enabled to reduce command line noise. -->
     <BuildArgs Condition="'$(DotNetBuildTests)' == 'true'">$(BuildArgs) /p:DotNetBuildTests=true</BuildArgs>
     <BuildArgs Condition="'$(NuGetConfigFile)' != ''">$(BuildArgs) /p:RestoreConfigFile=$(NuGetConfigFile)</BuildArgs>
+    <!-- Pass locations for assets and packages -->
+    <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetsDir=$(SourceBuiltAssetsDir)</BuildArgs>
+    <BuildArgs>$(BuildArgs) /p:SourceBuiltPackagesPath=$(SourceBuiltPackagesPath)</BuildArgs>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(DotNetBuildSourceOnly)' != 'true'">
