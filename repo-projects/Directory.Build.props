@@ -31,6 +31,8 @@
     <!-- Update nuget.config property to point to modified file that will be created/updated during build. -->
     <NuGetConfigFile Condition="'$(OriginalNuGetConfigFile)' != ''">$(BaseIntermediateOutputPath)$([System.IO.Path]::GetFileName('$(OriginalNuGetConfigFile)'))</NuGetConfigFile>
 
+    <SourceBuiltAssetManifestDir>$(BaseIntermediateOutputPath)AssetManifest/</SourceBuiltAssetManifestDir>
+
     <SourceBuiltSdksDir>$([MSBuild]::NormalizeDirectory('$(ArtifactsDir)', 'source-built-sdks'))</SourceBuiltSdksDir>
 
     <!-- Set the bootstrap version to the VMR's version if empty. (no bootstrap set). -->
@@ -75,6 +77,7 @@
     <!-- Pass locations for assets and packages -->
     <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetsDir=$(SourceBuiltAssetsDir)</BuildArgs>
     <BuildArgs>$(BuildArgs) /p:SourceBuiltPackagesPath=$(SourceBuiltPackagesPath)</BuildArgs>
+    <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetManifestDir=$(SourceBuiltAssetManifestDir)</BuildArgs>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(DotNetBuildSourceOnly)' != 'true'">
