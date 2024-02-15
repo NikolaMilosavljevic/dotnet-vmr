@@ -375,7 +375,7 @@
 
   <Target Name="CopyRepoArtifacts"
           DependsOnTargets="RepoBuild"
-          Condition="'$(IsUtilityProject)' != 'true'"
+          Condition="'$(IsUtilityProject)' != 'true' and Exists('$(RepoManifestFile)')"
           Inputs="$(RepoManifestFile)"
           Outputs="$(BaseIntermediateOutputPath)CopyRepoArtifacts.complete">
     <Error Text="Repo manifest file doesn't exist." Condition="!Exists('$(RepoManifestFile)')" />
