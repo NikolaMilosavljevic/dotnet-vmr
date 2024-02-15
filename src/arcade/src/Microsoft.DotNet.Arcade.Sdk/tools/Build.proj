@@ -318,7 +318,7 @@
     -->
 
     <PropertyGroup>
-      <_SingleRepoBuild Condition="'$(DotNetBuildFromSourceFlavor)' != 'Product' or '$(DotNetBuildOrchestrator)' != 'true'">true</_SingleRepoBuild>
+      <_SingleRepoBuild Condition="'$(DotNetBuildFromSourceFlavor)' != 'Product' and '$(DotNetBuildOrchestrator)' != 'true'">true</_SingleRepoBuild>
       <_InnerRepoBuild Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildPhase)' == 'InnerRepo'">true</_InnerRepoBuild>
       <_ShouldRunPublish Condition="'$(_InnerRepoBuild)' == 'true' and '$(_SingleRepoBuild)' != 'true'">true</_ShouldRunPublish>
       <_ShouldRunPublish Condition="'$(_InnerRepoBuild)' != 'true' and '$(_SingleRepoBuild)' == 'true'">true</_ShouldRunPublish>
