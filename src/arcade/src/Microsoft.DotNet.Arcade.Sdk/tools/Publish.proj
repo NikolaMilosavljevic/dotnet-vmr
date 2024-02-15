@@ -142,8 +142,16 @@
       
       <!-- Directory where pdbs pointed in `FilesToPublishToSymbolServer` are copied before publishing to AzDO artifacts. -->
       <PDBsToPublishTempLocation>$(ArtifactsTmpDir)PDBsToPublish/</PDBsToPublishTempLocation>
+
+      <PushToAzDO>true</PushToAzDO>
     </PropertyGroup>
     
+    <!-- In VMR inner-build copy to local storage and do not push to AzDO -->
+    <PropertyGroup Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildPhase)' == 'InnerRepo'">
+      <PushToAzDO>false</PushToAzDO>
+      <PushToLocalStorage>true</PushToLocalStorage>
+    </PropertyGroup>
+
     <!--
       The new Maestro/BAR build model keeps separate Azure DevOps and GitHub build information.
       The GitHub information will be extracted based on the Azure DevOps repository.
@@ -180,7 +188,12 @@
       IsStableBuild="$(IsStableBuild)"
       PublishingVersion="$(PublishingVersion)"
       AssetManifestPath="$(AssetManifestFilePath)" 
-      IsReleaseOnlyPackageVersion="$(IsReleaseOnlyPackageVersion)" />
+      IsReleaseOnlyPackageVersion="$(IsReleaseOnlyPackageVersion)"
+      PushToAzDO="$(PushToAzDO)"
+      PushToLocalStorage="$(PushToLocalStorage)"
+      AssetsLocalStoragePath="$(SourceBuiltAssetsDir)"
+      PackagesLocalStoragePath="$(SourceBuiltPackagesPath)"
+      AssetManifestLocalStoragePath="$(SourceBuiltAssetManifestDir)" />
 
     <!-- 
         Publish Windows PDBs produced by SymStore.targets (by default, only shipping PDBs are placed there).

@@ -57,11 +57,28 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
         public bool IsReleaseOnlyPackageVersion { get; set; }
 
+        public string AssetsLocalStoragePath { get; set; }
+
+        public string PackagesLocalStoragePath { get; set; }
+
+        public string AssetManifestLocalStoragePath { get; set; }
+
+        public bool PushToAzDO { get; set; }
+
+        public bool PushToLocalStorage { get; set; }
+
         /// <summary>
         /// Which version should the build manifest be tagged with.
         /// By default he latest version is used.
         /// </summary>
         public string PublishingVersion { get; set; }
+
+        public enum ItemType
+        {
+            AssetManifest = 0,
+            PackageArtifact,
+            BlobArtifact
+        }
 
         public override void ConfigureServices(IServiceCollection collection)
         {
@@ -83,7 +100,23 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
         {
             try
             {
-                Log.LogMessage(MessageImportance.High, "Performing push to Azure DevOps artifacts storage.");
+                if (PushToLocalStorage)
+                {
+                    if (string.IsNullOrEmpty(AssetsLocalStoragePath) || string.IsNullOrEmpty(PackagesLocalStoragePath) || string.IsNullOrEmpty(AssetManifestLocalStoragePath))
+                    {
+                        throw new Exception($"AssetsLocalStoragePath, PackagesLocalStoragePath and AssetManifestLocalStoragePath need to be specified if PublishToLocalStorage is set to true");
+                    }
+
+                    Directory.CreateDirectory(AssetManifestLocalStoragePath);
+                    Directory.CreateDirectory(AssetsLocalStoragePath);
+                    Directory.CreateDirectory(PackagesLocalStoragePath);
+                    Log.LogMessage(MessageImportance.High, "Performing push to local artifacts storage.");
+                }
+
+                if (PushToAzDO)
+                {
+                    Log.LogMessage(MessageImportance.High, "Performing push to Azure DevOps artifacts storage.");
+                }
 
                 if (!string.IsNullOrWhiteSpace(AssetsTemporaryDirectory))
                 {
@@ -116,8 +149,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 continue;
                             }
 
-                            Log.LogMessage(MessageImportance.High,
-                                $"##vso[artifact.upload containerfolder=BlobArtifacts;artifactname=BlobArtifacts]{blobItem.ItemSpec}");
+                            PushToLocalStorageOrAzDO(ItemType.BlobArtifact, blobItem.ItemSpec);
                         }
                     }
                     else
@@ -159,8 +191,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 continue;
                             }
 
-                            Log.LogMessage(MessageImportance.High,
-                                $"##vso[artifact.upload containerfolder=PackageArtifacts;artifactname=PackageArtifacts]{packagePath.ItemSpec}");
+                            PushToLocalStorageOrAzDO(ItemType.PackageArtifact, packagePath.ItemSpec);
                         }
 
                         foreach (var blobItem in blobItems)
@@ -171,8 +202,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 continue;
                             }
 
-                            Log.LogMessage(MessageImportance.High,
-                                $"##vso[artifact.upload containerfolder=BlobArtifacts;artifactname=BlobArtifacts]{blobItem.ItemSpec}");
+                            PushToLocalStorageOrAzDO(ItemType.BlobArtifact, blobItem.ItemSpec);
                         }
 
                         packageArtifacts = packageItems.Select(packageArtifactModelFactory.CreatePackageArtifactModel);
@@ -206,8 +236,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                         IsReleaseOnlyPackageVersion,
                         signingInformationModel: signingInformationModel);
 
-                    Log.LogMessage(MessageImportance.High,
-                        $"##vso[artifact.upload containerfolder=AssetManifests;artifactname=AssetManifests]{AssetManifestPath}");
+                    PushToLocalStorageOrAzDO(ItemType.AssetManifest, AssetManifestPath);
                 }
             }
             catch (Exception e)
@@ -216,6 +245,55 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             }
 
             return !Log.HasLoggedErrors;
+        }
+
+        private void PushToLocalStorageOrAzDO(ItemType itemType, string itemSpec)
+        {
+            if (PushToAzDO)
+            {
+                switch (itemType)
+                {
+                    case ItemType.AssetManifest:
+                        Log.LogMessage(MessageImportance.High,
+                            $"##vso[artifact.upload containerfolder=AssetManifests;artifactname=AssetManifests]{itemSpec}");
+                        break;
+
+                    case ItemType.PackageArtifact:
+                        Log.LogMessage(MessageImportance.High,
+                            $"##vso[artifact.upload containerfolder=PackageArtifacts;artifactname=PackageArtifacts]{itemSpec}");
+                        break;
+
+                    case ItemType.BlobArtifact:
+                        Log.LogMessage(MessageImportance.High,
+                            $"##vso[artifact.upload containerfolder=BlobArtifacts;artifactname=BlobArtifacts]{itemSpec}");
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(itemType));
+                }
+            }
+
+            if (PushToLocalStorage)
+            {
+                string filename = Path.GetFileName(itemSpec);
+                switch (itemType)
+                {
+                    case ItemType.AssetManifest:
+                        File.Copy(itemSpec, Path.Combine(AssetManifestLocalStoragePath, filename), true);
+                        break;
+
+                    case ItemType.PackageArtifact:
+                        File.Copy(itemSpec, Path.Combine(PackagesLocalStoragePath, filename), true);
+                        break;
+
+                    case ItemType.BlobArtifact:
+                        File.Copy(itemSpec, Path.Combine(AssetsLocalStoragePath, filename), true);
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(itemType));
+                }
+            }
         }
     }
 }
