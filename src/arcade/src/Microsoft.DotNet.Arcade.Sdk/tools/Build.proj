@@ -318,12 +318,13 @@
     -->
 
     <PropertyGroup>
-      <_SingleRepoBuild Condition="'$(DotNetBuildFromSourceFlavor)' != 'Product' and '$(DotNetBuildOrchestrator)' != 'true'">true</_SingleRepoBuild>
+      <_VmrBuild Condition="'$(DotNetBuildFromSourceFlavor)' == 'Product' or '$(DotNetBuildOrchestrator)' == 'true'">true</_VmrBuild>
       <_InnerRepoBuild Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildPhase)' == 'InnerRepo'">true</_InnerRepoBuild>
-      <_ShouldRunPublish Condition="'$(_InnerRepoBuild)' == 'true' and '$(_SingleRepoBuild)' != 'true'">true</_ShouldRunPublish>
-      <_ShouldRunPublish Condition="'$(_InnerRepoBuild)' != 'true' and '$(_SingleRepoBuild)' == 'true'">true</_ShouldRunPublish>
+      <_ShouldRunPublish Condition="'$(_InnerRepoBuild)' == 'true' and '$(_VmrBuild)' == 'true'">true</_ShouldRunPublish>
+      <_ShouldRunPublish Condition="'$(_InnerRepoBuild)' != 'true' and '$(_VmrBuild)' != 'true'">true</_ShouldRunPublish>
     </PropertyGroup>
 
+      <!-- Make sure we always publish in VMR build - working around runtime repo which sets Publish to false. -->
     <MSBuild Projects="Publish.proj"
              Properties="@(_PublishProps);_NETCORE_ENGINEERING_TELEMETRY=Publish"
              Targets="Publish"
