@@ -350,7 +350,7 @@
     CleanupRepo" />
 
   <Target Name="CopyRepoArtifacts"
-          Condition="'$(IsUtilityProject)' != 'true'"
+          Condition="'$(IsUtilityProject)' != 'true' and Exists('$(RepoManifestFile)')"
           Inputs="$(RepoManifestFile)"
           Outputs="$(BaseIntermediateOutputPath)ArtifactsCopy.complete">
     <Error Text="Repo manifest file doesn't exist." Condition="!Exists('$(RepoManifestFile)')" />
