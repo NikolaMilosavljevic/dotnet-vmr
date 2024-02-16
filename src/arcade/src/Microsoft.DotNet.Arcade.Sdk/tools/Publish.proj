@@ -71,6 +71,8 @@
       <ExistingSymbolPackages Include="$(ArtifactsNonShippingPackagesDir)**/*.symbols.nupkg" IsShipping="false" />
 
       <PackagesToPublish Include="$(ArtifactsShippingPackagesDir)**/*.nupkg" IsShipping="true" />
+      <!-- Include shipping archives if running in inner source-build -->
+      <PackagesToPublish Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildPhase)' == 'InnerRepo'" Include="$(ArtifactsShippingPackagesDir)**/*$(ArchiveExtension)" IsShipping="true" />
       <PackagesToPublish Include="$(ArtifactsNonShippingPackagesDir)**/*.nupkg" IsShipping="false" />
       <PackagesToPublish Remove="@(ExistingSymbolPackages)" />
 
