@@ -71,8 +71,6 @@
       <ExistingSymbolPackages Include="$(ArtifactsNonShippingPackagesDir)**/*.symbols.nupkg" IsShipping="false" />
 
       <PackagesToPublish Include="$(ArtifactsShippingPackagesDir)**/*.nupkg" IsShipping="true" />
-      <!-- Include shipping archives if running in inner source-build -->
-      <PackagesToPublish Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildPhase)' == 'InnerRepo'" Include="$(ArtifactsShippingPackagesDir)**/*$(ArchiveExtension)" IsShipping="true" />
       <PackagesToPublish Include="$(ArtifactsNonShippingPackagesDir)**/*.nupkg" IsShipping="false" />
       <PackagesToPublish Remove="@(ExistingSymbolPackages)" />
 
@@ -86,6 +84,13 @@
         <OriginalPackage>%(PackagesToPublish.Identity)</OriginalPackage>
         <IsShipping>%(PackagesToPublish.IsShipping)</IsShipping>
       </SymbolPackagesToGenerate>
+
+      <!-- Include all other packages, i.e. archives, if running in inner source-build -->
+      <OtherPackages Include="$(ArtifactsShippingPackagesDir)**/*" IsShipping="true" />
+      <OtherPackages Include="$(ArtifactsNonShippingPackagesDir)**/*" IsShipping="false" />
+      <OtherPackages Remove="@(ExistingSymbolPackages)" />
+      <OtherPackages Remove="@(PackagesToPublish)" />
+      <PackagesToPublish Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildPhase)' == 'InnerRepo'" Include="@(OtherPackages)" />
 
       <!-- If PostBuildSign is true, then we need to include newly generated packages in ItemsToSignPostBuild. -->
       <ItemsToSignPostBuild Include="@(SymbolPackagesToGenerate->'%(Filename)%(Extension)')" Condition="'$(PostBuildSign)' == 'true'" />

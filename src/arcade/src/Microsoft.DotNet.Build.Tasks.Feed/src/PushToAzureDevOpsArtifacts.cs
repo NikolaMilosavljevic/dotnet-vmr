@@ -155,7 +155,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                     else
                     {
                         ITaskItem[] symbolItems = itemsToPushNoExcludes
-                            .Where(i => i.ItemSpec.EndsWith("symbols.nupkg"))
+                            .Where(i => i.ItemSpec.EndsWith("symbols.nupkg") || !i.ItemSpec.EndsWith(".nupkg"))
                             .Select(i =>
                             {
                                 string fileName = Path.GetFileName(i.ItemSpec);
