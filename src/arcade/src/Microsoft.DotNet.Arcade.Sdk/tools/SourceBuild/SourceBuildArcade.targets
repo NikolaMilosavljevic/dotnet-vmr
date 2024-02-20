@@ -165,7 +165,7 @@
       <SymbolsRoot>$(CurrentRepoSourceBuildArtifactsDir)</SymbolsRoot>
       <!-- Fall back to repo root for source-build-externals or repos that don't have the regular SymbolsRoot as defined above -->
       <SymbolsRoot Condition="!Exists('$(SymbolsRoot)') or '$(GitHubRepositoryName)' == 'source-build-externals'">$(RepoRoot)</SymbolsRoot>
-      <SymbolsArchiveLocation>$(CurrentRepoSourceBuildArtifactsPackagesDir)</SymbolsArchiveLocation>
+      <SymbolsArchiveLocation>$(CurrentRepoSourceBuildArtifactsPackagesDir)NonShipping/</SymbolsArchiveLocation>
       <SymbolsArchiveLocation Condition="'$(GitHubRepositoryName)' == 'nuget-client' and '$(PackageOutputPath)' != ''">$([MSBuild]::EnsureTrailingSlash('$(PackageOutputPath)'))</SymbolsArchiveLocation>
       <SymbolsList>$([MSBuild]::NormalizePath('$(SymbolsArchiveLocation)', 'symbols.lst'))</SymbolsList>
       <SymbolsArchivePrefix>Symbols.</SymbolsArchivePrefix>
