@@ -113,7 +113,7 @@
       <SymbolPackagesToGenerate Remove="$(SymbolPackagesDir)**/Microsoft.DotNet.Darc.*" />
       <SymbolPackagesToGenerate Remove="$(SymbolPackagesDir)**/Microsoft.DotNet.Maestro.Tasks.*" />
       
-      <ItemsToPushToBlobFeed Include="@(PackagesToPublish);@(ExistingSymbolPackages);@(SymbolPackagesToGenerate)">
+      <ItemsToPushToBlobFeed Include="@(PackagesToPublish);@(ExistingSymbolPackages);@(SymbolPackagesToGenerate)" Exclude="@(ItemsToPushToBlobFeed)">
         <ManifestArtifactData Condition="'%(IsShipping)' != 'true'">NonShipping=true</ManifestArtifactData>
       </ItemsToPushToBlobFeed>
 
