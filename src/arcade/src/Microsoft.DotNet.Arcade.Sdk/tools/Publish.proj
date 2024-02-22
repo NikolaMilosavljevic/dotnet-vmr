@@ -200,7 +200,8 @@
       PushToAzDO="$(PushToAzDO)"
       PushToLocalStorage="$(PushToLocalStorage)"
       AssetsLocalStoragePath="$(SourceBuiltAssetsDir)"
-      PackagesLocalStoragePath="$(SourceBuiltPackagesPath)"
+      ShippingPackagesLocalStoragePath="$(SourceBuiltShippingPackagesPath)"
+      NonShippingPackagesLocalStoragePath="$(SourceBuiltNonShippingPackagesPath)"
       AssetManifestLocalStoragePath="$(SourceBuiltAssetManifestDir)" />
 
     <!-- 

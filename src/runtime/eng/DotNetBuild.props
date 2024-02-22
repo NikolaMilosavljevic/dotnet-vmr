@@ -80,9 +80,10 @@
       <InnerBuildArgs Condition="'$(RestoreConfigFile)' != ''">$(InnerBuildArgs) /p:RestoreConfigFile=$(RestoreConfigFile)</InnerBuildArgs>
 
       <!-- Pass locations for assets and packages -->
-      <InnerBuildArgs>$(InnerBuildArgs) /p:SourceBuiltAssetsDir=$(SourceBuiltAssetsDir)</InnerBuildArgs>
-      <InnerBuildArgs>$(InnerBuildArgs) /p:SourceBuiltPackagesPath=$(SourceBuiltPackagesPath)</InnerBuildArgs>
-      <InnerBuildArgs>$(InnerBuildArgs) /p:SourceBuiltAssetManifestDir=$(SourceBuiltAssetManifestDir)</InnerBuildArgs>
+      <InnerBuildArgs Condition="'$(SourceBuiltAssetsDir)' != ''">$(InnerBuildArgs) /p:SourceBuiltAssetsDir=$(SourceBuiltAssetsDir)</InnerBuildArgs>
+      <InnerBuildArgs Condition="'$(SourceBuiltShippingPackagesPath)' != ''">$(InnerBuildArgs) /p:SourceBuiltShippingPackagesPath=$(SourceBuiltShippingPackagesPath)</InnerBuildArgs>
+      <InnerBuildArgs Condition="'$(SourceBuiltNonShippingPackagesPath)' != ''">$(InnerBuildArgs) /p:SourceBuiltNonShippingPackagesPath=$(SourceBuiltNonShippingPackagesPath)</InnerBuildArgs>
+      <InnerBuildArgs Condition="'$(SourceBuiltAssetManifestDir)' != ''">$(InnerBuildArgs) /p:SourceBuiltAssetManifestDir=$(SourceBuiltAssetManifestDir)</InnerBuildArgs>
     </PropertyGroup>
   </Target>
 

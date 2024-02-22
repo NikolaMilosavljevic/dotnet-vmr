@@ -84,7 +84,8 @@
     <BuildArgs Condition="'$(SourceBuildUseMonoRuntime)' == 'true'">$(BuildArgs) /p:SourceBuildUseMonoRuntime=$(SourceBuildUseMonoRuntime)</BuildArgs>
     <!-- Pass locations for assets and packages -->
     <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetsDir=$(SourceBuiltAssetsDir)</BuildArgs>
-    <BuildArgs>$(BuildArgs) /p:SourceBuiltPackagesPath=$(SourceBuiltPackagesPath)</BuildArgs>
+    <BuildArgs>$(BuildArgs) /p:SourceBuiltShippingPackagesPath=$(SourceBuiltPackagesPath)</BuildArgs>
+    <BuildArgs>$(BuildArgs) /p:SourceBuiltNonShippingPackagesPath=$(SourceBuiltPackagesPath)</BuildArgs>
     <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetManifestDir=$(SourceBuiltAssetManifestDir)</BuildArgs>
   </PropertyGroup>
 
