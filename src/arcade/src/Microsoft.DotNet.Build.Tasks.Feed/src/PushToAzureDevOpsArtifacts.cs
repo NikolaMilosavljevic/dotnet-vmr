@@ -59,7 +59,9 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
         public string AssetsLocalStoragePath { get; set; }
 
-        public string PackagesLocalStoragePath { get; set; }
+        public string ShippingPackagesLocalStoragePath { get; set; }
+
+        public string NonShippingPackagesLocalStoragePath { get; set; }
 
         public string AssetManifestLocalStoragePath { get; set; }
 
@@ -102,14 +104,18 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             {
                 if (PushToLocalStorage)
                 {
-                    if (string.IsNullOrEmpty(AssetsLocalStoragePath) || string.IsNullOrEmpty(PackagesLocalStoragePath) || string.IsNullOrEmpty(AssetManifestLocalStoragePath))
+                    if (string.IsNullOrEmpty(AssetsLocalStoragePath) ||
+                        string.IsNullOrEmpty(ShippingPackagesLocalStoragePath) ||
+                        string.IsNullOrEmpty(NonShippingPackagesLocalStoragePath) ||
+                        string.IsNullOrEmpty(AssetManifestLocalStoragePath))
                     {
-                        throw new Exception($"AssetsLocalStoragePath, PackagesLocalStoragePath and AssetManifestLocalStoragePath need to be specified if PublishToLocalStorage is set to true");
+                        throw new Exception($"AssetsLocalStoragePath, ShippingPackagesLocalStoragePath, NonShippingPackagesLocalStoragePath and AssetManifestLocalStoragePath need to be specified if PublishToLocalStorage is set to true");
                     }
 
                     Directory.CreateDirectory(AssetManifestLocalStoragePath);
                     Directory.CreateDirectory(AssetsLocalStoragePath);
-                    Directory.CreateDirectory(PackagesLocalStoragePath);
+                    Directory.CreateDirectory(ShippingPackagesLocalStoragePath);
+                    Directory.CreateDirectory(NonShippingPackagesLocalStoragePath);
                     Log.LogMessage(MessageImportance.High, "Performing push to local artifacts storage.");
                 }
 
@@ -283,7 +289,14 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                         break;
 
                     case ItemType.PackageArtifact:
-                        File.Copy(itemSpec, Path.Combine(PackagesLocalStoragePath, filename), true);
+                        if (itemSpec.Contains("\\NonShipping\\"))
+                        {
+                            File.Copy(itemSpec, Path.Combine(NonShippingPackagesLocalStoragePath, filename), true);
+                        }
+                        else
+                        {
+                            File.Copy(itemSpec, Path.Combine(ShippingPackagesLocalStoragePath, filename), true);
+                        }
                         break;
 
                     case ItemType.BlobArtifact:

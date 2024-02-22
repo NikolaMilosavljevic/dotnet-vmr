@@ -76,7 +76,8 @@
     <BuildArgs Condition="'$(NuGetConfigFile)' != ''">$(BuildArgs) /p:RestoreConfigFile=$(NuGetConfigFile)</BuildArgs>
     <!-- Pass locations for assets and packages -->
     <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetsDir=$(SourceBuiltAssetsDir)</BuildArgs>
-    <BuildArgs>$(BuildArgs) /p:SourceBuiltPackagesPath=$(SourceBuiltPackagesPath)</BuildArgs>
+    <BuildArgs>$(BuildArgs) /p:SourceBuiltShippingPackagesPath=$(SourceBuiltPackagesPath)</BuildArgs>
+    <BuildArgs>$(BuildArgs) /p:SourceBuiltNonShippingPackagesPath=$(SourceBuiltPackagesPath)</BuildArgs>
     <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetManifestDir=$(SourceBuiltAssetManifestDir)</BuildArgs>
   </PropertyGroup>
 
