@@ -12,7 +12,6 @@ using Microsoft.DotNet.VersionTools.BuildManifest.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
-using NuGet.Packaging.Core;
 using NuGet.Versioning;
 using System.Collections.Generic;
 using System.IO;
@@ -279,11 +278,11 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
             IList<string> actualNupkgInfoPath = new List<string>();
             nupkgInfoFactoryMock.Setup(m => m.CreateNupkgInfo(PACKAGE_A)).Returns(new NupkgInfo(new PackageIdentity(
                 id: Path.GetFileNameWithoutExtension(PACKAGE_A),
-                version: new NuGetVersion(NUPKG_VERSION)
+                version: NUPKG_VERSION
             )));
             nupkgInfoFactoryMock.Setup(m => m.CreateNupkgInfo(PACKAGE_B)).Returns(new NupkgInfo(new PackageIdentity(
                 id: Path.GetFileNameWithoutExtension(PACKAGE_B),
-                version: new NuGetVersion(NUPKG_VERSION)
+                version: NUPKG_VERSION
             )));
 
             // Dependency Injection setup
@@ -328,11 +327,11 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
             IList<string> actualNupkgInfoPath = new List<string>();
             nupkgInfoFactoryMock.Setup(m => m.CreateNupkgInfo(PACKAGE_A)).Returns(new NupkgInfo(new PackageIdentity(
                 id: Path.GetFileNameWithoutExtension(PACKAGE_A),
-                version: new NuGetVersion(NUPKG_VERSION)
+                version: NUPKG_VERSION
             )));
             nupkgInfoFactoryMock.Setup(m => m.CreateNupkgInfo(PACKAGE_B)).Returns(new NupkgInfo(new PackageIdentity(
                 id: Path.GetFileNameWithoutExtension(PACKAGE_B),
-                version: new NuGetVersion(NUPKG_VERSION)
+                version: NUPKG_VERSION
             )));
 
             // Dependency Injection setup
@@ -375,11 +374,11 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
             Mock<INupkgInfoFactory> nupkgInfoFactoryMock = new Mock<INupkgInfoFactory>();
             nupkgInfoFactoryMock.Setup(m => m.CreateNupkgInfo(PACKAGE_A)).Returns(new NupkgInfo(new PackageIdentity(
                 id: Path.GetFileNameWithoutExtension(PACKAGE_A),
-                version: new NuGetVersion(NUPKG_VERSION)
+                version: NUPKG_VERSION
             )));
             nupkgInfoFactoryMock.Setup(m => m.CreateNupkgInfo(PACKAGE_B)).Returns(new NupkgInfo(new PackageIdentity(
                 id: Path.GetFileNameWithoutExtension(PACKAGE_B),
-                version: new NuGetVersion(NUPKG_VERSION)
+                version: NUPKG_VERSION
             )));
 
             // Dependency Injection setup
@@ -425,11 +424,11 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
             IList<string> actualNupkgInfoPath = new List<string>();
             nupkgInfoFactoryMock.Setup(m => m.CreateNupkgInfo(PACKAGE_A)).Returns(new NupkgInfo(new PackageIdentity(
                 id: Path.GetFileNameWithoutExtension(PACKAGE_A),
-                version: new NuGetVersion(NUPKG_VERSION)
+                version: NUPKG_VERSION
             )));
             nupkgInfoFactoryMock.Setup(m => m.CreateNupkgInfo(PACKAGE_B)).Returns(new NupkgInfo(new PackageIdentity(
                 id: Path.GetFileNameWithoutExtension(PACKAGE_B),
-                version: new NuGetVersion(NUPKG_VERSION)
+                version: NUPKG_VERSION
             )));
 
             // Dependency Injection setup
@@ -529,11 +528,11 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
             IList<string> actualNupkgInfoPath = new List<string>();
             nupkgInfoFactoryMock.Setup(m => m.CreateNupkgInfo(PACKAGE_A)).Returns(new NupkgInfo(new PackageIdentity(
                 id: "test-package-a",
-                version: new NuGetVersion(NUPKG_VERSION)
+                version: NUPKG_VERSION
             )));
             nupkgInfoFactoryMock.Setup(m => m.CreateNupkgInfo(PACKAGE_B)).Returns(new NupkgInfo(new PackageIdentity(
                 id: "test-package-b",
-                version: new NuGetVersion(NUPKG_VERSION)
+                version: NUPKG_VERSION
             )));
 
             // Dependency Injection setup
