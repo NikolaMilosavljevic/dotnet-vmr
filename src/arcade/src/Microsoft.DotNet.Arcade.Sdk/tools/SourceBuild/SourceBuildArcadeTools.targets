@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.DotNet.SourceBuild.Tasks" Version="$(MicrosoftDotNetSourceBuildTasksVersion)" IsImplicitlyDefined="true" />
-    <PackageReference Include="Microsoft.DotNet.Build.Tasks.Feed" Version="$(MicrosoftDotNetBuildTasksFeedVersion)" IsImplicitlyDefined="true" />
+    <PackageReference Condition="'$(DotNetBuildSourceOnly)' == 'true' and '$(DotNetBuildFromSourceFlavor)' == 'Product'" Include="Microsoft.DotNet.Build.Tasks.Feed" Version="$(MicrosoftDotNetBuildTasksFeedVersion)" IsImplicitlyDefined="true" />
   </ItemGroup>
 
   <!-- Because the condition here is rather complex, it should read as the following:
