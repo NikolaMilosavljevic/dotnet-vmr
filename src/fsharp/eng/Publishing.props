@@ -6,8 +6,9 @@
 
   <ItemGroup>
     <_PackagesToPublish Remove="@(_PackagesToPublish)" />
-    <_PackagesToPublish Include="$(ArtifactsPackagesDir)**\*.tar.gz" UploadPathSegment="Runtime" Condition="'$(ArcadeBuildFromSource)' == 'true'" />
     <_PackagesToPublish Include="$(ArtifactsPackagesDir)**\*.nupkg" UploadPathSegment="Runtime" Condition="'$(ArcadeBuildFromSource)' == 'true'" />
+    <_ArchivesToPublish Remove="@(_ArchivesToPublish)" />
+    <_ArchivesToPublish Include="$(ArtifactsPackagesDir)**\*.tar.gz" UploadPathSegment="Runtime" Condition="'$(ArcadeBuildFromSource)' == 'true'" />
   </ItemGroup>
 
   <Target Name="_PublishPackages">
@@ -20,6 +21,10 @@
       <ItemsToPushToBlobFeed Remove="@(ItemsToPushToBlobFeed)" Condition="'$(OS)' != 'Windows_NT' and '$(PostBuildSign)' != 'true' and '$(ArcadeBuildFromSource)' != 'true'" />
 
       <ItemsToPushToBlobFeed Include="@(_PackagesToPublish)">
+        <IsShipping>true</IsShipping>
+      </ItemsToPushToBlobFeed>
+
+      <ItemsToPushToBlobFeed Include="@(_ArchivesToPublish)">
         <ManifestArtifactData>NonShipping=false</ManifestArtifactData>
         <PublishFlatContainer>true</PublishFlatContainer>
         <RelativeBlobPath>$(_UploadPathRoot)/%(_PackagesToPublish.UploadPathSegment)/$(_PackageVersion)/%(Filename)%(Extension)</RelativeBlobPath>
