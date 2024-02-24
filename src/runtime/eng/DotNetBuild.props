@@ -42,7 +42,7 @@
            Properties that control flags from source-build, and the expected output for source-build should be added to this file. -->
 
       <!-- Enable regular Arcade publishing in VMR build -->
-      <InnerBuildArgs Condition="'$(DotNetBuildFromSourceFlavor)' == 'Product' or '$(DotNetBuildOrchestrator)' == 'true'">$(InnerBuildArgs) --restore --build --publish</InnerBuildArgs>
+      <InnerBuildArgs Condition="'$(DotNetBuildFromSourceFlavor)' == 'Product' or '$(DotNetBuildOrchestrator)' == 'true'">$(InnerBuildArgs) $(FlagParameterPrefix)restore $(FlagParameterPrefix)build $(FlagParameterPrefix)publish</InnerBuildArgs>
 
       <InnerBuildArgs>$(InnerBuildArgs) $(FlagParameterPrefix)arch $(TargetArch)</InnerBuildArgs>
       <InnerBuildArgs>$(InnerBuildArgs) $(FlagParameterPrefix)os $(TargetOS)</InnerBuildArgs>
