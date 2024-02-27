@@ -102,6 +102,14 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
         {
             try
             {
+                /*
+                if (PushToAzDO == false && PushToLocalStorage == false)
+                {
+                    // Default to pushing to AzDO - ensures this task works everywhere
+                    PushToAzDO = true;
+                }
+                */
+
                 if (PushToLocalStorage)
                 {
                     if (string.IsNullOrEmpty(AssetsLocalStoragePath) ||
