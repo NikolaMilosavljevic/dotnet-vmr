@@ -155,13 +155,15 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 continue;
                             }
 
+                            // test
+                            Log.LogMessage(MessageImportance.High, $"PublishFlatContainer is true - publishing blob: {blobItem.ItemSpec}");
                             PushToLocalStorageOrAzDO(ItemType.BlobArtifact, blobItem.ItemSpec);
                         }
                     }
                     else
                     {
                         ITaskItem[] symbolItems = itemsToPushNoExcludes
-                            .Where(i => i.ItemSpec.EndsWith("symbols.nupkg") || !i.ItemSpec.EndsWith(".nupkg"))
+                            .Where(i => i.ItemSpec.EndsWith("symbols.nupkg"))
                             .Select(i =>
                             {
                                 string fileName = Path.GetFileName(i.ItemSpec);
@@ -169,6 +171,12 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 return i;
                             })
                             .ToArray();
+
+                        // test
+                        foreach (ITaskItem item in symbolItems)
+                        {
+                            Log.LogMessage(MessageImportance.High, $"Symbol: {item.ItemSpec}");
+                        }
 
                         var blobItems = itemsToPushNoExcludes
                             .Where(i =>
@@ -185,6 +193,12 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                             .Union(symbolItems)
                             .ToArray();
 
+                        // test
+                        foreach (var b in blobItems)
+                        {
+                            Log.LogMessage(MessageImportance.High, $"BlobItem: {b.ItemSpec}");
+                        }
+
                         ITaskItem[] packageItems = itemsToPushNoExcludes
                             .Except(blobItems)
                             .ToArray();
@@ -197,6 +211,8 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 continue;
                             }
 
+                            // test
+                            Log.LogMessage(MessageImportance.High, $"Publish package artifact: {packagePath.ItemSpec}");
                             PushToLocalStorageOrAzDO(ItemType.PackageArtifact, packagePath.ItemSpec);
                         }
 
@@ -208,6 +224,8 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 continue;
                             }
 
+                            // test
+                            Log.LogMessage(MessageImportance.High, $"Publish blob artifact: {blobItem.ItemSpec}");
                             PushToLocalStorageOrAzDO(ItemType.BlobArtifact, blobItem.ItemSpec);
                         }
 

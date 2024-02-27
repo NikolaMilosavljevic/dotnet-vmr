@@ -53,6 +53,7 @@
       <!-- Source-build produces a unified symbols archive - we need to include it local source-build publishing. -->
       <ItemsToPush Condition="'$(DotNetBuildFromSource)' == 'true'" Include="$(ArtifactRoot)packages/**/Symbols*.tar.gz" IsShipping="false">
         <ManifestArtifactData>NonShipping=true</ManifestArtifactData>
+        <PublishFlatContainer>true</PublishFlatContainer>
       </ItemsToPush>
     </ItemGroup>
 

@@ -91,7 +91,10 @@
       <OtherPackages Include="$(ArtifactsNonShippingPackagesDir)**/*" IsShipping="false" />
       <OtherPackages Remove="@(ExistingSymbolPackages)" />
       <OtherPackages Remove="@(PackagesToPublish)" />
-      <PackagesToPublish Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildPhase)' == 'InnerRepo'" Include="@(OtherPackages)" />
+      <PackagesToPublish Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildPhase)' == 'InnerRepo'" Include="@(OtherPackages)">
+        <PublishFlatContainer>true</PublishFlatContainer>
+        <RelativeBlobPath>%(Filename)%(Extension)</RelativeBlobPath>
+      </PackagesToPublish>
 
       <!-- If PostBuildSign is true, then we need to include newly generated packages in ItemsToSignPostBuild. -->
       <ItemsToSignPostBuild Include="@(SymbolPackagesToGenerate->'%(Filename)%(Extension)')" Condition="'$(PostBuildSign)' == 'true'" />
