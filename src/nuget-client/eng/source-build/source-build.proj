@@ -86,10 +86,11 @@
       <_PublishProperties Include="PushToAzDO=false" />
       <_PublishProperties Include="PushToLocalStorage=true" />
       <_PublishProperties Include="MicrosoftDotNetBuildTasksFeedAssemblyPath=$(MicrosoftDotNetBuildTasksFeedAssemblyPath)" />
-      <_PublishProperties Include="AssetsLocalStoragePath=$(SourceBuiltAssetsDir" />
+      <_PublishProperties Include="AssetsLocalStoragePath=$(SourceBuiltAssetsDir)" />
       <_PublishProperties Include="ShippingPackagesLocalStoragePath=$(SourceBuiltShippingPackagesPath)" />
       <_PublishProperties Include="NonShippingPackagesLocalStoragePath=$(SourceBuiltNonShippingPackagesPath)" />
       <_PublishProperties Include="AssetManifestLocalStoragePath=$(SourceBuiltAssetManifestDir)" />
+      <_PublishProperties Include="ArtifactsLogDir=$(ArtifactsLogDir)" />
     </ItemGroup>
 
     <MSBuild Projects="$(ProjectRoot)build/publish.proj"

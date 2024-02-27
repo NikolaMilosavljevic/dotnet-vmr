@@ -54,6 +54,7 @@
       <ItemsToPush Condition="'$(DotNetBuildFromSource)' == 'true'" Include="$(ArtifactRoot)packages/**/Symbols*.tar.gz" IsShipping="false">
         <ManifestArtifactData>NonShipping=true</ManifestArtifactData>
         <PublishFlatContainer>true</PublishFlatContainer>
+        <RelativeBlobPath>%(Filename)%(Extension)</RelativeBlobPath>
       </ItemsToPush>
     </ItemGroup>
 
