@@ -50,6 +50,9 @@
 
     <ItemGroup>
       <ItemsToPush Include="$(NuGetClientNupkgsDirectoryPath)/*.nupkg" />
+      <!-- In source-only build, we do not need to publish *.symbols.nupkg -->
+      <SymbolsPackages Include="$(NuGetClientNupkgsDirectoryPath)/*.symbols.nupkg" />
+      <ItemsToPush Remove="@(SymbolsPackages)" Condition="'$(DotNetBuildSourceOnly)' == 'true'" />
       <!-- Source-build produces a unified symbols archive - we need to include it local source-build publishing. -->
       <ItemsToPush Condition="'$(DotNetBuildFromSource)' == 'true'" Include="$(ArtifactRoot)packages/**/Symbols*.tar.gz" IsShipping="false">
         <ManifestArtifactData>NonShipping=true</ManifestArtifactData>

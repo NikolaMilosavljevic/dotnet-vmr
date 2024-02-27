@@ -83,6 +83,7 @@
     <ItemGroup>
       <_PublishProperties Include="Configuration=$(BuildConfiguration)" />
       <_PublishProperties Include="DotNetBuildFromSource=true" />
+      <_PublishProperties Include="DotNetBuildSourceOnly=true" />
       <_PublishProperties Include="PushToAzDO=false" />
       <_PublishProperties Include="PushToLocalStorage=true" />
       <_PublishProperties Include="MicrosoftDotNetBuildTasksFeedAssemblyPath=$(MicrosoftDotNetBuildTasksFeedAssemblyPath)" />
