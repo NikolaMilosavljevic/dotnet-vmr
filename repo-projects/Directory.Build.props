@@ -32,7 +32,7 @@
     <!-- Update nuget.config property to point to modified file that will be created/updated during build. -->
     <NuGetConfigFile Condition="'$(OriginalNuGetConfigFile)' != ''">$(BaseIntermediateOutputPath)$([System.IO.Path]::GetFileName('$(OriginalNuGetConfigFile)'))</NuGetConfigFile>
 
-    <SourceBuiltAssetManifestDir>$(BaseIntermediateOutputPath)AssetManifest/</SourceBuiltAssetManifestDir>
+    <RepoAssetManifestDir>$(ProjectDirectory)AssetManifest/</RepoAssetManifestDir>
 
     <SourceBuiltSdksDir>$([MSBuild]::NormalizeDirectory('$(ArtifactsDir)', 'source-built-sdks'))</SourceBuiltSdksDir>
     <RepoArtifactsShippingPackagesDir Condition="'$(RepositoryName)' != 'source-build-reference-packages'">$([MSBuild]::NormalizeDirectory('$(ArtifactsShippingPackagesDir)', '$(RepositoryName)'))</RepoArtifactsShippingPackagesDir>
@@ -83,10 +83,10 @@
     <!-- TODO rename this property https://github.com/dotnet/source-build/issues/4165 -->
     <BuildArgs Condition="'$(SourceBuildUseMonoRuntime)' == 'true'">$(BuildArgs) /p:SourceBuildUseMonoRuntime=$(SourceBuildUseMonoRuntime)</BuildArgs>
     <!-- Pass locations for assets and packages -->
-    <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetsDir=$(SourceBuiltAssetsDir)</BuildArgs>
-    <BuildArgs>$(BuildArgs) /p:SourceBuiltShippingPackagesPath=$(SourceBuiltPackagesPath)</BuildArgs>
-    <BuildArgs>$(BuildArgs) /p:SourceBuiltNonShippingPackagesPath=$(SourceBuiltPackagesPath)</BuildArgs>
-    <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetManifestDir=$(SourceBuiltAssetManifestDir)</BuildArgs>
+    <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetsDir=$(ArtifactsAssetsDir)</BuildArgs>
+    <BuildArgs>$(BuildArgs) /p:SourceBuiltShippingPackagesPath=$(RepoArtifactsShippingPackagesDir)</BuildArgs>
+    <BuildArgs>$(BuildArgs) /p:SourceBuiltNonShippingPackagesPath=$(RepoArtifactsNonShippingPackagesDir)</BuildArgs>
+    <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetManifestDir=$(RepoAssetManifestDir)</BuildArgs>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(DotNetBuildSourceOnly)' != 'true'">
