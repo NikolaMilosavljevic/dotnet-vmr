@@ -24,6 +24,7 @@
     <ProjectAssetsJsonArchiveFile>$(PackageReportDir)all-project-assets-json-files.zip</ProjectAssetsJsonArchiveFile>
     <ProdConManifestFile>$(PackageReportDir)prodcon-build.xml</ProdConManifestFile>
     <RepoManifestFile>$([MSBuild]::NormalizePath('$(ProjectDirectory)', 'artifacts', 'RepoManifest.xml'))</RepoManifestFile>
+    <RepoAssetsSymbolsArchive>$(ArtifactsAssetsDir)Symbols.$(RepositoryName)$(ArchiveExtension)</RepoAssetsSymbolsArchive>
 
     <IntermediateSymbolsRepoDir>$(IntermediateSymbolsRootDir)$(RepositoryName)</IntermediateSymbolsRepoDir>
   </PropertyGroup>
@@ -562,8 +563,18 @@
     </Touch>
   </Target>
 
+  <Target Name="DiscoverSymbolsArchiveFile"
+          Condition="'$(DotNetBuildSourceOnly)' == 'true' and
+                     '$(IsUtilityProject)' != 'true' and
+                     Exists('$(RepoAssetsSymbolsArchive)')">
+
+    <ItemGroup>
+      <RepoSymbolsArchive Include="$(RepoAssetsSymbolsArchive)" />
+    </ItemGroup>
+  </Target>
+
   <Target Name="ExtractSymbolsArchiveFile"
-          DependsOnTargets="CopyRepoArtifacts"
+          DependsOnTargets="CopyRepoArtifacts;DiscoverSymbolsArchiveFile"
           Condition="'$(DotNetBuildSourceOnly)' == 'true' and
                      '$(IsUtilityProject)' != 'true' and
                      '@(RepoSymbolsArchive)' != ''"
@@ -585,6 +596,7 @@
     CopyRepoArtifacts;
     CopyInnerBuildRestoredPackages;
     ExtractToolPackage;
+    DiscoverSymbolsArchiveFile;
     ExtractSymbolsArchiveFile;
     CleanupRepo" />
 
