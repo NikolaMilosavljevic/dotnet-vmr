@@ -86,12 +86,9 @@
         <IsShipping>%(PackagesToPublish.IsShipping)</IsShipping>
       </SymbolPackagesToGenerate>
 
-      <!-- Include all other packages, i.e. archives, if running in inner source-build -->
-      <OtherPackages Include="$(ArtifactsShippingPackagesDir)**/*" IsShipping="true" />
-      <OtherPackages Include="$(ArtifactsNonShippingPackagesDir)**/*" IsShipping="false" />
-      <OtherPackages Remove="@(ExistingSymbolPackages)" />
-      <OtherPackages Remove="@(PackagesToPublish)" />
-      <PackagesToPublish Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildPhase)' == 'InnerRepo'" Include="@(OtherPackages)">
+      <!-- Include Symbols.<repo>.tar.gz, if running in inner source-only build -->
+      <UnifiedSymbolsPackage Include="$(ArtifactsPackagesDir)**/Symbols*.tar.gz" IsShipping="false" />
+      <PackagesToPublish Condition="'$(DotNetBuildSourceOnly)' == 'true' and '$(DotNetBuildInnerRepo)' == 'true'" Include="@(UnifiedSymbolsPackage)">
         <PublishFlatContainer>true</PublishFlatContainer>
         <RelativeBlobPath>%(Filename)%(Extension)</RelativeBlobPath>
       </PackagesToPublish>
