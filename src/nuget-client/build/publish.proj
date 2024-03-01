@@ -8,35 +8,14 @@
     <TargetFramework>net472</TargetFramework>
     <ArtifactsLogDir Condition="'$(ArtifactsLogDir)' == ''">$(MSBuildThisFileDirectory)PublishToBuildAssetRegistryLogs</ArtifactsLogDir>
   </PropertyGroup>
-
-  <!--
-    When source-building, lots of properties are unnecessary as we only push to local storage.
-    Set the unused, but required properties to dummy values.
-  -->
-  <PropertyGroup Condition="'$(DotNetBuildFromSource)' == 'true'">
-    <NuGetClientNupkgsDirectoryPath Condition="'$(NuGetClientNupkgsDirectoryPath)' == ''">$(NupkgOutputDirectory)</NuGetClientNupkgsDirectoryPath>
-    <BUILD_BUILDNUMBER Condition="'$(BUILD_BUILDNUMBER)' == ''">BUILD_BUILDNUMBER</BUILD_BUILDNUMBER>
-    <BUILD_SOURCEBRANCH Condition="'$(BUILD_SOURCEBRANCH)' == ''">BUILD_SOURCEBRANCH</BUILD_SOURCEBRANCH>
-    <BUILD_SOURCEVERSION Condition="'$(BUILD_SOURCEVERSION)' == ''">BUILD_SOURCEVERSION</BUILD_SOURCEVERSION>
-    <BUILD_REPOSITORY_URI Condition="'$(BUILD_REPOSITORY_URI)' == ''">BUILD_REPOSITORY_URI</BUILD_REPOSITORY_URI>
-    <MaestroAccessToken Condition="'$(MaestroAccessToken)' == ''">MaestroAccessToken</MaestroAccessToken>
-    <MaestroApiEndpoint Condition="'$(MaestroApiEndpoint)' == ''">MaestroApiEndpoint</MaestroApiEndpoint>
-    <SYSTEM_TEAMFOUNDATIONCOLLECTIONURI Condition="'$(SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)' == ''">SYSTEM_TEAMFOUNDATIONCOLLECTIONURI</SYSTEM_TEAMFOUNDATIONCOLLECTIONURI>
-    <SYSTEM_TEAMPROJECT Condition="'$(SYSTEM_TEAMPROJECT)' == ''">SYSTEM_TEAMPROJECT</SYSTEM_TEAMPROJECT>
-    <BUILD_BUILDID Condition="'$(BUILD_BUILDID)' == ''">BUILD_BUILDID</BUILD_BUILDID>
-    <SYSTEM_DEFINITIONID Condition="'$(SYSTEM_DEFINITIONID)' == ''">SYSTEM_DEFINITIONID</SYSTEM_DEFINITIONID>
-  </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Condition="'$(DotNetBuildFromSource)' != 'true'" Include="Microsoft.DotNet.Maestro.Tasks" />
+    <PackageReference Include="Microsoft.DotNet.Maestro.Tasks" />
     <PackageReference Include="Microsoft.DotNet.Build.Tasks.Feed" />
   </ItemGroup>
 
-  <UsingTask Condition="'$(DotNetBuildFromSource)' != 'true'" TaskName="Microsoft.DotNet.Build.Tasks.Feed.PushToAzureDevOpsArtifacts" AssemblyFile="$(PkgMicrosoft_DotNet_Build_Tasks_Feed)\tools\netcoreapp2.1\Microsoft.DotNet.Build.Tasks.Feed.dll" />
-  <UsingTask Condition="'$(DotNetBuildFromSource)' != 'true'" TaskName="Microsoft.DotNet.Maestro.Tasks.PushMetadataToBuildAssetRegistry" AssemblyFile="$(PkgMicrosoft_DotNet_Maestro_Tasks)\tools\netcoreapp3.1\Microsoft.DotNet.Maestro.Tasks.dll" />
+  <UsingTask TaskName="Microsoft.DotNet.Build.Tasks.Feed.PushToAzureDevOpsArtifacts" AssemblyFile="$(PkgMicrosoft_DotNet_Build_Tasks_Feed)\tools\netcoreapp2.1\Microsoft.DotNet.Build.Tasks.Feed.dll" />
+  <UsingTask TaskName="Microsoft.DotNet.Maestro.Tasks.PushMetadataToBuildAssetRegistry" AssemblyFile="$(PkgMicrosoft_DotNet_Maestro_Tasks)\tools\netcoreapp3.1\Microsoft.DotNet.Maestro.Tasks.dll" />
 
-  <!-- Source-build -->
-  <UsingTask Condition="'$(DotNetBuildFromSource)' == 'true'" TaskName="Microsoft.DotNet.Build.Tasks.Feed.PushToAzureDevOpsArtifacts" AssemblyFile="$(MicrosoftDotNetBuildTasksFeedAssemblyPath)" />
 
   <Target Name="PublishToBuildAssetRegistry">
     <PropertyGroup>
@@ -50,15 +29,6 @@
 
     <ItemGroup>
       <ItemsToPush Include="$(NuGetClientNupkgsDirectoryPath)/*.nupkg" />
-      <!-- In source-only build, we do not need to publish *.symbols.nupkg -->
-      <SymbolsPackages Include="$(NuGetClientNupkgsDirectoryPath)/*.symbols.nupkg" />
-      <ItemsToPush Remove="@(SymbolsPackages)" Condition="'$(DotNetBuildSourceOnly)' == 'true'" />
-      <!-- Source-build produces a unified symbols archive - we need to include it local source-build publishing. -->
-      <ItemsToPush Condition="'$(DotNetBuildFromSource)' == 'true'" Include="$(ArtifactRoot)packages/**/Symbols*.tar.gz" IsShipping="false">
-        <ManifestArtifactData>NonShipping=true</ManifestArtifactData>
-        <PublishFlatContainer>true</PublishFlatContainer>
-        <RelativeBlobPath>%(Filename)%(Extension)</RelativeBlobPath>
-      </ItemsToPush>
     </ItemGroup>
 
     <Error Condition="@(ItemsToPush->Count()) == 0" Text="There were no packages found at '$(NuGetClientNupkgsDirectoryPath)'." />
@@ -86,14 +56,7 @@
       <ManifestBuildData Include="AzureDevOpsBranch=$(BUILD_SOURCEBRANCH)" />
     </ItemGroup>
 
-    <!-- Defaults to AzDO publishing -->
-    <PropertyGroup>
-      <PushToAzDO Condition="'$(PushToAzDO)' == ''">true</PushToAzDO>
-      <PushToLocalStorage Condition="'$(PushToLocalStorage)' == ''">false</PushToLocalStorage>
-    </PropertyGroup>
-
     <PushToAzureDevOpsArtifacts
-      Condition="'$(DotNetBuildFromSource)' != 'true'"
       ItemsToPush="@(ItemsToPush)"
       ManifestBuildData="@(ManifestBuildData)"
       ManifestRepoUri="$(BUILD_REPOSITORY_NAME)"
@@ -103,25 +66,7 @@
       AssetManifestPath="$(AssetManifestPath)"
       PublishingVersion="3" />
 
-    <PushToAzureDevOpsArtifacts
-      Condition="'$(DotNetBuildFromSource)' == 'true'"
-      ItemsToPush="@(ItemsToPush)"
-      ManifestBuildData="@(ManifestBuildData)"
-      ManifestRepoUri="$(BUILD_REPOSITORY_NAME)"
-      ManifestBranch="$(BUILD_SOURCEBRANCH)"
-      ManifestBuildId="$(BUILD_BUILDNUMBER)"
-      ManifestCommit="$(BUILD_SOURCEVERSION)"
-      AssetManifestPath="$(AssetManifestPath)"
-      PublishingVersion="3"
-      PushToAzDO="$(PushToAzDO)"
-      PushToLocalStorage="$(PushToLocalStorage)"
-      AssetsLocalStoragePath="$(AssetsLocalStoragePath)"
-      ShippingPackagesLocalStoragePath="$(ShippingPackagesLocalStoragePath)"
-      NonShippingPackagesLocalStoragePath="$(NonShippingPackagesLocalStoragePath)"
-      AssetManifestLocalStoragePath="$(AssetManifestLocalStoragePath)" />
-
     <PushMetadataToBuildAssetRegistry
-      Condition="'$(DotNetBuildFromSource)' != 'true'"
       BuildAssetRegistryToken="$(MaestroAccessToken)"
       MaestroApiEndpoint="$(MaestroApiEndpoint)"
       ManifestsPath="$(ArtifactsLogDir)AssetManifest\"
