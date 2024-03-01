@@ -587,6 +587,9 @@
     <!-- Extract repo symbols tarball -->
     <MakeDir Directories="$(IntermediateSymbolsRepoDir)" />
     <Exec Command="tar -xzf %(RepoSymbolsArchive.Identity) -C $(IntermediateSymbolsRepoDir)" />
+
+    <!-- Delete repo symbols archive in assets folder -->
+    <Delete Condition="'%(RepoSymbolsArchive.Identity)' == '$(RepoAssetsSymbolsArchive)'" Files="%(RepoSymbolsArchive.Identity)" />
   </Target>
 
   <Target Name="Build"

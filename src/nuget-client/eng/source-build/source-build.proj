@@ -73,14 +73,6 @@
             />
 
     <ItemGroup>
-      <MicrosoftDotNetBuildTasksFeedAssemblyPathItem Include="$(NuGetPackageRoot)microsoft.dotnet.build.tasks.feed/*/tools/net9.0/Microsoft.DotNet.Build.Tasks.Feed.dll" />
-    </ItemGroup>
-
-    <PropertyGroup>
-      <MicrosoftDotNetBuildTasksFeedAssemblyPath>@(MicrosoftDotNetBuildTasksFeedAssemblyPathItem)</MicrosoftDotNetBuildTasksFeedAssemblyPath>
-    </PropertyGroup>
-
-    <ItemGroup>
       <_PublishProperties Include="_NETCORE_ENGINEERING_TELEMETRY=Publish" />
       <_PublishProperties Include="Configuration=$(Configuration)" />
       <_PublishProperties Include="ArcadeBuildFromSource=$(ArcadeBuildFromSource)" />
