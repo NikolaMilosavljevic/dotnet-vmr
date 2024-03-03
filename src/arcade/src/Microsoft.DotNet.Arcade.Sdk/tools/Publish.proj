@@ -206,7 +206,7 @@
       AssetsLocalStoragePath="$(SourceBuiltAssetsDir)"
       ShippingPackagesLocalStoragePath="$(SourceBuiltShippingPackagesPath)"
       NonShippingPackagesLocalStoragePath="$(SourceBuiltNonShippingPackagesPath)"
-      AssetManifestLocalStoragePath="$(SourceBuiltAssetManifestDir)" />
+      AssetManifestsLocalStoragePath="$(SourceBuiltAssetManifestsDir)" />
 
     <!-- 
         Publish Windows PDBs produced by SymStore.targets (by default, only shipping PDBs are placed there).

@@ -63,7 +63,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
         public string NonShippingPackagesLocalStoragePath { get; set; }
 
-        public string AssetManifestLocalStoragePath { get; set; }
+        public string AssetManifestsLocalStoragePath { get; set; }
 
         public bool PushToAzDO { get; set; }
 
@@ -115,9 +115,9 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                     if (string.IsNullOrEmpty(AssetsLocalStoragePath) ||
                         string.IsNullOrEmpty(ShippingPackagesLocalStoragePath) ||
                         string.IsNullOrEmpty(NonShippingPackagesLocalStoragePath) ||
-                        string.IsNullOrEmpty(AssetManifestLocalStoragePath))
+                        string.IsNullOrEmpty(AssetManifestsLocalStoragePath))
                     {
-                        throw new Exception($"AssetsLocalStoragePath, ShippingPackagesLocalStoragePath, NonShippingPackagesLocalStoragePath and AssetManifestLocalStoragePath need to be specified if PublishToLocalStorage is set to true");
+                        throw new Exception($"AssetsLocalStoragePath, ShippingPackagesLocalStoragePath, NonShippingPackagesLocalStoragePath and AssetManifestsLocalStoragePath need to be specified if PublishToLocalStorage is set to true");
                     }
 
                     Log.LogMessage(MessageImportance.High, "Performing push to local artifacts storage.");
@@ -307,8 +307,8 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                 switch (itemType)
                 {
                     case ItemType.AssetManifest:
-                        Directory.CreateDirectory(AssetManifestLocalStoragePath);
-                        File.Copy(itemSpec, Path.Combine(AssetManifestLocalStoragePath, filename), true);
+                        Directory.CreateDirectory(AssetManifestsLocalStoragePath);
+                        File.Copy(itemSpec, Path.Combine(AssetManifestsLocalStoragePath, filename), true);
                         break;
 
                     case ItemType.PackageArtifact:

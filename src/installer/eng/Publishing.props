@@ -191,6 +191,6 @@
       AssetsLocalStoragePath="$(SourceBuiltAssetsDir)"
       ShippingPackagesLocalStoragePath="$(SourceBuiltShippingPackagesPath)"
       NonShippingPackagesLocalStoragePath="$(SourceBuiltNonShippingPackagesPath)"
-      AssetManifestLocalStoragePath="$(SourceBuiltAssetManifestDir)" />
+      AssetManifestsLocalStoragePath="$(SourceBuiltAssetManifestsDir)" />
   </Target>
 </Project>

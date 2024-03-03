@@ -83,7 +83,7 @@
       <InnerBuildArgs Condition="'$(SourceBuiltAssetsDir)' != ''">$(InnerBuildArgs) /p:SourceBuiltAssetsDir=$(SourceBuiltAssetsDir)</InnerBuildArgs>
       <InnerBuildArgs Condition="'$(SourceBuiltShippingPackagesPath)' != ''">$(InnerBuildArgs) /p:SourceBuiltShippingPackagesPath=$(SourceBuiltShippingPackagesPath)</InnerBuildArgs>
       <InnerBuildArgs Condition="'$(SourceBuiltNonShippingPackagesPath)' != ''">$(InnerBuildArgs) /p:SourceBuiltNonShippingPackagesPath=$(SourceBuiltNonShippingPackagesPath)</InnerBuildArgs>
-      <InnerBuildArgs Condition="'$(SourceBuiltAssetManifestDir)' != ''">$(InnerBuildArgs) /p:SourceBuiltAssetManifestDir=$(SourceBuiltAssetManifestDir)</InnerBuildArgs>
+      <InnerBuildArgs Condition="'$(SourceBuiltAssetManifestsDir)' != ''">$(InnerBuildArgs) /p:SourceBuiltAssetManifestsDir=$(SourceBuiltAssetManifestsDir)</InnerBuildArgs>
     </PropertyGroup>
   </Target>
 

@@ -89,7 +89,7 @@
       <_PublishProperties Include="AssetsLocalStoragePath=$(SourceBuiltAssetsDir)" />
       <_PublishProperties Include="ShippingPackagesLocalStoragePath=$(SourceBuiltShippingPackagesPath)" />
       <_PublishProperties Include="NonShippingPackagesLocalStoragePath=$(SourceBuiltNonShippingPackagesPath)" />
-      <_PublishProperties Include="AssetManifestLocalStoragePath=$(SourceBuiltAssetManifestDir)" />
+      <_PublishProperties Include="AssetManifestsLocalStoragePath=$(SourceBuiltAssetManifestsDir)" />
     </ItemGroup>
 
     <MSBuild Projects="$(ArcadeDir)Publish.proj"

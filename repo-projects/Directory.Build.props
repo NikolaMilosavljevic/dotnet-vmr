@@ -32,7 +32,7 @@
     <!-- Update nuget.config property to point to modified file that will be created/updated during build. -->
     <NuGetConfigFile Condition="'$(OriginalNuGetConfigFile)' != ''">$(BaseIntermediateOutputPath)$([System.IO.Path]::GetFileName('$(OriginalNuGetConfigFile)'))</NuGetConfigFile>
 
-    <RepoAssetManifestDir>$(BaseIntermediateOutputPath)AssetManifest/</RepoAssetManifestDir>
+    <RepoAssetManifestsDir>$(BaseIntermediateOutputPath)AssetManifests/</RepoAssetManifestsDir>
 
     <SourceBuiltSdksDir>$([MSBuild]::NormalizeDirectory('$(ArtifactsDir)', 'source-built-sdks'))</SourceBuiltSdksDir>
 
@@ -87,7 +87,7 @@
     <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetsDir=$(ArtifactsAssetsDir)</BuildArgs>
     <BuildArgs>$(BuildArgs) /p:SourceBuiltShippingPackagesPath=$(RepoArtifactsShippingPackagesDir)</BuildArgs>
     <BuildArgs>$(BuildArgs) /p:SourceBuiltNonShippingPackagesPath=$(RepoArtifactsNonShippingPackagesDir)</BuildArgs>
-    <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetManifestDir=$(RepoAssetManifestDir)</BuildArgs>
+    <BuildArgs>$(BuildArgs) /p:SourceBuiltAssetManifestsDir=$(RepoAssetManifestsDir)</BuildArgs>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(DotNetBuildSourceOnly)' != 'true'">

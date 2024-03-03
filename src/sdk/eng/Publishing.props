@@ -159,7 +159,7 @@
       AssetsLocalStoragePath="$(SourceBuiltAssetsDir)"
       ShippingPackagesLocalStoragePath="$(SourceBuiltShippingPackagesPath)"
       NonShippingPackagesLocalStoragePath="$(SourceBuiltNonShippingPackagesPath)"
-      AssetManifestLocalStoragePath="$(SourceBuiltAssetManifestDir)" />
+      AssetManifestsLocalStoragePath="$(SourceBuiltAssetManifestsDir)" />
 
     <Copy
       SourceFiles="$(SdkAssetsManifestFilePath)"
