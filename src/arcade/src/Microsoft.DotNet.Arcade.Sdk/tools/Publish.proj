@@ -154,13 +154,10 @@
       
       <!-- Directory where pdbs pointed in `FilesToPublishToSymbolServer` are copied before publishing to AzDO artifacts. -->
       <PDBsToPublishTempLocation>$(ArtifactsTmpDir)PDBsToPublish/</PDBsToPublishTempLocation>
-
-      <PushToAzDO>true</PushToAzDO>
     </PropertyGroup>
     
-    <!-- In VMR inner-build copy to local storage and do not push to AzDO -->
+    <!-- In VMR inner-build copy to local storage, do not push to AzDO -->
     <PropertyGroup Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildPhase)' == 'InnerRepo'">
-      <PushToAzDO>false</PushToAzDO>
       <PushToLocalStorage>true</PushToLocalStorage>
     </PropertyGroup>
 
@@ -182,7 +179,7 @@
     <!--
       The user can set `PublishingVersion` via eng\Publishing.props
     -->
-    <PushToAzureDevOpsArtifacts
+    <PushToBuildStorage
       AzureDevOpsCollectionUri="$(SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)"
       AzureDevOpsProject="$(SYSTEM_TEAMPROJECT)"
       AzureDevOpsBuildId="$(BUILD_BUILDID)"
@@ -201,12 +198,11 @@
       PublishingVersion="$(PublishingVersion)"
       AssetManifestPath="$(AssetManifestFilePath)" 
       IsReleaseOnlyPackageVersion="$(IsReleaseOnlyPackageVersion)"
-      PushToAzDO="$(PushToAzDO)"
       PushToLocalStorage="$(PushToLocalStorage)"
-      AssetsLocalStoragePath="$(SourceBuiltAssetsDir)"
-      ShippingPackagesLocalStoragePath="$(SourceBuiltShippingPackagesPath)"
-      NonShippingPackagesLocalStoragePath="$(SourceBuiltNonShippingPackagesPath)"
-      AssetManifestsLocalStoragePath="$(SourceBuiltAssetManifestsDir)" />
+      AssetsLocalStorageDir="$(SourceBuiltAssetsDir)"
+      ShippingPackagesLocalStorageDir="$(SourceBuiltShippingPackagesDir)"
+      NonShippingPackagesLocalStorageDir="$(SourceBuiltNonShippingPackagesDir)"
+      AssetManifestsLocalStorageDir="$(SourceBuiltAssetManifestsDir)" />
 
     <!-- 
         Publish Windows PDBs produced by SymStore.targets (by default, only shipping PDBs are placed there).

@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace Microsoft.DotNet.Build.Tasks.Feed
 {
-    public class PushToAzureDevOpsArtifacts : MSBuildTaskBase
+    public class PushToBuildStorage : MSBuildTaskBase
     {
         [Required]
         public ITaskItem[] ItemsToPush { get; set; }
@@ -57,15 +57,13 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
         public bool IsReleaseOnlyPackageVersion { get; set; }
 
-        public string AssetsLocalStoragePath { get; set; }
+        public string AssetsLocalStorageDir { get; set; }
 
-        public string ShippingPackagesLocalStoragePath { get; set; }
+        public string ShippingPackagesLocalStorageDir { get; set; }
 
-        public string NonShippingPackagesLocalStoragePath { get; set; }
+        public string NonShippingPackagesLocalStorageDir { get; set; }
 
-        public string AssetManifestsLocalStoragePath { get; set; }
-
-        public bool PushToAzDO { get; set; }
+        public string AssetManifestsLocalStorageDir { get; set; }
 
         public bool PushToLocalStorage { get; set; }
 
@@ -102,28 +100,19 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
         {
             try
             {
-                /*
-                if (PushToAzDO == false && PushToLocalStorage == false)
-                {
-                    // Default to pushing to AzDO - ensures this task works everywhere
-                    PushToAzDO = true;
-                }
-                */
-
                 if (PushToLocalStorage)
                 {
-                    if (string.IsNullOrEmpty(AssetsLocalStoragePath) ||
-                        string.IsNullOrEmpty(ShippingPackagesLocalStoragePath) ||
-                        string.IsNullOrEmpty(NonShippingPackagesLocalStoragePath) ||
-                        string.IsNullOrEmpty(AssetManifestsLocalStoragePath))
+                    if (string.IsNullOrEmpty(AssetsLocalStorageDir) ||
+                        string.IsNullOrEmpty(ShippingPackagesLocalStorageDir) ||
+                        string.IsNullOrEmpty(NonShippingPackagesLocalStorageDir) ||
+                        string.IsNullOrEmpty(AssetManifestsLocalStorageDir))
                     {
-                        throw new Exception($"AssetsLocalStoragePath, ShippingPackagesLocalStoragePath, NonShippingPackagesLocalStoragePath and AssetManifestsLocalStoragePath need to be specified if PublishToLocalStorage is set to true");
+                        throw new Exception($"AssetsLocalStorageDir, ShippingPackagesLocalStorageDir, NonShippingPackagesLocalStorageDir and AssetManifestsLocalStorageDir need to be specified if PublishToLocalStorage is set to true");
                     }
 
                     Log.LogMessage(MessageImportance.High, "Performing push to local artifacts storage.");
                 }
-
-                if (PushToAzDO)
+                else
                 {
                     Log.LogMessage(MessageImportance.High, "Performing push to Azure DevOps artifacts storage.");
                 }
@@ -159,8 +148,6 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 continue;
                             }
 
-                            // test
-                            Log.LogMessage(MessageImportance.High, $"PublishFlatContainer is true - publishing blob: {blobItem.ItemSpec}");
                             PushToLocalStorageOrAzDO(ItemType.BlobArtifact, blobItem.ItemSpec);
                         }
                     }
@@ -175,12 +162,6 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 return i;
                             })
                             .ToArray();
-
-                        // test
-                        foreach (ITaskItem item in symbolItems)
-                        {
-                            Log.LogMessage(MessageImportance.High, $"Symbol: {item.ItemSpec}");
-                        }
 
                         var blobItems = itemsToPushNoExcludes
                             .Where(i =>
@@ -197,12 +178,6 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                             .Union(symbolItems)
                             .ToArray();
 
-                        // test
-                        foreach (var b in blobItems)
-                        {
-                            Log.LogMessage(MessageImportance.High, $"BlobItem: {b.ItemSpec}");
-                        }
-
                         ITaskItem[] packageItems = itemsToPushNoExcludes
                             .Except(blobItems)
                             .ToArray();
@@ -215,8 +190,6 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 continue;
                             }
 
-                            // test
-                            Log.LogMessage(MessageImportance.High, $"Publish package artifact: {packagePath.ItemSpec}");
                             PushToLocalStorageOrAzDO(ItemType.PackageArtifact, packagePath.ItemSpec, string.Equals(packagePath.GetMetadata("IsShipping"), "true", StringComparison.OrdinalIgnoreCase));
                         }
 
@@ -228,8 +201,6 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 continue;
                             }
 
-                            // test
-                            Log.LogMessage(MessageImportance.High, $"Publish blob artifact: {blobItem.ItemSpec}");
                             PushToLocalStorageOrAzDO(ItemType.BlobArtifact, blobItem.ItemSpec);
                         }
 
@@ -277,8 +248,42 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
         private void PushToLocalStorageOrAzDO(ItemType itemType, string itemSpec, bool shipping = false)
         {
-            if (PushToAzDO)
+            if (PushToLocalStorage)
             {
+                string filename = Path.GetFileName(itemSpec);
+                switch (itemType)
+                {
+                    case ItemType.AssetManifest:
+                        Directory.CreateDirectory(AssetManifestsLocalStorageDir);
+                        File.Copy(itemSpec, Path.Combine(AssetManifestsLocalStorageDir, filename), true);
+                        break;
+
+                    case ItemType.PackageArtifact:
+                        if (shipping)
+                        {
+                            Directory.CreateDirectory(ShippingPackagesLocalStorageDir);
+                            File.Copy(itemSpec, Path.Combine(ShippingPackagesLocalStorageDir, filename), true);
+                        }
+                        else
+                        {
+                            Directory.CreateDirectory(NonShippingPackagesLocalStorageDir);
+                            File.Copy(itemSpec, Path.Combine(NonShippingPackagesLocalStorageDir, filename), true);
+                        }
+                        break;
+
+                    case ItemType.BlobArtifact:
+                        Directory.CreateDirectory(AssetsLocalStorageDir);
+                        File.Copy(itemSpec, Path.Combine(AssetsLocalStorageDir, filename), true);
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(itemType));
+                }
+            }
+            else
+            {
+                // Push to AzDO artifacts storage
+
                 switch (itemType)
                 {
                     case ItemType.AssetManifest:
@@ -294,39 +299,6 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                     case ItemType.BlobArtifact:
                         Log.LogMessage(MessageImportance.High,
                             $"##vso[artifact.upload containerfolder=BlobArtifacts;artifactname=BlobArtifacts]{itemSpec}");
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(itemType));
-                }
-            }
-
-            if (PushToLocalStorage)
-            {
-                string filename = Path.GetFileName(itemSpec);
-                switch (itemType)
-                {
-                    case ItemType.AssetManifest:
-                        Directory.CreateDirectory(AssetManifestsLocalStoragePath);
-                        File.Copy(itemSpec, Path.Combine(AssetManifestsLocalStoragePath, filename), true);
-                        break;
-
-                    case ItemType.PackageArtifact:
-                        if (shipping)
-                        {
-                            Directory.CreateDirectory(ShippingPackagesLocalStoragePath);
-                            File.Copy(itemSpec, Path.Combine(ShippingPackagesLocalStoragePath, filename), true);
-                        }
-                        else
-                        {
-                            Directory.CreateDirectory(NonShippingPackagesLocalStoragePath);
-                            File.Copy(itemSpec, Path.Combine(NonShippingPackagesLocalStoragePath, filename), true);
-                        }
-                        break;
-
-                    case ItemType.BlobArtifact:
-                        Directory.CreateDirectory(AssetsLocalStoragePath);
-                        File.Copy(itemSpec, Path.Combine(AssetsLocalStoragePath, filename), true);
                         break;
 
                     default:

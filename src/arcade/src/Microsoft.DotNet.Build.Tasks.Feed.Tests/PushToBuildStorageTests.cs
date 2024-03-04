@@ -20,7 +20,7 @@ using Xunit;
 
 namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
 {
-    public class PushToAzureDevOpsArtifactsTests
+    public class PushToBuildStorageTests
     {
         private static string TARGET_MANIFEST_PATH = Path.Combine("C:", "manifests", "TestManifest.xml");
         private static string PACKAGE_A = Path.Combine("C:", "packages", "test-package-a.6.0.492.nupkg");
@@ -51,9 +51,9 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
             }),
         };
 
-        private PushToAzureDevOpsArtifacts ConstructPushToAzureDevOpsArtifactsTask(bool setAdditionalData = true)
+        private PushToBuildStorage ConstructPushToBuildStorageTask(bool setAdditionalData = true)
         {
-            var task = new PushToAzureDevOpsArtifacts
+            var task = new PushToBuildStorage
             {
                 BuildEngine = new MockBuildEngine(),
                 AssetManifestPath = TARGET_MANIFEST_PATH,                
@@ -199,7 +199,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
         public void HasRecordedPublishingVersion()
         {
             var expectedManifestContent = BuildExpectedManifestContent();
-            var task = ConstructPushToAzureDevOpsArtifactsTask(setAdditionalData: false);
+            var task = ConstructPushToBuildStorageTask(setAdditionalData: false);
             task.ItemsToPush = new TaskItem[0];
             task.IsStableBuild = false;
 
@@ -229,7 +229,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
             var publishingInfraVersion = "456";
             var expectedManifestContent = BuildExpectedManifestContent(
                 publishingInfraVersion: publishingInfraVersion);
-            var task = ConstructPushToAzureDevOpsArtifactsTask(setAdditionalData: false);
+            var task = ConstructPushToBuildStorageTask(setAdditionalData: false);
             task.ItemsToPush = new TaskItem[0];
             task.IsStableBuild = false;
             task.PublishingVersion = publishingInfraVersion;
@@ -264,7 +264,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
                 isStable: true,
                 includePackages: true);
 
-            PushToAzureDevOpsArtifacts task = ConstructPushToAzureDevOpsArtifactsTask();
+            PushToBuildStorage task = ConstructPushToBuildStorageTask();
 
             // Mocks
             Mock<IFileSystem> fileSystemMock = new Mock<IFileSystem>();
@@ -305,7 +305,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
         [Fact]
         public void PublishFlatContainerManifest()
         {
-            PushToAzureDevOpsArtifacts task = ConstructPushToAzureDevOpsArtifactsTask();
+            PushToBuildStorage task = ConstructPushToBuildStorageTask();
             task.PublishFlatContainer = true;
 
             string expectedManifestContent = BuildExpectedManifestContent(
@@ -354,7 +354,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
         [Fact]
         public void IsNotStableBuildPath()
         {
-            PushToAzureDevOpsArtifacts task = ConstructPushToAzureDevOpsArtifactsTask();
+            PushToBuildStorage task = ConstructPushToBuildStorageTask();
             task.IsStableBuild = false;
 
             string expectedManifestContent = BuildExpectedManifestContent(
@@ -401,7 +401,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
         [Fact]
         public void IsReleaseOnlyPackageVersionPath()
         {
-            PushToAzureDevOpsArtifacts task = ConstructPushToAzureDevOpsArtifactsTask();
+            PushToBuildStorage task = ConstructPushToBuildStorageTask();
             task.IsReleaseOnlyPackageVersion = true;
 
             string expectedManifestContent = BuildExpectedManifestContent(
@@ -452,7 +452,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
         [Fact]
         public void SigningInfoInManifest()
         {
-            PushToAzureDevOpsArtifacts task = ConstructPushToAzureDevOpsArtifactsTask();
+            PushToBuildStorage task = ConstructPushToBuildStorageTask();
             task.FileExtensionSignInfo = new ITaskItem[]
             {
                 new TaskItem(".dll", new Dictionary<string, string>
@@ -556,7 +556,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
         [Fact]
         public void AreDependenciesRegistered()
         {
-            PushToAzureDevOpsArtifacts task = new PushToAzureDevOpsArtifacts();
+            PushToBuildStorage task = new PushToBuildStorage();
 
             var collection = new ServiceCollection();
             task.ConfigureServices(collection);

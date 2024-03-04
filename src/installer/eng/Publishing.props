@@ -135,13 +135,8 @@
       <IsStableBuild Condition="'$(DotNetFinalVersionKind)' == 'release'">true</IsStableBuild>
     </PropertyGroup>
 
-    <PropertyGroup>
-      <PushToAzDO>true</PushToAzDO>
-    </PropertyGroup>
-
-    <!-- In VMR inner-build copy to local storage and do not push to AzDO -->
+    <!-- In VMR inner-build copy to local storage, do not push to AzDO -->
     <PropertyGroup Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildPhase)' == 'InnerRepo'">
-      <PushToAzDO>false</PushToAzDO>
       <PushToLocalStorage>true</PushToLocalStorage>
     </PropertyGroup>
 
@@ -166,7 +161,7 @@
       IsStableBuild="$(IsStableBuild)"
       PublishingVersion="3" />
 
-    <PushToAzureDevOpsArtifacts
+    <PushToBuildStorage
       Condition="'$(DotNetBuildRepo)' == 'true'"
       AzureDevOpsCollectionUri="$(SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)"
       AzureDevOpsProject="$(SYSTEM_TEAMPROJECT)"
@@ -186,11 +181,10 @@
       PublishFlatContainer="true"
       IsStableBuild="$(IsStableBuild)"
       PublishingVersion="3"
-      PushToAzDO="$(PushToAzDO)"
       PushToLocalStorage="$(PushToLocalStorage)"
-      AssetsLocalStoragePath="$(SourceBuiltAssetsDir)"
-      ShippingPackagesLocalStoragePath="$(SourceBuiltShippingPackagesPath)"
-      NonShippingPackagesLocalStoragePath="$(SourceBuiltNonShippingPackagesPath)"
-      AssetManifestsLocalStoragePath="$(SourceBuiltAssetManifestsDir)" />
+      AssetsLocalStorageDir="$(SourceBuiltAssetsDir)"
+      ShippingPackagesLocalStorageDir="$(SourceBuiltShippingPackagesDir)"
+      NonShippingPackagesLocalStorageDir="$(SourceBuiltNonShippingPackagesDir)"
+      AssetManifestsLocalStorageDir="$(SourceBuiltAssetManifestsDir)" />
   </Target>
 </Project>

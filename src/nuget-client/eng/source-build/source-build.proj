@@ -86,10 +86,10 @@
       <_PublishProperties Include="DotNetBuildSourceOnly=$(DotNetBuildSourceOnly)" />
       <_PublishProperties Include="DotNetPublishUsingPipelines=true" />
       <_PublishProperties Include="PublishToSymbolServer=false" />
-      <_PublishProperties Include="AssetsLocalStoragePath=$(SourceBuiltAssetsDir)" />
-      <_PublishProperties Include="ShippingPackagesLocalStoragePath=$(SourceBuiltShippingPackagesPath)" />
-      <_PublishProperties Include="NonShippingPackagesLocalStoragePath=$(SourceBuiltNonShippingPackagesPath)" />
-      <_PublishProperties Include="AssetManifestsLocalStoragePath=$(SourceBuiltAssetManifestsDir)" />
+      <_PublishProperties Include="AssetsLocalStorageDir=$(SourceBuiltAssetsDir)" />
+      <_PublishProperties Include="ShippingPackagesLocalStorageDir=$(SourceBuiltShippingPackagesDir)" />
+      <_PublishProperties Include="NonShippingPackagesLocalStorageDir=$(SourceBuiltNonShippingPackagesDir)" />
+      <_PublishProperties Include="AssetManifestsLocalStorageDir=$(SourceBuiltAssetManifestsDir)" />
     </ItemGroup>
 
     <MSBuild Projects="$(ArcadeDir)Publish.proj"
