@@ -16,6 +16,20 @@
   </ItemGroup>
 
   <Target Name="_PublishInstallers">
+
+    <PropertyGroup>
+      <_RuntimeFilenamePrefix>dotnet-runtime-internal-</_RuntimeFilenamePrefix>
+    </PropertyGroup>
+    <ItemGroup>
+      <_RuntimeArchiveItem Include="$(ArtifactsPackagesDir)**\$(_RuntimeFilenamePrefix)*$(ArchiveExtension)" />
+    </ItemGroup>
+
+    <!-- Extract runtime version from runtime archive filename. -->
+    <PropertyGroup>
+      <_RuntimeArchiveFilename>%(_RuntimeArchiveItem.Filename)%(_RuntimeArchiveItem.Extension)</_RuntimeArchiveFilename>
+      <_RuntimeVersion>$(_RuntimeArchiveFilename.Replace('$(_RuntimeFilenamePrefix)','').Replace('-$(OutputRID)$(ArchiveExtension)',''))</_RuntimeVersion>
+    </PropertyGroup>
+
     <ItemGroup>
       <!-- Do not push .nupkg files from Linux and macOS builds. They'll be packed up separately and signed on Windows.
            Do not remove if post build sign is true, as we avoid the xplat codesign jobs, and need to have
@@ -27,7 +41,7 @@
       <ItemsToPushToBlobFeed Include="@(_InstallersToPublish)">
         <ManifestArtifactData>NonShipping=false</ManifestArtifactData>
         <PublishFlatContainer>true</PublishFlatContainer>
-        <RelativeBlobPath>$(_UploadPathRoot)/%(_InstallersToPublish.UploadPathSegment)/$(_PackageVersion)/%(Filename)%(Extension)</RelativeBlobPath>
+        <RelativeBlobPath>%(_InstallersToPublish.UploadPathSegment)/$(_RuntimeVersion)/%(Filename)%(Extension)</RelativeBlobPath>
       </ItemsToPushToBlobFeed>
     </ItemGroup>
   </Target>

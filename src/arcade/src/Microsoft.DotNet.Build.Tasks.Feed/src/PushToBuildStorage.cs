@@ -3,6 +3,7 @@
 
 using Microsoft.Arcade.Common;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 using Microsoft.DotNet.VersionTools.Automation;
 using Microsoft.DotNet.VersionTools.BuildManifest.Model;
 using Microsoft.Extensions.DependencyInjection;
@@ -148,7 +149,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 continue;
                             }
 
-                            PushToLocalStorageOrAzDO(ItemType.BlobArtifact, blobItem.ItemSpec);
+                            PushToLocalStorageOrAzDO(ItemType.BlobArtifact, blobItem);
                         }
                     }
                     else
@@ -190,7 +191,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 continue;
                             }
 
-                            PushToLocalStorageOrAzDO(ItemType.PackageArtifact, packagePath.ItemSpec, string.Equals(packagePath.GetMetadata("IsShipping"), "true", StringComparison.OrdinalIgnoreCase));
+                            PushToLocalStorageOrAzDO(ItemType.PackageArtifact, packagePath);
                         }
 
                         foreach (var blobItem in blobItems)
@@ -201,7 +202,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                                 continue;
                             }
 
-                            PushToLocalStorageOrAzDO(ItemType.BlobArtifact, blobItem.ItemSpec);
+                            PushToLocalStorageOrAzDO(ItemType.BlobArtifact, blobItem);
                         }
 
                         packageArtifacts = packageItems.Select(packageArtifactModelFactory.CreatePackageArtifactModel);
@@ -235,7 +236,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                         IsReleaseOnlyPackageVersion,
                         signingInformationModel: signingInformationModel);
 
-                    PushToLocalStorageOrAzDO(ItemType.AssetManifest, AssetManifestPath);
+                    PushToLocalStorageOrAzDO(ItemType.AssetManifest, new TaskItem(AssetManifestPath));
                 }
             }
             catch (Exception e)
@@ -246,34 +247,41 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             return !Log.HasLoggedErrors;
         }
 
-        private void PushToLocalStorageOrAzDO(ItemType itemType, string itemSpec, bool shipping = false)
+        private void PushToLocalStorageOrAzDO(ItemType itemType, ITaskItem item)
         {
+            string path = item.ItemSpec;
+
             if (PushToLocalStorage)
             {
-                string filename = Path.GetFileName(itemSpec);
+                string filename = Path.GetFileName(path);
                 switch (itemType)
                 {
                     case ItemType.AssetManifest:
                         Directory.CreateDirectory(AssetManifestsLocalStorageDir);
-                        File.Copy(itemSpec, Path.Combine(AssetManifestsLocalStorageDir, filename), true);
+                        File.Copy(path, Path.Combine(AssetManifestsLocalStorageDir, filename), true);
                         break;
 
                     case ItemType.PackageArtifact:
-                        if (shipping)
+                        if (string.Equals(item.GetMetadata("IsShipping"), "true", StringComparison.OrdinalIgnoreCase))
                         {
                             Directory.CreateDirectory(ShippingPackagesLocalStorageDir);
-                            File.Copy(itemSpec, Path.Combine(ShippingPackagesLocalStorageDir, filename), true);
+                            File.Copy(path, Path.Combine(ShippingPackagesLocalStorageDir, filename), true);
                         }
                         else
                         {
                             Directory.CreateDirectory(NonShippingPackagesLocalStorageDir);
-                            File.Copy(itemSpec, Path.Combine(NonShippingPackagesLocalStorageDir, filename), true);
+                            File.Copy(path, Path.Combine(NonShippingPackagesLocalStorageDir, filename), true);
                         }
                         break;
 
                     case ItemType.BlobArtifact:
-                        Directory.CreateDirectory(AssetsLocalStorageDir);
-                        File.Copy(itemSpec, Path.Combine(AssetsLocalStorageDir, filename), true);
+                        string relativeBlobPath = item.GetMetadata("RelativeBlobPath");
+                        string destinationPath = Path.Combine(
+                                                    AssetsLocalStorageDir,
+                                                    string.IsNullOrEmpty(relativeBlobPath) ? filename : relativeBlobPath);
+
+                        Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+                        File.Copy(path, destinationPath, true);
                         break;
 
                     default:
@@ -288,17 +296,17 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                 {
                     case ItemType.AssetManifest:
                         Log.LogMessage(MessageImportance.High,
-                            $"##vso[artifact.upload containerfolder=AssetManifests;artifactname=AssetManifests]{itemSpec}");
+                            $"##vso[artifact.upload containerfolder=AssetManifests;artifactname=AssetManifests]{path}");
                         break;
 
                     case ItemType.PackageArtifact:
                         Log.LogMessage(MessageImportance.High,
-                            $"##vso[artifact.upload containerfolder=PackageArtifacts;artifactname=PackageArtifacts]{itemSpec}");
+                            $"##vso[artifact.upload containerfolder=PackageArtifacts;artifactname=PackageArtifacts]{path}");
                         break;
 
                     case ItemType.BlobArtifact:
                         Log.LogMessage(MessageImportance.High,
-                            $"##vso[artifact.upload containerfolder=BlobArtifacts;artifactname=BlobArtifacts]{itemSpec}");
+                            $"##vso[artifact.upload containerfolder=BlobArtifacts;artifactname=BlobArtifacts]{path}");
                         break;
 
                     default:
