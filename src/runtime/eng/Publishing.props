@@ -17,6 +17,12 @@
 
   <Target Name="_PublishInstallers">
 
+    <ItemGroup>
+      <_SymbolsArchive Include="$(ArtifactsPackagesDir)**\Symbols.runtime.tar.gz" Condition="'$(DotNetBuildFromSource)' == 'true'" />
+      <!-- Exclude Symbols archive as it is already included, with correct blob path, in Publish.proj. -->
+      <_InstallersToPublish Remove="@(_SymbolsArchive)" Condition="'$(DotNetBuildFromSource)' == 'true'" />
+    </ItemGroup>
+
     <PropertyGroup>
       <_RuntimeFilenamePrefix>dotnet-runtime-internal-</_RuntimeFilenamePrefix>
     </PropertyGroup>
