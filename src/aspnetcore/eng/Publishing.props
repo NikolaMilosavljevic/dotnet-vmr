@@ -39,7 +39,7 @@
     <_InstallersToPublish Remove="@(WixPacksToPublish)" Condition="'$(PostBuildSign)' != 'true'" />
     <_ChecksumsToPublish Include="$(ArtifactsDir)installers\**\*.sha512" />
     <!-- Version file, for VMR build -->
-    <_VersionFileToPublish Include="$(ArtifactsDir)installers\**\aspnetcore_base_runtime.version" UploadPathSegment="Runtime" Condition="'$(DotNetBuildFromSource)' == 'true'" />
+    <_VersionFileToPublish Include="$(ArtifactsDir)installers\**\aspnetcore_base_runtime.version" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
   </ItemGroup>
 
   <Target

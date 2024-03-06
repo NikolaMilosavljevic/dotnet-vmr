@@ -7,12 +7,12 @@
 
   <ItemGroup>
     <_InstallersToPublish Remove="@(_InstallersToPublish)" />
-    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.tar.gz" UploadPathSegment="Runtime" Condition="'$(DotNetBuildFromSource)' == 'true'" />
-    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.zip" UploadPathSegment="Runtime" Condition="'$(DotNetBuildFromSource)' == 'true'" />
-    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.deb" UploadPathSegment="Runtime" Condition="'$(DotNetBuildFromSource)' == 'true'" />
-    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.rpm" UploadPathSegment="Runtime" Condition="'$(DotNetBuildFromSource)' == 'true'" />
-    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.exe" UploadPathSegment="Runtime" Condition="'$(DotNetBuildFromSource)' == 'true'" />
-    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.msi" UploadPathSegment="Runtime" Condition="'$(DotNetBuildFromSource)' == 'true'" />
+    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.tar.gz" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
+    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.zip" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
+    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.deb" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
+    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.rpm" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
+    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.exe" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
+    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.msi" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
   </ItemGroup>
 
   <Target Name="_PublishInstallers">
@@ -24,10 +24,12 @@
     </ItemGroup>
 
     <PropertyGroup>
-      <_RuntimeFilenamePrefix>dotnet-runtime-internal-</_RuntimeFilenamePrefix>
+      <_RuntimeFilenamePrefix>dotnet-runtime-</_RuntimeFilenamePrefix>
     </PropertyGroup>
     <ItemGroup>
-      <_RuntimeArchiveItem Include="$(ArtifactsPackagesDir)**\$(_RuntimeFilenamePrefix)*$(ArchiveExtension)" />
+      <_RuntimeArchiveItem Include="$(ArtifactsPackagesDir)**\$(_RuntimeFilenamePrefix)*$(OutputRID)$(ArchiveExtension)" />
+      <_RuntimeInternalArchiveItem Include="$(ArtifactsPackagesDir)**\dotnet-runtime-internal*$(OutputRID)$(ArchiveExtension)" />
+      <_RuntimeArchiveItem Remove="@(_RuntimeInternalArchiveItem)" />
     </ItemGroup>
 
     <!-- Extract runtime version from runtime archive filename. -->
