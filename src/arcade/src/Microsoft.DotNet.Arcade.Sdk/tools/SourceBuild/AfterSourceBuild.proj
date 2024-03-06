@@ -12,7 +12,8 @@
   <Import Project="$(MicrosoftDotNetSourceBuildTasksBuildDir)Microsoft.DotNet.SourceBuild.Tasks.props" />
 
   <Target Name="AfterSourceBuildInnerBuild"
-          Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildInnerRepo)' == 'true'"
+          Condition="('$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildInnerRepo)' == 'true') and
+                     '$(DotNetBuildOrchestrator)' == 'true'"
           DependsOnTargets="CreateRepoSymbolsArchive" />
 
   <Target Name="AfterSourceBuild"
