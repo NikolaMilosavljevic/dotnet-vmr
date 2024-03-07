@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <_PackagesToPublish Remove="@(_PackagesToPublish)" />
-    <_PackagesToPublish Include="$(ArtifactsPackagesDir)**\*.nupkg" UploadPathSegment="Roslyn-analyzers" Condition="'$(DotNetBuildFromSource)' == 'true'" />
+    <_PackagesToPublish Include="$(ArtifactsPackagesDir)**\*.nupkg" UploadPathSegment="Roslyn-analyzers" Condition="'$(DotNetBuildRepo)' == 'true'" />
   </ItemGroup>
 
   <Target Name="_PublishPackages">
