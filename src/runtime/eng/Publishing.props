@@ -23,19 +23,23 @@
       <_InstallersToPublish Remove="@(_SymbolsArchive)" Condition="'$(DotNetBuildFromSource)' == 'true'" />
     </ItemGroup>
 
+    <!-- Discover the runtime package version from dotnet-runtime-<version-<Rid>.<Extension> archive. -->
     <PropertyGroup>
       <_RuntimeFilenamePrefix>dotnet-runtime-</_RuntimeFilenamePrefix>
+      <_PackageRid>$(OutputRID)</_PackageRid>
+      <!-- Use TargetRid if OutputRID isn't available, i.e. on Windows. -->
+      <_PackageRid Condition="'$(_PackageRid)' == ''">$(TargetRid)</_PackageRid>
     </PropertyGroup>
     <ItemGroup>
-      <_RuntimeArchiveItem Include="$(ArtifactsPackagesDir)**\$(_RuntimeFilenamePrefix)*$(OutputRID)$(ArchiveExtension)" />
-      <_RuntimeInternalArchiveItem Include="$(ArtifactsPackagesDir)**\dotnet-runtime-internal*$(OutputRID)$(ArchiveExtension)" />
+      <_RuntimeArchiveItem Include="$(ArtifactsPackagesDir)**\$(_RuntimeFilenamePrefix)*$(_PackageRid)$(ArchiveExtension)" />
+      <_RuntimeInternalArchiveItem Include="$(ArtifactsPackagesDir)**\dotnet-runtime-internal*$(_PackageRid)$(ArchiveExtension)" />
       <_RuntimeArchiveItem Remove="@(_RuntimeInternalArchiveItem)" />
     </ItemGroup>
 
     <!-- Extract runtime version from runtime archive filename. -->
     <PropertyGroup>
       <_RuntimeArchiveFilename>%(_RuntimeArchiveItem.Filename)%(_RuntimeArchiveItem.Extension)</_RuntimeArchiveFilename>
-      <_RuntimeVersion>$(_RuntimeArchiveFilename.Replace('$(_RuntimeFilenamePrefix)','').Replace('-$(OutputRID)$(ArchiveExtension)',''))</_RuntimeVersion>
+      <_RuntimeVersion>$(_RuntimeArchiveFilename.Replace('$(_RuntimeFilenamePrefix)','').Replace('-$(_PackageRid)$(ArchiveExtension)',''))</_RuntimeVersion>
     </PropertyGroup>
 
     <ItemGroup>
