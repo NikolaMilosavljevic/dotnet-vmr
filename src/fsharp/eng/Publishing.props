@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <_PackagesToPublish Remove="@(_PackagesToPublish)" />
-    <_PackagesToPublish Include="$(ArtifactsPackagesDir)**\*.nupkg" UploadPathSegment="Runtime" Condition="'$(DotNetBuildFromSource)' == 'true'" />
+    <_PackagesToPublish Include="$(ArtifactsPackagesDir)**\*.nupkg" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
   </ItemGroup>
 
   <Target Name="_PublishPackages">
