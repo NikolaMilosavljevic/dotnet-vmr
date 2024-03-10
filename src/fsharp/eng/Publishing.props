@@ -7,7 +7,7 @@
   <ItemGroup>
     <_PackagesToPublish Remove="@(_PackagesToPublish)" />
     <!-- Additional packages needed to avoid prebuilts in VMR. -->
-    <_PackagesToPublish Include="$(ArtifactsPackagesDir)Dependency\Shipping\*.nupkg" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
+    <_PackagesToPublish Include="$(ArtifactsPackagesDir)Dependency\**\*.nupkg" UploadPathSegment="Runtime" Condition="'$(DotNetBuildSourceOnly)' == 'true'" />
   </ItemGroup>
 
   <Target Name="_PublishPackages">
