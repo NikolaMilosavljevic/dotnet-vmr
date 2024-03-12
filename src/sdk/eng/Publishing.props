@@ -101,8 +101,12 @@
 
     <MakeDir Directories="$(TempWorkingDirectory)"/>
 
+    <!--
+      Delete PushToAzureDevOpsArtifacts task and remove condition from PushToBuildStorage task
+      after this repo picks up arcade with the following change: https://github.com/dotnet/arcade/pull/14559
+    -->
     <PushToAzureDevOpsArtifacts
-      Condition="'$(DotNetBuildRepo)' != 'true'"
+      Condition="'$(DotNetBuildOrchestrator)' != 'true'"
       AzureDevOpsCollectionUri="$(SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)"
       AzureDevOpsProject="$(SYSTEM_TEAMPROJECT)"
       AzureDevOpsBuildId="$(BUILD_BUILDID)"
@@ -124,7 +128,7 @@
       IsStableBuild="$(IsStableBuild)" />
 
     <PushToBuildStorage
-      Condition="'$(DotNetBuildRepo)' == 'true'"
+      Condition="'$(DotNetBuildOrchestrator)' == 'true'"
       AzureDevOpsCollectionUri="$(SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)"
       AzureDevOpsProject="$(SYSTEM_TEAMPROJECT)"
       AzureDevOpsBuildId="$(BUILD_BUILDID)"
