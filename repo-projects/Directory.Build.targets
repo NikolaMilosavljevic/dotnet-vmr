@@ -24,7 +24,7 @@
     <ProjectAssetsJsonArchiveFile>$(PackageReportDir)all-project-assets-json-files.zip</ProjectAssetsJsonArchiveFile>
     <ProdConManifestFile>$(PackageReportDir)prodcon-build.xml</ProdConManifestFile>
     <RepoManifestFile>$([MSBuild]::NormalizePath('$(ProjectDirectory)', 'artifacts', 'RepoManifest.xml'))</RepoManifestFile>
-    <RepoAssetsSymbolsArchive>$(ArtifactsAssetsDir)Symbols.$(RepositoryName)$(ArchiveExtension)</RepoAssetsSymbolsArchive>
+    <RepoAssetsSymbolsArchive>$(ArtifactsAssetsSymbolsDir)Symbols.$(RepositoryName)$(ArchiveExtension)</RepoAssetsSymbolsArchive>
 
     <IntermediateSymbolsRepoDir>$(IntermediateSymbolsRootDir)$(RepositoryName)</IntermediateSymbolsRepoDir>
   </PropertyGroup>
@@ -611,9 +611,6 @@
     <!-- Extract repo symbols tarball -->
     <MakeDir Directories="$(IntermediateSymbolsRepoDir)" />
     <Exec Command="tar -xzf %(RepoSymbolsArchive.Identity) -C $(IntermediateSymbolsRepoDir)" />
-
-    <!-- Delete repo symbols archive in assets folder -->
-    <Delete Condition="'%(RepoSymbolsArchive.Identity)' == '$(RepoAssetsSymbolsArchive)'" Files="%(RepoSymbolsArchive.Identity)" />
   </Target>
 
   <Target Name="Build"

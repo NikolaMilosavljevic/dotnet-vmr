@@ -104,7 +104,7 @@
       <UnifiedSymbolsPackage Include="$(ArtifactsNonShippingPackagesDir)Symbols.*.tar.gz" IsShipping="false" />
       <PackagesToPublish Include="@(UnifiedSymbolsPackage)">
         <PublishFlatContainer>true</PublishFlatContainer>
-        <RelativeBlobPath>%(Filename)%(Extension)</RelativeBlobPath>
+        <RelativeBlobPath>Symbols/%(Filename)%(Extension)</RelativeBlobPath>
       </PackagesToPublish>
     </ItemGroup>
 
