@@ -457,26 +457,6 @@
     </Touch>
   </Target>
 
-  <!--
-    Copy published SBRP artifacts to reference-packages dir.
-    Artifacts get published to a temp location, as we cannot publish them directly to
-    reference-packages dir, until repo build is complete and previous content of
-    reference-packages dir is deleted.
-  -->
-  <Target Name="CopySBRPArtifacts"
-          DependsOnTargets="RepoBuild"
-          Condition="'$(RepositoryName)' == 'source-build-reference-packages' and Exists('$(RepoPackagesTempDir)')">
-    <ItemGroup>
-      <_ReferenceTempPackages Include="$(RepoPackagesTempDir)**/*" />
-    </ItemGroup>
-
-    <Error Text="SBRP artifacts do not exist in expected location: $(RepoPackagesTemp)" Condition="'@(_ReferenceTempPackages)' == ''" />
-
-    <Copy SourceFiles="@(_ReferenceTempPackages)"
-          DestinationFolder="$(ReferencePackagesDir)"
-          Condition="'@(_ReferenceTempPackages)' != ''" />
-  </Target>
-
   <!-- Copy restored packages from inner build to ensure they're included in the
        main build prebuilt check -->
   <Target Name="CopyInnerBuildRestoredPackages"
@@ -618,7 +598,6 @@
     BuildRepoReferences;
     RepoBuild;
     CopyRepoArtifacts;
-    CopySBRPArtifacts;
     CopyInnerBuildRestoredPackages;
     ExtractToolPackage;
     DiscoverSymbolsArchiveFile;
