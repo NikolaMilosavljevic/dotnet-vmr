@@ -46,7 +46,7 @@
     <CurrentRepoSourceBuildArtifactsDir>$([MSBuild]::NormalizeDirectory('$(CurrentRepoSourceBuildSourceDir)', 'artifacts'))</CurrentRepoSourceBuildArtifactsDir>
     <CurrentRepoSourceBuildArtifactsLogsDir>$([MSBuild]::NormalizeDirectory('$(CurrentRepoSourceBuildArtifactsDir)', 'log', '$(Configuration)'))</CurrentRepoSourceBuildArtifactsLogsDir>
     <CurrentRepoSourceBuildArtifactsPackagesDir>$([MSBuild]::NormalizeDirectory('$(CurrentRepoSourceBuildArtifactsDir)', 'packages', '$(Configuration)'))</CurrentRepoSourceBuildArtifactsPackagesDir>
-    <CurrentRepoSourceBuildArtifactsNonShippingPackagesDir>$([MSBuild]::NormalizeDirectory('$(CurrentRepoSourceBuildArtifactsPackagesDir)', 'NonShipping', '$(Configuration)'))</CurrentRepoSourceBuildArtifactsNonShippingPackagesDir>
+    <CurrentRepoSourceBuildArtifactsNonShippingPackagesDir>$([MSBuild]::NormalizeDirectory('$(CurrentRepoSourceBuildArtifactsPackagesDir)', 'NonShipping'))</CurrentRepoSourceBuildArtifactsNonShippingPackagesDir>
 
     <CurrentRepoSourceBuildNuGetSourceName>source-build-int-nupkg-cache</CurrentRepoSourceBuildNuGetSourceName>
     <!-- If this path is updated, also update the component detection task in eng\common\templates\steps\source-build.yml -->

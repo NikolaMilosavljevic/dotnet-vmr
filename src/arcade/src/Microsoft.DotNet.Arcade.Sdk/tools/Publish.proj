@@ -101,7 +101,7 @@
 
     <!-- Include Symbols.<repo>.tar.gz, if running in inner source-only build -->
     <ItemGroup Condition="'$(DotNetBuildSourceOnly)' == 'true' and '$(DotNetBuildInnerRepo)' == 'true'">
-      <UnifiedSymbolsPackage Include="$(ArtifactsNonShippingPackagesDir)Symbols.$(GitHubRepositoryName).tar.gz" IsShipping="false" />
+      <UnifiedSymbolsPackage Include="$(ArtifactsNonShippingPackagesDir)Symbols.*.tar.gz" IsShipping="false" />
       <PackagesToPublish Include="@(UnifiedSymbolsPackage)">
         <PublishFlatContainer>true</PublishFlatContainer>
         <RelativeBlobPath>%(Filename)%(Extension)</RelativeBlobPath>
