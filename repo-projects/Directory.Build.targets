@@ -100,7 +100,7 @@
                      Include="$(PrebuiltNuGetSourceName);$(PreviouslySourceBuiltNuGetSourceName);$(ReferencePackagesNuGetSourceName)" />
       <_BuildSources Include="@(_CommonBuildSources)" />
     </ItemGroup>
-    
+
     <PropertyGroup Condition="'$(DotNetBuildSourceOnly)' != 'true'">
       <!-- When not building source-only, repositories lagging behind on the .NET SDK (e.g. tooling repos)
           that need to utilize a VS-aligned version for development purposes may not have the latest product
@@ -374,6 +374,10 @@
     <Message Importance="High" Text="See '$(RepoConsoleLogFile)' for more information." Condition="Exists('$(RepoConsoleLogFile)') and '$(MinimalConsoleLogOutput)' == 'true'" />
   </Target>
 
+  <!--
+    Remove this target after arcade changes for publishing have flown to installer repo.
+    https://github.com/dotnet/source-build/issues/4207
+  -->
   <Target Name="CopyRepoArtifacts"
           DependsOnTargets="RepoBuild"
           Condition="'$(IsUtilityProject)' != 'true' and Exists('$(RepoManifestFile)')"

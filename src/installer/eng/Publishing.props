@@ -135,11 +135,6 @@
       <IsStableBuild Condition="'$(DotNetFinalVersionKind)' == 'release'">true</IsStableBuild>
     </PropertyGroup>
 
-    <!-- In VMR inner-build copy to local storage, do not push to AzDO -->
-    <PropertyGroup Condition="'$(ArcadeInnerBuildFromSource)' == 'true' or '$(DotNetBuildPhase)' == 'InnerRepo'">
-      <PushToLocalStorage>true</PushToLocalStorage>
-    </PropertyGroup>
-
     <PushToAzureDevOpsArtifacts
       Condition="'$(DotNetBuildRepo)' != 'true'"
       AzureDevOpsCollectionUri="$(SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)"
