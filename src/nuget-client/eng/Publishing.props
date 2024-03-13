@@ -1,16 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
-    <PublishingVersion>3</PublishingVersion>
     <ProducesDotNetReleaseShippingAssets>true</ProducesDotNetReleaseShippingAssets>
-    <PublishDependsOnTargets>$(PublishDependsOnTargets);_PublishPackages</PublishDependsOnTargets>
   </PropertyGroup>
 
   <ItemGroup>
     <ItemsToPushToBlobFeed Include="$(ArtifactsDir)nupkgs/*.nupkg"
                            IsShipping="true"
-                           UploadPathSegment="nuget-client"
-                           Condition="'$(DotNetBuildSourceOnly)' == 'true'" />
+                           UploadPathSegment="nuget-client" />
     <_SymbolsPackages Include="$(ArtifactsDir)nupkgs/*.symbols.nupkg" />
     <ItemsToPushToBlobFeed Remove="@(_SymbolsPackages)" Condition="'$(DotNetBuildSourceOnly)' == 'true'" />
   </ItemGroup>
