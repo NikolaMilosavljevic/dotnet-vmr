@@ -600,6 +600,7 @@
     CopyRepoArtifacts;
     CopyInnerBuildRestoredPackages;
     ExtractToolPackage;
+    DiscoverSymbolsArchiveFile;
     ExtractSymbolsArchiveFile;
     CleanupRepo" />
 
