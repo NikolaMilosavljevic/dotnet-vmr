@@ -5,14 +5,14 @@
     <PublishDependsOnTargets>$(PublishDependsOnTargets);_PublishInstallers</PublishDependsOnTargets>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(DotNetBuildRepo)' == 'true'">
     <_InstallersToPublish Remove="@(_InstallersToPublish)" />
-    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.tar.gz" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
-    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.zip" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
-    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.deb" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
-    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.rpm" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
-    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.exe" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
-    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.msi" UploadPathSegment="Runtime" Condition="'$(DotNetBuildRepo)' == 'true'" />
+    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.tar.gz" UploadPathSegment="Runtime" />
+    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.zip" UploadPathSegment="Runtime" />
+    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.deb" UploadPathSegment="Runtime" />
+    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.rpm" UploadPathSegment="Runtime" />
+    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.exe" UploadPathSegment="Runtime" />
+    <_InstallersToPublish Include="$(ArtifactsPackagesDir)**\*.msi" UploadPathSegment="Runtime" />
   </ItemGroup>
 
   <Target Name="_PublishInstallers">
