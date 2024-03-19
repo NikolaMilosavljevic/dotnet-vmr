@@ -37,6 +37,8 @@ namespace Microsoft.DotNet.Build.Tasks
         /// </summary>
         public string[] SourceBuildSources { get; set; }
 
+        public string VmrRoot { get; set; }
+
         public override bool Execute()
         {
             string xml = File.ReadAllText(NuGetConfigFile);
@@ -51,9 +53,9 @@ namespace Microsoft.DotNet.Build.Tasks
             }
 
             Hashtable allSourcesPackages = new Hashtable();
-            List<string> currentPackages = new List<string>();
-            List<string> referencePackages = new List<string>();
-            List<string> previouslyBuiltPackages = new List<string>();
+            Hashtable currentPackages = new Hashtable();
+            Hashtable referencePackages = new Hashtable();
+            Hashtable previouslyBuiltPackages = new Hashtable();
             foreach (string packageSource in SourceBuildSources)
             {
                 XElement sourceElement = pkgSourcesElement.Descendants().FirstOrDefault(e => e.Name == "add" && e.Attribute("key").Value == packageSource);
@@ -71,26 +73,52 @@ namespace Microsoft.DotNet.Build.Tasks
                 string[] packages = Directory.GetFiles(path, "*.nupkg", SearchOption.AllDirectories);
                 foreach (string package in packages)
                 {
-                    string id = GetNupkgId(package).ToLower();
+                    NupkgInfo info = GetNupkgId(package);
+                    string id = info.Id.ToLower();
+                    string version = info.Version.ToLower();
                     if (packageSource.StartsWith("source-built-"))
                     {
-                        if (!currentPackages.Contains(id))
+                        if (currentPackages.ContainsKey(id))
                         {
-                            currentPackages.Add(id);
+                            List<string> versions = (List<string>)currentPackages[id];
+                            if (!versions.Contains(version))
+                            {
+                                versions.Add(version);
+                            }
+                        }
+                        else
+                        {
+                            currentPackages.Add(id, new List<string> { version });
                         }
                     }
                     else if (packageSource.Equals("reference-packages"))
                     {
-                        if (!referencePackages.Contains(id))
+                        if (referencePackages.ContainsKey(id))
                         {
-                            referencePackages.Add(id);
+                            List<string> versions = (List<string>)referencePackages[id];
+                            if (!versions.Contains(version))
+                            {
+                                versions.Add(version);
+                            }
+                        }
+                        else
+                        {
+                            referencePackages.Add(id, new List<string> { version });
                         }
                     }
                     else // previously build packages
                     {
-                        if (!previouslyBuiltPackages.Contains(id))
+                        if (previouslyBuiltPackages.ContainsKey(id))
                         {
-                            previouslyBuiltPackages.Add(id);
+                            List<string> versions = (List<string>)previouslyBuiltPackages[id];
+                            if (!versions.Contains(version))
+                            {
+                                versions.Add(version);
+                            }
+                        }
+                        else
+                        {
+                            previouslyBuiltPackages.Add(id, new List<string> { version });
                         }
                     }
 
@@ -109,38 +137,52 @@ namespace Microsoft.DotNet.Build.Tasks
                 }
             }
 
-            // If there is a source-build-reference-package-cache source,
-            // add all packages from it to the reference-packages source mappings
+            // If there is a source-build-reference-package-cache source, we are building SBRP repo.
+            // source-build-reference-package-cache is a dynamic source, populated by SBRP build,
+            // Discover all SBRP packages from checked in nuspec files.
 
-            if (allSourcesPackages.ContainsKey("reference-packages"))
+            XElement sbrpSourceElement = pkgSourcesElement.Descendants().FirstOrDefault(e => e.Name == "add" && e.Attribute("key").Value == sbrpCacheName);
+            if (sbrpSourceElement != null)
             {
-                XElement sbrpSourceElement = pkgSourcesElement.Descendants().FirstOrDefault(e => e.Name == "add" && e.Attribute("key").Value == sbrpCacheName);
-                if (sbrpSourceElement != null)
+                if (!allSourcesPackages.ContainsKey(sbrpCacheName))
                 {
-                    if (!allSourcesPackages.ContainsKey(sbrpCacheName))
-                    {
-                        allSourcesPackages.Add(sbrpCacheName, new List<string>());
-                    }
+                    allSourcesPackages.Add(sbrpCacheName, new List<string>());
+                }
 
-                    List<string> sbrpcPackages = (List<string>)allSourcesPackages[sbrpCacheName];
-                    foreach (string packagePattern in (List<string>)allSourcesPackages["reference-packages"])
+                if (string.IsNullOrEmpty(VmrRoot))
+                {
+                    throw new InvalidDataException(string.Format(CultureInfo.CurrentCulture, "VmrRoot is not set - cannot determine SBRP packages."));
+                }
+
+                List<string> sbrpcPackages = (List<string>)allSourcesPackages[sbrpCacheName];
+                string sbrpRepoRoot = Path.Combine(VmrRoot, "src", "source-build-reference-packages");
+                if (Directory.Exists(sbrpRepoRoot))
+                {
+                    string[] nuspecFiles = Directory.GetFiles(sbrpRepoRoot, "*.nuspec", SearchOption.AllDirectories);
+                    foreach (string nuspecFile in nuspecFiles)
                     {
-                        if (!sbrpcPackages.Contains(packagePattern))
+                        // SBRP nuspec file names do not contain version number, so we can get package id without parsing the nuspec file.
+                        string id = Path.GetFileNameWithoutExtension(nuspecFile).ToLower();
+                        if (!sbrpcPackages.Contains(id))
                         {
-                            sbrpcPackages.Add(packagePattern);
+                            sbrpcPackages.Add(id);
                         }
                     }
                 }
+                else
+                {
+                    throw new InvalidDataException(string.Format(CultureInfo.CurrentCulture, "SBRP repo root does not exist in expected path: {0}", sbrpRepoRoot));
+                }
             }
 
+
             // Enumerate any existing package source mappings and filter to remove
-            // those that are present in any source-built source
+            // those that are present in any source-build source
             Hashtable oldSourceMappingPatterns = new Hashtable();
             if (pkgSrcMappingElement != null)
             {
                 foreach (XElement packageSource in pkgSrcMappingElement.Descendants().Where(e => e.Name == "packageSource"))
                 {
-                    string key = packageSource.Attribute("key").Value;
                     List<string> patterns = new List<string>();
                     foreach (XElement package in packageSource.Descendants().Where(e => e.Name == "package"))
                     {
@@ -155,7 +197,7 @@ namespace Microsoft.DotNet.Build.Tasks
 
                     if (patterns.Count > 0)
                     {
-                        oldSourceMappingPatterns.Add(key, patterns);
+                        oldSourceMappingPatterns.Add(packageSource.Attribute("key").Value, patterns);
                     }
                 }
             }
@@ -167,7 +209,6 @@ namespace Microsoft.DotNet.Build.Tasks
             }
 
             // Remove all packageSourceMappings.
-            // When building online, we will add filtered original mappings
             pkgSrcMappingElement.ReplaceNodes(new XElement("clear"));
 
             XElement pkgSrcMappingClearElement = pkgSrcMappingElement.Descendants().FirstOrDefault(e => e.Name == "clear");
@@ -192,8 +233,10 @@ namespace Microsoft.DotNet.Build.Tasks
                 }
             }
 
+            // Add all new package source mappings
             foreach (string packageSource in allSourcesPackages.Keys)
             {
+                // skip sources with zero mappings
                 if (allSourcesPackages[packageSource] == null)
                 {
                     continue;
@@ -201,26 +244,35 @@ namespace Microsoft.DotNet.Build.Tasks
 
                 XElement pkgSrc = new XElement("packageSource", new XAttribute("key", packageSource));
 
-                if (allSourcesPackages.ContainsKey(packageSource))
+                if (packageSource.StartsWith("source-built-") ||
+                    packageSource.Equals(sbrpCacheName) ||
+                    packageSource.Equals("reference-packages"))
                 {
-                    if (packageSource.StartsWith("source-built-") ||
-                        packageSource.Equals(sbrpCacheName) ||
-                        packageSource.Equals("reference-packages"))
+                    // Add all packages from current source-built source
+                    foreach (string packagePattern in (List<string>)allSourcesPackages[packageSource])
                     {
-                        // add all packages from current source-build source
-                        foreach (string packagePattern in (List<string>)allSourcesPackages[packageSource])
+                        pkgSrc.Add(new XElement("package", new XAttribute("pattern", packagePattern)));
+                    }
+                }
+                else // previously source-built and prebuilt sources
+                {
+                    foreach (string packagePattern in (List<string>)allSourcesPackages[packageSource])
+                    {
+                        // Add only packages where version does not exist in current source-built sources
+                        if (!currentPackages.Contains(packagePattern))
                         {
                             pkgSrc.Add(new XElement("package", new XAttribute("pattern", packagePattern)));
                         }
-                    }
-                    else // previously source-built and prebuilt sources
-                    {
-                        // add only packages not present in current source-build sources
-                        foreach (string packagePattern in (List<string>)allSourcesPackages[packageSource])
+                        else
                         {
-                            if (!currentPackages.Contains(packagePattern))
+                            // Matching pattern/id - check if any version is different
+                            foreach (string version in (List<string>)previouslyBuiltPackages[packagePattern])
                             {
-                                pkgSrc.Add(new XElement("package", new XAttribute("pattern", packagePattern)));
+                                if (!((List<string>)currentPackages[packagePattern]).Contains(version))
+                                {
+                                    pkgSrc.Add(new XElement("package", new XAttribute("pattern", packagePattern)));
+                                    break;
+                                }
                             }
                         }
                     }
@@ -237,7 +289,7 @@ namespace Microsoft.DotNet.Build.Tasks
             return true;
         }
 
-        static string GetNupkgId(string path)
+        private NupkgInfo GetNupkgId(string path)
         {
             try
             {
@@ -250,7 +302,9 @@ namespace Microsoft.DotNet.Build.Tasks
                         using Stream nuspecFileStream = entry.Open();
                         XDocument doc = XDocument.Load(nuspecFileStream, LoadOptions.PreserveWhitespace);
                         XElement metadataElement = doc.Descendants().First(c => c.Name.LocalName.ToString() == "metadata");
-                        return metadataElement.Descendants().First(c => c.Name.LocalName.ToString() == "id").Value;
+                        return new NupkgInfo(
+                                metadataElement.Descendants().First(c => c.Name.LocalName.ToString() == "id").Value,
+                                metadataElement.Descendants().First(c => c.Name.LocalName.ToString() == "version").Value);
                     }
                 }
 
@@ -261,5 +315,17 @@ namespace Microsoft.DotNet.Build.Tasks
                 throw new InvalidDataException(string.Format(CultureInfo.CurrentCulture, "Invalid package", path), ex);
             }
         }
+    }
+
+    public class NupkgInfo
+    {
+        public NupkgInfo(string id, string version)
+        {
+            Id = id;
+            Version = version;
+        }
+
+        public string Id { get; }
+        public string Version { get; }
     }
 }
