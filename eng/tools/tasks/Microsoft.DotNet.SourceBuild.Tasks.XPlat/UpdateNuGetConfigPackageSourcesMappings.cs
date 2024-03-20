@@ -196,18 +196,18 @@ namespace Microsoft.DotNet.Build.Tasks
                     // Add package with version to appropriate hashtable
                     if (packageSource.StartsWith("source-built-"))
                     {
-                        AddPackageToHashtable(currentPackages, id, version);
+                        AddToHashtable(currentPackages, id, version);
                     }
                     else if (packageSource.Equals("reference-packages"))
                     {
-                        AddPackageToHashtable(referencePackages, id, version);
+                        AddToHashtable(referencePackages, id, version);
                     }
                     else // previously built packages
                     {
-                        AddPackageToHashtable(previouslyBuiltPackages, id, version);
+                        AddToHashtable(previouslyBuiltPackages, id, version);
                     }
 
-                    AddPackageToSourcePackagesHashtable(allSourcesPackages, packageSource, id);
+                    AddToHashtable(allSourcesPackages, packageSource, id);
                 }
             }
         }
@@ -238,8 +238,8 @@ namespace Microsoft.DotNet.Build.Tasks
                     string id = info.Id.ToLower();
                     string version = info.Version.ToLower();
 
-                    AddPackageToHashtable(currentPackages, id, version);
-                    AddPackageToSourcePackagesHashtable(allSourcesPackages, SBRPCacheSourceName, id);
+                    AddToHashtable(currentPackages, id, version);
+                    AddToHashtable(allSourcesPackages, SBRPCacheSourceName, id);
                 }
                 catch (Exception ex)
                 {
@@ -248,35 +248,19 @@ namespace Microsoft.DotNet.Build.Tasks
             }
         }
 
-        private void AddPackageToSourcePackagesHashtable(Hashtable hashtable, string packageSource, string id)
+        private void AddToHashtable(Hashtable hashtable, string key, string value)
         {
-            if (hashtable.ContainsKey(packageSource))
+            if (hashtable.ContainsKey(key))
             {
-                List<string> sourcePackages = (List<string>)hashtable[packageSource];
-                if (!sourcePackages.Contains(id))
+                List<string> values = (List<string>)hashtable[key];
+                if (!values.Contains(value))
                 {
-                    sourcePackages.Add(id);
+                    values.Add(value);
                 }
             }
             else
             {
-                hashtable.Add(packageSource, new List<string> { id });
-            }
-        }
-
-        private void AddPackageToHashtable(Hashtable hashtable, string id, string version)
-        {
-            if (hashtable.ContainsKey(id))
-            {
-                List<string> versions = (List<string>)hashtable[id];
-                if (!versions.Contains(version))
-                {
-                    versions.Add(version);
-                }
-            }
-            else
-            {
-                hashtable.Add(id, new List<string> { version });
+                hashtable.Add(key, new List<string> { value });
             }
         }
 
