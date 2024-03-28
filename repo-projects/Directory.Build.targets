@@ -201,6 +201,7 @@
       SbrpRepoSrcPath="$(SbrpRepoSrcPath)"
       SbrpCacheSourceName="$(SbrpCacheNuGetSourceName)"
       ReferencePackagesSourceName="$(ReferencePackagesNuGetSourceName)"
+      PreviouslySourceBuiltSourceName="$(PreviouslySourceBuiltNuGetSourceName)"
       SourceBuiltSourceNamePrefix="$(SourceBuiltSourceNamePrefix)"
       CustomSources="$(NetSdkSupportingFeedName)" />
 
