@@ -245,11 +245,11 @@ namespace Microsoft.DotNet.UnifiedBuild.Tasks
                 }
                 else if (packageSource.Equals(PreviouslySourceBuiltSourceName))
                 {
-                    AddPackageSourceForPackageVersionNotInCurrentPackages(pkgSrc, packagePattern, previouslySourceBuiltPackages);
+                    AddPackageSourceMappingIfPackageVersionNotInCurrentPackages(pkgSrc, packagePattern, previouslySourceBuiltPackages);
                 }
                 else if (packageSource.Equals(PrebuiltSourceName))
                 {
-                    AddPackageSourceForPackageVersionNotInCurrentPackages(pkgSrc, packagePattern, prebuiltPackages);
+                    AddPackageSourceMappingIfPackageVersionNotInCurrentPackages(pkgSrc, packagePattern, prebuiltPackages);
                 }
                 else // unknown/unexpected source
                 {
@@ -260,14 +260,14 @@ namespace Microsoft.DotNet.UnifiedBuild.Tasks
             return pkgSrc;
         }
 
-        private void AddPackageSourceForPackageVersionNotInCurrentPackages(XElement pkgSrc, string packagePattern, Dictionary<string, List<string>> packages)
+        private void AddPackageSourceMappingIfPackageVersionNotInCurrentPackages(XElement pkgSrc, string packagePattern, Dictionary<string, List<string>> packages)
         {
             foreach (string version in packages[packagePattern])
             {
                 if (!currentPackages[packagePattern].Contains(version))
                 {
                     pkgSrc.Add(new XElement("package", new XAttribute("pattern", packagePattern)));
-                    break;
+                    return;
                 }
             }
         }
