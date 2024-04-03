@@ -15,7 +15,10 @@
     <MSBuild Projects="$(RepoProjectsDir)$(RootRepo).proj" Targets="WritePrebuiltUsageData;ReportPrebuiltUsage" />
   </Target>
 
-  <!-- Determine symbols tarball names used as outputs of symbols repackaging targets -->
+  <!--
+    Determine symbols tarball names and discover all intermediate symbols,
+    to be used as inputs and outputs of symbols repackaging targets.
+  -->
   <Target Name="DetermineSymbolsTargetsInputsAndOutputs"
           AfterTargets="Build"
           DependsOnTargets="DetermineSourceBuiltSdkVersion">
@@ -24,7 +27,7 @@
       <SdkSymbolsTarball>$(ArtifactsAssetsDir)dotnet-symbols-sdk-$(SourceBuiltSdkVersion)-$(TargetRid)$(ArchiveExtension)</SdkSymbolsTarball>
     </PropertyGroup>
     <ItemGroup>
-      <AllIntermediateSymbols Include="$(IntermediateSymbolsRootDir)**" />
+      <IntermediateSymbol Include="$(IntermediateSymbolsRootDir)**" />
     </ItemGroup>
   </Target>
  
@@ -32,7 +35,7 @@
   <Target Name="RepackageSymbols"
           AfterTargets="Build"
           DependsOnTargets="DetermineSymbolsTargetsInputsAndOutputs"
-          Inputs="@(AllIntermediateSymbols)"
+          Inputs="@(IntermediateSymbol)"
           Outputs="$(UnifiedSymbolsTarball)">
 
     <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(UnifiedSymbolsTarball)'))" />
@@ -47,7 +50,7 @@
   <Target Name="CreateSdkSymbolsTarball"
           AfterTargets="Build"
           DependsOnTargets="RepackageSymbols"
-          Inputs="@(AllIntermediateSymbols);%(SdkTarballItem.Identity)"
+          Inputs="@(IntermediateSymbol);$(SdkTarballPath)"
           Outputs="$(SdkSymbolsTarball)">
     <PropertyGroup>
       <IntermediateSdkSymbolsLayout>$(BaseIntermediateOutputPath)SdkSymbols</IntermediateSdkSymbolsLayout>
