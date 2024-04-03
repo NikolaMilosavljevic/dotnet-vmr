@@ -27,7 +27,7 @@
       <SdkSymbolsTarball>$(ArtifactsAssetsDir)dotnet-symbols-sdk-$(SourceBuiltSdkVersion)-$(TargetRid)$(ArchiveExtension)</SdkSymbolsTarball>
     </PropertyGroup>
     <ItemGroup>
-      <IntermediateSymbol Include="$(IntermediateSymbolsRootDir)**" />
+      <IntermediateSymbol Include="$(IntermediateSymbolsRootDir)**/*" />
     </ItemGroup>
   </Target>
  
