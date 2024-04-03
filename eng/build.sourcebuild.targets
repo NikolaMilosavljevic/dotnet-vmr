@@ -55,7 +55,7 @@
 
     <Message Importance="High" Text="Packaged sdk symbols in '$(SdkSymbolsTarball)'" />
 
-    <RemoveDir Directories="$(IntermediateSymbolsRootDir)" />
+    <!--RemoveDir Directories="$(IntermediateSymbolsRootDir)" /-->
     <RemoveDir Directories="$(IntermediateSdkSymbolsLayout)" />
     <RemoveDir Directories="$(IntermediateSdkLayout)" />
   </Target>
