@@ -3,10 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 
 namespace Microsoft.DotNet.UnifiedBuild.Tasks
 {
-    public static class FileUtilities
+    public static class Utilities
     {
         public const string CR = "\r";
         public const string CRLF = "\r\n";
@@ -65,6 +67,38 @@ namespace Microsoft.DotNet.UnifiedBuild.Tasks
             }
 
             return source;
+        }
+
+        public static bool ShouldFileHaveAPdb(string file, out string guid)
+        {
+            guid = string.Empty;
+
+            if (file.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) &&
+                !file.EndsWith(".resources.dll", StringComparison.InvariantCultureIgnoreCase) &&
+                !file.Contains(Path.DirectorySeparatorChar + "packs" + Path.DirectorySeparatorChar))
+            {
+                using var pdbStream = File.OpenRead(file);
+                using var peReader = new PEReader(pdbStream);
+                try
+                {
+                    // Check if pdb is embedded
+                    if (peReader.ReadDebugDirectory().Any(entry => entry.Type == DebugDirectoryEntryType.EmbeddedPortablePdb))
+                    {
+                        return false;
+                    }
+
+                    var debugDirectory = peReader.ReadDebugDirectory().First(entry => entry.Type == DebugDirectoryEntryType.CodeView);
+                    var codeViewData = peReader.ReadCodeViewDebugDirectoryData(debugDirectory);
+                    guid = $"{codeViewData.Guid.ToString("N").Replace("-", string.Empty)}";
+                }
+                catch (Exception e) when (e is BadImageFormatException || e is InvalidOperationException)
+                {
+                    // Ignore binaries without debug info
+                    return false;
+                }
+            }
+
+            return guid != string.Empty;
         }
     }
 }
