@@ -78,7 +78,7 @@ namespace Microsoft.DotNet.UnifiedBuild.Tasks
 
             foreach (string file in Directory.GetFiles(SdkLayoutPath, "*", SearchOption.AllDirectories))
             {
-                if (Utilities.ShouldFileHaveAPdb(file, out string guid))
+                if (Utilities.FileInSdkLayoutRequiresAPdb(file, out string guid))
                 {
                     string debugId = GetDebugId(guid, file);
                     if (!allPdbGuids.ContainsKey(debugId))

@@ -71,13 +71,24 @@ namespace Microsoft.DotNet.UnifiedBuild.Tasks
             return source;
         }
 
-        public static bool ShouldFileHaveAPdb(string file, out string guid)
+        // Checks if a file in Sdk layout requires an external Pdb.
+        public static bool FileInSdkLayoutRequiresAPdb(string file, out string guid)
+        {
+            guid = string.Empty;
+
+            // Files under packs/ are used for build only, no need for Pdbs
+            return !file.Contains(Path.DirectorySeparatorChar + "packs" + Path.DirectorySeparatorChar) ?
+                FileHasCompanionPdbInfo(file, out guid) :
+                false;
+        }
+
+        // Checks if a file has debug data indicating an external companion Pdb.
+        public static bool FileHasCompanionPdbInfo(string file, out string guid)
         {
             guid = string.Empty;
 
             if (file.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) &&
-                !file.EndsWith(".resources.dll", StringComparison.InvariantCultureIgnoreCase) &&
-                !file.Contains(Path.DirectorySeparatorChar + "packs" + Path.DirectorySeparatorChar))
+                !file.EndsWith(".resources.dll", StringComparison.InvariantCultureIgnoreCase))
             {
                 using var pdbStream = File.OpenRead(file);
                 using var peReader = new PEReader(pdbStream);

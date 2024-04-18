@@ -74,7 +74,7 @@ public class SymbolsTests : SdkTests
         IEnumerable<string> allFiles = Directory.GetFiles(sdkRoot, "*", SearchOption.AllDirectories);
         Parallel.ForEach(allFiles, file =>
         {
-            if (UnifiedBuildTasks.Utilities.ShouldFileHaveAPdb(file, out string guid))
+            if (UnifiedBuildTasks.Utilities.FileInSdkLayoutRequiresAPdb(file, out string guid))
             {
                 string symbolFile = Path.ChangeExtension(file.Replace(sdkRoot, symbolsRoot), ".pdb");
                 if (!File.Exists(symbolFile))
