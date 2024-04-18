@@ -11,13 +11,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using Microsoft.DotNet.UnifiedBuild.Tasks = UnifiedBuildTasks;
+using UnifiedBuildTasks = Microsoft.DotNet.UnifiedBuild.Tasks;
 
 namespace Microsoft.DotNet.SourceBuild.SmokeTests;
 
 public class SymbolsTests : SdkTests
 {
-    private static string SymbolsTestsRoot { get; } = Path.Combine(Directory.GetCurrentDirectory(), nameof(SymbolsTestsTests));
+    private static string SymbolsTestsRoot { get; } = Path.Combine(Directory.GetCurrentDirectory(), nameof(SymbolsTests));
 
     public SymbolsTests(ITestOutputHelper outputHelper) : base(outputHelper) { }
 
@@ -43,8 +43,8 @@ public class SymbolsTests : SdkTests
                 symbolsRoot,
                 OutputHelper);
 
-            string sdkRoot = Directory.CreateDirectory(Path.Combine(SymbolsTestsRoot, "sdk"")).FullName;
-            Utilities.ExtractTarball(Config.SdkTarballPath, sdkRoot, OutputHelper);
+            string sdkRoot = Directory.CreateDirectory(Path.Combine(SymbolsTestsRoot, "sdk")).FullName;
+            Utilities.ExtractTarball(Config.SdkTarballPath!, sdkRoot, OutputHelper);
 
             IList<string> failedFiles = VerifySdkFilesHaveMatchingSymbols(symbolsRoot, sdkRoot);
 
@@ -74,7 +74,7 @@ public class SymbolsTests : SdkTests
         IEnumerable<string> allFiles = Directory.GetFiles(sdkRoot, "*", SearchOption.AllDirectories);
         Parallel.ForEach(allFiles, file =>
         {
-            if (UnifiedBuildTasks.Utilities.ShouldBinaryHaveAPdb(file, out string guid))
+            if (UnifiedBuildTasks.Utilities.ShouldFileHaveAPdb(file, out string guid))
             {
                 string symbolFile = Path.ChangeExtension(file.Replace(sdkRoot, symbolsRoot), ".pdb");
                 if (!File.Exists(symbolFile))
