@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.DotNet.UnifiedBuild.Tests;
+namespace Microsoft.DotNet.PortableBuild.Tests;
 
 public static class Utilities
 {

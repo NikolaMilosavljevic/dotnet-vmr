@@ -20,7 +20,7 @@ using System.Xml;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.DotNet.UnifiedBuild.Tests;
+namespace Microsoft.DotNet.PortableBuild.Tests;
 
 [Trait("Category", "SdkContent")]
 public class NugetPackageContentTests : TestBase

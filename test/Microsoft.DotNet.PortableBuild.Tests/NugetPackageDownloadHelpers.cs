@@ -16,7 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Microsoft.DotNet.UnifiedBuild.Tests;
+namespace Microsoft.DotNet.PortableBuild.Tests;
 
 public static class NugetPackageDownloadHelpers
 {

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using Xunit.Abstractions;
 
-namespace Microsoft.DotNet.UnifiedBuild.Tests;
+namespace Microsoft.DotNet.PortableBuild.Tests;
 
 internal static class ExecuteHelper
 {
