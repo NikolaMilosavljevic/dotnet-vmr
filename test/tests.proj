@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <!-- Shared tests - applicable to unified-build and indirectly to source-build. -->
-    <ProjectReference Include="Microsoft.DotNet.UnifiedBuild.UnitTests\Microsoft.DotNet.UnifiedBuild.Tests.csproj" />
+    <ProjectReference Include="Microsoft.DotNet.UnifiedBuild.Tests\Microsoft.DotNet.UnifiedBuild.Tests.csproj" />
     <!-- Source-build specific tests. -->
     <ProjectReference Include="Microsoft.DotNet.SourceBuild.Tests\Microsoft.DotNet.SourceBuild.Tests.csproj"
                       Condition="'$(DotNetBuildSourceOnly)' == 'true'" />
