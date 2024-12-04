@@ -222,61 +222,61 @@ public unsafe partial class DataObject :
 
     #region ComTypes.IDataObject
     int ComTypes.IDataObject.DAdvise(ref FORMATETC pFormatetc, ADVF advf, IAdviseSink pAdvSink, out int pdwConnection) =>
-        _innerData.DAdvise(ref pFormatetc, advf, pAdvSink, out pdwConnection);
+        ((ComTypes.IDataObject)_innerData).DAdvise(ref pFormatetc, advf, pAdvSink, out pdwConnection);
 
-    void ComTypes.IDataObject.DUnadvise(int dwConnection) => _innerData.DUnadvise(dwConnection);
+    void ComTypes.IDataObject.DUnadvise(int dwConnection) => ((ComTypes.IDataObject)_innerData).DUnadvise(dwConnection);
 
     int ComTypes.IDataObject.EnumDAdvise(out IEnumSTATDATA? enumAdvise) =>
-        _innerData.EnumDAdvise(out enumAdvise);
+        ((ComTypes.IDataObject)_innerData).EnumDAdvise(out enumAdvise);
 
     IEnumFORMATETC ComTypes.IDataObject.EnumFormatEtc(DATADIR dwDirection) =>
-        _innerData.EnumFormatEtc(dwDirection);
+        ((ComTypes.IDataObject)_innerData).EnumFormatEtc(dwDirection);
 
     int ComTypes.IDataObject.GetCanonicalFormatEtc(ref FORMATETC pformatetcIn, out FORMATETC pformatetcOut) =>
-        _innerData.GetCanonicalFormatEtc(ref pformatetcIn, out pformatetcOut);
+        ((ComTypes.IDataObject)_innerData).GetCanonicalFormatEtc(ref pformatetcIn, out pformatetcOut);
 
     void ComTypes.IDataObject.GetData(ref FORMATETC formatetc, out STGMEDIUM medium) =>
-        _innerData.GetData(ref formatetc, out medium);
+        ((ComTypes.IDataObject)_innerData).GetData(ref formatetc, out medium);
 
     void ComTypes.IDataObject.GetDataHere(ref FORMATETC formatetc, ref STGMEDIUM medium) =>
-        _innerData.GetDataHere(ref formatetc, ref medium);
+        ((ComTypes.IDataObject)_innerData).GetDataHere(ref formatetc, ref medium);
 
     int ComTypes.IDataObject.QueryGetData(ref FORMATETC formatetc) =>
-        _innerData.QueryGetData(ref formatetc);
+        ((ComTypes.IDataObject)_innerData).QueryGetData(ref formatetc);
 
     void ComTypes.IDataObject.SetData(ref FORMATETC pFormatetcIn, ref STGMEDIUM pmedium, bool fRelease) =>
-        _innerData.SetData(ref pFormatetcIn, ref pmedium, fRelease);
+        ((ComTypes.IDataObject)_innerData).SetData(ref pFormatetcIn, ref pmedium, fRelease);
 
     #endregion
 
-    #region Com.IDataObject.Interface
+    #region Com.IDataObject
 
     HRESULT Com.IDataObject.Interface.DAdvise(Com.FORMATETC* pformatetc, uint advf, Com.IAdviseSink* pAdvSink, uint* pdwConnection) =>
-        _innerData.DAdvise(pformatetc, advf, pAdvSink, pdwConnection);
+        ((Com.IDataObject.Interface)_innerData).DAdvise(pformatetc, advf, pAdvSink, pdwConnection);
 
     HRESULT Com.IDataObject.Interface.DUnadvise(uint dwConnection) =>
-        _innerData.DUnadvise(dwConnection);
+        ((Com.IDataObject.Interface)_innerData).DUnadvise(dwConnection);
 
     HRESULT Com.IDataObject.Interface.EnumDAdvise(Com.IEnumSTATDATA** ppenumAdvise) =>
-        _innerData.EnumDAdvise(ppenumAdvise);
+        ((Com.IDataObject.Interface)_innerData).EnumDAdvise(ppenumAdvise);
 
     HRESULT Com.IDataObject.Interface.EnumFormatEtc(uint dwDirection, Com.IEnumFORMATETC** ppenumFormatEtc) =>
-        _innerData.EnumFormatEtc(dwDirection, ppenumFormatEtc);
+        ((Com.IDataObject.Interface)_innerData).EnumFormatEtc(dwDirection, ppenumFormatEtc);
 
     HRESULT Com.IDataObject.Interface.GetData(Com.FORMATETC* pformatetcIn, Com.STGMEDIUM* pmedium) =>
-        _innerData.GetData(pformatetcIn, pmedium);
+        ((Com.IDataObject.Interface)_innerData).GetData(pformatetcIn, pmedium);
 
     HRESULT Com.IDataObject.Interface.GetDataHere(Com.FORMATETC* pformatetc, Com.STGMEDIUM* pmedium) =>
-        _innerData.GetDataHere(pformatetc, pmedium);
+        ((Com.IDataObject.Interface)_innerData).GetDataHere(pformatetc, pmedium);
 
     HRESULT Com.IDataObject.Interface.QueryGetData(Com.FORMATETC* pformatetc) =>
-        _innerData.QueryGetData(pformatetc);
+        ((Com.IDataObject.Interface)_innerData).QueryGetData(pformatetc);
 
     HRESULT Com.IDataObject.Interface.GetCanonicalFormatEtc(Com.FORMATETC* pformatectIn, Com.FORMATETC* pformatetcOut) =>
-        _innerData.GetCanonicalFormatEtc(pformatectIn, pformatetcOut);
+        ((Com.IDataObject.Interface)_innerData).GetCanonicalFormatEtc(pformatectIn, pformatetcOut);
 
     HRESULT Com.IDataObject.Interface.SetData(Com.FORMATETC* pformatetc, Com.STGMEDIUM* pmedium, BOOL fRelease) =>
-        _innerData.SetData(pformatetc, pmedium, fRelease);
+        ((Com.IDataObject.Interface)_innerData).SetData(pformatetc, pmedium, fRelease);
 
     #endregion
 }

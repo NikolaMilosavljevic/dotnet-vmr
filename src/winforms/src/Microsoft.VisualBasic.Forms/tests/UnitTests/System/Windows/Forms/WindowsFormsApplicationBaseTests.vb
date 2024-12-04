@@ -90,7 +90,6 @@ Namespace Microsoft.VisualBasic.Forms.Tests
             End Using
         End Sub
 
-        <Fact>
         Public Sub DoEvents_DoesNotThrow()
             Dim testCode As Action = Sub() DoEvents()
             testCode.Should.NotThrow()

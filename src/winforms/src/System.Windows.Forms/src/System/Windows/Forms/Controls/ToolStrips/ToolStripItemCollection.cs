@@ -141,23 +141,16 @@ public class ToolStripItemCollection : ArrangedElementCollection, IList
             throw new NotSupportedException(SR.ToolStripItemCollectionIsReadOnly);
         }
 
-        // Return early if the collection is empty.
-        if (toolStripItems.Count == 0)
-        {
-            return;
-        }
-
         // ToolStripDropDown will look for PropertyNames.Items to determine if it needs
         // to resize itself.
         using (new LayoutTransaction(_owner, _owner!, PropertyNames.Items))
         {
-            // Create a temporary array to avoid modifying the original collection during iteration.
-            // Items will be removed from toolStripsItems collection when they are added to this collection
-            // if they had a different owner control.
-            var itemsToAdd = toolStripItems.InnerList.ToArray();
-            foreach (ToolStripItem item in itemsToAdd)
+            for (int i = 0; i < toolStripItems.Count; i++)
             {
-                Add(item);
+                // Items are removed from their origin when added to a different owner.
+                // Decrement the index to always add the items from index 0 which will preserve
+                // the original order and avoid a pesky ArgumentOutOfRangeException.
+                Add(toolStripItems[i--]);
             }
         }
     }

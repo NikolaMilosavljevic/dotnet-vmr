@@ -1,7 +1,6 @@
 ﻿' Licensed to the .NET Foundation under one or more agreements.
 ' The .NET Foundation licenses this file to you under the MIT license.
 
-Imports System.ComponentModel
 Imports System.Drawing
 Imports System.Globalization
 Imports System.Threading
@@ -12,7 +11,6 @@ Namespace Microsoft.VisualBasic.MyServices.Internal
     ''' <summary>
     '''  A dialog that shows progress used for Network.Download and Network.Upload
     ''' </summary>
-    <DesignerCategory("Default")>
     Friend NotInheritable Class ProgressDialog
         Inherits Form
 

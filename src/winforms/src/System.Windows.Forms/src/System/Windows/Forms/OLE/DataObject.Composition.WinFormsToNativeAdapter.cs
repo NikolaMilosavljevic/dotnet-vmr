@@ -33,8 +33,7 @@ public unsafe partial class DataObject
             /// </summary>
             private static bool GetTymedUsable(TYMED tymed) => (tymed & AllowedTymeds) != 0;
 
-            #region  Com.IDataObject.Interface
-            public HRESULT GetData(FORMATETC* pformatetcIn, STGMEDIUM* pmedium)
+            HRESULT Com.IDataObject.Interface.GetData(FORMATETC* pformatetcIn, STGMEDIUM* pmedium)
             {
                 if (pformatetcIn is null)
                 {
@@ -72,7 +71,7 @@ public unsafe partial class DataObject
                 if (!((TYMED)pformatetcIn->tymed).HasFlag(TYMED.TYMED_HGLOBAL))
                 {
                     pmedium->tymed = (TYMED)pformatetcIn->tymed;
-                    return GetDataHere(pformatetcIn, pmedium);
+                    return ((Com.IDataObject.Interface)this).GetDataHere(pformatetcIn, pmedium);
                 }
 
                 pmedium->tymed = TYMED.TYMED_HGLOBAL;
@@ -83,7 +82,7 @@ public unsafe partial class DataObject
                     return HRESULT.E_OUTOFMEMORY;
                 }
 
-                HRESULT result = GetDataHere(pformatetcIn, pmedium);
+                HRESULT result = ((Com.IDataObject.Interface)this).GetDataHere(pformatetcIn, pmedium);
                 if (result.Failed)
                 {
                     PInvokeCore.GlobalFree(pmedium->hGlobal);
@@ -93,7 +92,7 @@ public unsafe partial class DataObject
                 return result;
             }
 
-            public HRESULT GetDataHere(FORMATETC* pformatetc, STGMEDIUM* pmedium)
+            HRESULT Com.IDataObject.Interface.GetDataHere(FORMATETC* pformatetc, STGMEDIUM* pmedium)
             {
                 if (pformatetc is null)
                 {
@@ -183,7 +182,7 @@ public unsafe partial class DataObject
                 }
             }
 
-            public HRESULT QueryGetData(FORMATETC* pformatetc)
+            HRESULT Com.IDataObject.Interface.QueryGetData(FORMATETC* pformatetc)
             {
                 if (pformatetc is null)
                 {
@@ -213,7 +212,7 @@ public unsafe partial class DataObject
                 return HRESULT.S_OK;
             }
 
-            public HRESULT GetCanonicalFormatEtc(FORMATETC* pformatectIn, FORMATETC* pformatetcOut)
+            HRESULT Com.IDataObject.Interface.GetCanonicalFormatEtc(FORMATETC* pformatectIn, FORMATETC* pformatetcOut)
             {
                 if (pformatetcOut is null)
                 {
@@ -224,7 +223,7 @@ public unsafe partial class DataObject
                 return (HRESULT)DATA_S_SAMEFORMATETC;
             }
 
-            public HRESULT SetData(FORMATETC* pformatetc, STGMEDIUM* pmedium, BOOL fRelease)
+            HRESULT Com.IDataObject.Interface.SetData(FORMATETC* pformatetc, STGMEDIUM* pmedium, BOOL fRelease)
             {
                 if (pformatetc is null)
                 {
@@ -254,7 +253,7 @@ public unsafe partial class DataObject
                 return HRESULT.E_NOTIMPL;
             }
 
-            public HRESULT EnumFormatEtc(uint dwDirection, IEnumFORMATETC** ppenumFormatEtc)
+            HRESULT Com.IDataObject.Interface.EnumFormatEtc(uint dwDirection, IEnumFORMATETC** ppenumFormatEtc)
             {
                 if (ppenumFormatEtc is null)
                 {
@@ -270,7 +269,7 @@ public unsafe partial class DataObject
                 return HRESULT.E_NOTIMPL;
             }
 
-            public HRESULT DAdvise(FORMATETC* pformatetc, uint advf, IAdviseSink* pAdvSink, uint* pdwConnection)
+            HRESULT Com.IDataObject.Interface.DAdvise(FORMATETC* pformatetc, uint advf, IAdviseSink* pAdvSink, uint* pdwConnection)
             {
                 if (pdwConnection is null)
                 {
@@ -281,9 +280,9 @@ public unsafe partial class DataObject
                 return HRESULT.E_NOTIMPL;
             }
 
-            public HRESULT DUnadvise(uint dwConnection) => HRESULT.E_NOTIMPL;
+            HRESULT Com.IDataObject.Interface.DUnadvise(uint dwConnection) => HRESULT.E_NOTIMPL;
 
-            public HRESULT EnumDAdvise(IEnumSTATDATA** ppenumAdvise)
+            HRESULT Com.IDataObject.Interface.EnumDAdvise(IEnumSTATDATA** ppenumAdvise)
             {
                 if (ppenumAdvise is null)
                 {
@@ -293,7 +292,6 @@ public unsafe partial class DataObject
                 *ppenumAdvise = null;
                 return HRESULT.OLE_E_ADVISENOTSUPPORTED;
             }
-            #endregion
 
             private HRESULT SaveDataToHGLOBAL(object data, string format, ref STGMEDIUM medium) => format switch
             {

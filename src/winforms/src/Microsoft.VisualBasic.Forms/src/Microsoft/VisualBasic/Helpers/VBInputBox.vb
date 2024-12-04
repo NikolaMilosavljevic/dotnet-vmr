@@ -8,7 +8,6 @@ Imports System.Windows.Forms
 
 Namespace Microsoft.VisualBasic.CompilerServices
 
-    <DesignerCategory("Default")>
     Friend NotInheritable Class VBInputBox
         Inherits Form
 

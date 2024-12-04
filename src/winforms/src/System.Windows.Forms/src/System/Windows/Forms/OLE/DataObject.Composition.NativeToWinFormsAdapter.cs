@@ -394,7 +394,8 @@ public unsafe partial class DataObject
             }
 
             #region IDataObject
-            public object? GetData(string format, bool autoConvert)
+
+            object? IDataObject.GetData(string format, bool autoConvert)
             {
                 using var nativeDataObject = _nativeDataObject.GetInterface();
                 object? data = GetObjectFromDataObject(nativeDataObject, format, out bool doNotContinue);
@@ -430,11 +431,11 @@ public unsafe partial class DataObject
                 return originalData ?? data;
             }
 
-            public object? GetData(string format) => GetData(format, autoConvert: true);
+            object? IDataObject.GetData(string format) => ((IDataObject)this).GetData(format, autoConvert: true);
 
-            public object? GetData(Type format) => GetData(format.FullName!);
+            object? IDataObject.GetData(Type format) => ((IDataObject)this).GetData(format.FullName!);
 
-            public bool GetDataPresent(Type format) => GetDataPresent(format.FullName!);
+            bool IDataObject.GetDataPresent(Type format) => GetDataPresent(format.FullName!);
 
             public bool GetDataPresent(string format, bool autoConvert)
             {
@@ -502,10 +503,11 @@ public unsafe partial class DataObject
 
             public string[] GetFormats() => GetFormats(autoConvert: true);
 
-            public void SetData(string format, bool autoConvert, object? data) { }
-            public void SetData(string format, object? data) { }
-            public void SetData(Type format, object? data) { }
-            public void SetData(object? data) { }
+            void IDataObject.SetData(string format, bool autoConvert, object? data) { }
+            void IDataObject.SetData(string format, object? data) { }
+            void IDataObject.SetData(Type format, object? data) { }
+            void IDataObject.SetData(object? data) { }
+
             #endregion
 
             private bool GetDataPresentInner(string format)
