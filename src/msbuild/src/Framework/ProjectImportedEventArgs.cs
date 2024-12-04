@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.Build.Shared;
 
@@ -29,7 +28,7 @@ namespace Microsoft.Build.Framework
         public ProjectImportedEventArgs(
             int lineNumber,
             int columnNumber,
-            [StringSyntax(StringSyntaxAttribute.CompositeFormat)] string message,
+            string message,
             params object[] messageArgs)
             : base(
                   subcategory: null,

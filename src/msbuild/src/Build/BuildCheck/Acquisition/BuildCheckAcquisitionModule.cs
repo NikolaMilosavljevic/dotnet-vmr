@@ -7,9 +7,8 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Build.Experimental.BuildCheck.Infrastructure;
 using Microsoft.Build.Framework;
-#if FEATURE_ASSEMBLYLOADCONTEXT
+using Microsoft.Build.Framework.Telemetry;
 using Microsoft.Build.Shared;
-#endif
 
 namespace Microsoft.Build.Experimental.BuildCheck.Acquisition;
 

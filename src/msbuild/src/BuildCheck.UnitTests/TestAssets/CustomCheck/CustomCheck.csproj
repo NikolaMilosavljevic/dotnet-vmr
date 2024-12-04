@@ -9,9 +9,9 @@
 
   <ItemGroup>
     <None Include="CustomCheck.props" Pack="true" PackagePath="build\CustomCheck.props" />
-    <None Include="README.md" />
+    <Content Include="README.md" />
   </ItemGroup>
 
   <Import Project="..\Common\CommonTest.targets" />
-  
+
 </Project>

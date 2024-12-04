@@ -234,12 +234,4 @@ namespace Microsoft.Build.Shared
         internal const string AdditionalPropertiesMetadataName = "AdditionalProperties";
         internal const string ProjectConfigurationDescription = "ProjectConfigurationDescription";
     }
-
-    /// <summary>
-    /// Constants naming well-known items.
-    /// </summary>
-    internal static class ItemNames
-    {
-        internal const string reference = "Reference";
-    }
 }

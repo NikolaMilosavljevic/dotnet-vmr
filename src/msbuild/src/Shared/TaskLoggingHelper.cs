@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Resources;
@@ -220,7 +219,7 @@ namespace Microsoft.Build.Utilities
         /// <param name="args">Arguments for formatting.</param>
         /// <returns>The formatted string.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <c>unformatted</c> is null.</exception>
-        public virtual string FormatString([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string unformatted, params object[] args)
+        public virtual string FormatString(string unformatted, params object[] args)
         {
             ErrorUtilities.VerifyThrowArgumentNull(unformatted);
 
@@ -266,7 +265,7 @@ namespace Microsoft.Build.Utilities
         /// <param name="message">The message string.</param>
         /// <param name="messageArgs">Optional arguments for formatting the message string.</param>
         /// <exception cref="ArgumentNullException">Thrown when <c>message</c> is null.</exception>
-        public void LogMessage([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string message, params object[] messageArgs)
+        public void LogMessage(string message, params object[] messageArgs)
         {
             // This API is poorly designed, because parameters misordered like LogMessage(message, MessageImportance.High)
             // will use this overload, ignore the importance and accidentally format the string.
@@ -288,7 +287,7 @@ namespace Microsoft.Build.Utilities
         /// <param name="message">The message string.</param>
         /// <param name="messageArgs">Optional arguments for formatting the message string.</param>
         /// <exception cref="ArgumentNullException">Thrown when <c>message</c> is null.</exception>
-        public void LogMessage(MessageImportance importance, [StringSyntax(StringSyntaxAttribute.CompositeFormat)] string message, params object[] messageArgs)
+        public void LogMessage(MessageImportance importance, string message, params object[] messageArgs)
         {
             // No lock needed, as BuildEngine methods from v4.5 onwards are thread safe.
             ErrorUtilities.VerifyThrowArgumentNull(message);
@@ -357,7 +356,7 @@ namespace Microsoft.Build.Utilities
             int endLineNumber,
             int endColumnNumber,
             MessageImportance importance,
-            [StringSyntax(StringSyntaxAttribute.CompositeFormat)] string message,
+            string message,
             params object[] messageArgs)
         {
             // No lock needed, as BuildEngine methods from v4.5 onwards are thread safe.
@@ -419,7 +418,7 @@ namespace Microsoft.Build.Utilities
             int columnNumber,
             int endLineNumber,
             int endColumnNumber,
-            [StringSyntax(StringSyntaxAttribute.CompositeFormat)] string message,
+            string message,
             params object[] messageArgs)
         {
             // No lock needed, as BuildEngine methods from v4.5 onwards are thread safe.
@@ -633,7 +632,7 @@ namespace Microsoft.Build.Utilities
         /// <param name="message">The message string.</param>
         /// <param name="messageArgs">Optional arguments for formatting the message string.</param>
         /// <exception cref="ArgumentNullException">Thrown when <c>message</c> is null.</exception>
-        public void LogError([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string message, params object[] messageArgs)
+        public void LogError(string message, params object[] messageArgs)
         {
             LogError(null, null, null, null, null, 0, 0, 0, 0, message, messageArgs);
         }
@@ -662,7 +661,7 @@ namespace Microsoft.Build.Utilities
             int columnNumber,
             int endLineNumber,
             int endColumnNumber,
-            [StringSyntax(StringSyntaxAttribute.CompositeFormat)] string message,
+            string message,
             params object[] messageArgs)
         {
             LogError(subcategory, errorCode, helpKeyword, null, file, lineNumber, columnNumber, endLineNumber, endColumnNumber, message, messageArgs);
@@ -688,13 +687,13 @@ namespace Microsoft.Build.Utilities
             string subcategory,
             string errorCode,
             string helpKeyword,
-            [StringSyntax(StringSyntaxAttribute.Uri)] string helpLink,
+            string helpLink,
             string file,
             int lineNumber,
             int columnNumber,
             int endLineNumber,
             int endColumnNumber,
-            [StringSyntax(StringSyntaxAttribute.CompositeFormat)] string message,
+            string message,
             params object[] messageArgs)
         {
             // No lock needed, as BuildEngine methods from v4.5 onwards are thread safe.
@@ -984,7 +983,7 @@ namespace Microsoft.Build.Utilities
         /// <param name="message">The message string.</param>
         /// <param name="messageArgs">Optional arguments for formatting the message string.</param>
         /// <exception cref="ArgumentNullException">Thrown when <c>message</c> is null.</exception>
-        public void LogWarning([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string message, params object[] messageArgs)
+        public void LogWarning(string message, params object[] messageArgs)
         {
             LogWarning(null, null, null, null, 0, 0, 0, 0, message, messageArgs);
         }
@@ -1013,7 +1012,7 @@ namespace Microsoft.Build.Utilities
             int columnNumber,
             int endLineNumber,
             int endColumnNumber,
-            [StringSyntax(StringSyntaxAttribute.CompositeFormat)] string message,
+            string message,
             params object[] messageArgs)
         {
             LogWarning(subcategory, warningCode, helpKeyword, null, file, lineNumber, columnNumber, endLineNumber, endColumnNumber, message, messageArgs);
@@ -1039,13 +1038,13 @@ namespace Microsoft.Build.Utilities
             string subcategory,
             string warningCode,
             string helpKeyword,
-            [StringSyntax(StringSyntaxAttribute.Uri)] string helpLink,
+            string helpLink,
             string file,
             int lineNumber,
             int columnNumber,
             int endLineNumber,
             int endColumnNumber,
-            [StringSyntax(StringSyntaxAttribute.CompositeFormat)] string message,
+            string message,
             params object[] messageArgs)
         {
             // No lock needed, as BuildEngine methods from v4.5 onwards are thread safe.

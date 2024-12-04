@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Build.Experimental.BuildCheck.Infrastructure;
+using Microsoft.Build.Framework;
 
 namespace Microsoft.Build.Experimental.BuildCheck.Acquisition;
 

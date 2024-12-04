@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using Microsoft.Build.Experimental.BuildCheck;
 
 namespace Microsoft.Build.Experimental.BuildCheck.Checks;
 
-internal abstract class WorkerNodeCheck : Check
+internal abstract class InternalCheck : Check
 {
     /// <summary>
     /// Used by the implementors to subscribe to data and events they are interested in.

@@ -3,31 +3,33 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Build.BuildCheck.Infrastructure;
 using Microsoft.Build.Collections;
 using Microsoft.Build.Evaluation;
+using Microsoft.Build.Experimental.BuildCheck;
 using Microsoft.Build.Experimental.BuildCheck.Infrastructure;
 using Microsoft.Build.Shared;
 
 namespace Microsoft.Build.Experimental.BuildCheck.Checks;
 
-internal class PropertiesUsageCheck : WorkerNodeCheck
+internal class PropertiesUsageCheck : InternalCheck
 {
     private static readonly CheckRule _usedBeforeInitializedRule = new CheckRule("BC0201", "PropertyUsedBeforeDeclared",
         ResourceUtilities.GetResourceString("BuildCheck_BC0201_Title")!,
         ResourceUtilities.GetResourceString("BuildCheck_BC0201_MessageFmt")!,
-        new CheckConfiguration() { RuleId = "BC0201", Severity = CheckResultSeverity.Warning, EvaluationCheckScope = EvaluationCheckScope.ProjectFileOnly });
+        new CheckConfiguration() { Severity = CheckResultSeverity.Warning, EvaluationCheckScope = EvaluationCheckScope.ProjectFileOnly });
 
     private static readonly CheckRule _initializedAfterUsedRule = new CheckRule("BC0202", "PropertyDeclaredAfterUsed",
         ResourceUtilities.GetResourceString("BuildCheck_BC0202_Title")!,
         ResourceUtilities.GetResourceString("BuildCheck_BC0202_MessageFmt")!,
-        new CheckConfiguration() { RuleId = "BC0202", Severity = CheckResultSeverity.Warning, EvaluationCheckScope = EvaluationCheckScope.ProjectFileOnly });
+        new CheckConfiguration() { Severity = CheckResultSeverity.Warning, EvaluationCheckScope = EvaluationCheckScope.ProjectFileOnly });
 
     private static readonly CheckRule _unusedPropertyRule = new CheckRule("BC0203", "UnusedPropertyDeclared",
         ResourceUtilities.GetResourceString("BuildCheck_BC0203_Title")!,
         ResourceUtilities.GetResourceString("BuildCheck_BC0203_MessageFmt")!,
-        new CheckConfiguration() { RuleId = "BC0203", Severity = CheckResultSeverity.Suggestion, EvaluationCheckScope = EvaluationCheckScope.ProjectFileOnly });
+        new CheckConfiguration() { Severity = CheckResultSeverity.Suggestion, EvaluationCheckScope = EvaluationCheckScope.ProjectFileOnly });
 
     internal static readonly IReadOnlyList<CheckRule> SupportedRulesList = [_usedBeforeInitializedRule, _initializedAfterUsedRule, _unusedPropertyRule];
 
@@ -146,7 +148,7 @@ internal class PropertiesUsageCheck : WorkerNodeCheck
             {
                 _uninitializedReadsInScope.Remove(writeData.PropertyName);
 
-                context.ReportResult(BuildCheckResult.CreateBuiltIn(
+                context.ReportResult(BuildCheckResult.Create(
                     _initializedAfterUsedRule,
                     uninitInScopeReadLocation,
                     writeData.PropertyName, writeData.ElementLocation?.LocationString ?? string.Empty));
@@ -158,7 +160,7 @@ internal class PropertiesUsageCheck : WorkerNodeCheck
             {
                 _uninitializedReadsOutOfScope.Remove(writeData.PropertyName);
 
-                context.ReportResult(BuildCheckResult.CreateBuiltIn(
+                context.ReportResult(BuildCheckResult.Create(
                     _initializedAfterUsedRule,
                     uninitOutScopeReadLocation,
                     writeData.PropertyName, writeData.ElementLocation?.LocationString ?? string.Empty));
@@ -203,7 +205,7 @@ internal class PropertiesUsageCheck : WorkerNodeCheck
                          readData.ElementLocation, readData.ProjectFilePath))
             {
                 // report immediately
-                context.ReportResult(BuildCheckResult.CreateBuiltIn(
+                context.ReportResult(BuildCheckResult.Create(
                     _usedBeforeInitializedRule,
                     readData.ElementLocation,
                     readData.PropertyName));
@@ -218,7 +220,7 @@ internal class PropertiesUsageCheck : WorkerNodeCheck
         {
             if (propWithLocation.Value != null && !_readProperties.Contains(propWithLocation.Key))
             {
-                context.ReportResult(BuildCheckResult.CreateBuiltIn(
+                context.ReportResult(BuildCheckResult.Create(
                     _unusedPropertyRule,
                     propWithLocation.Value,
                     propWithLocation.Key));
@@ -229,7 +231,7 @@ internal class PropertiesUsageCheck : WorkerNodeCheck
         //  uninitialized reads immediately (instead we wait if they are attempted to be initialized late).
         foreach (var uninitializedRead in _uninitializedReadsInScope)
         {
-            context.ReportResult(BuildCheckResult.CreateBuiltIn(
+            context.ReportResult(BuildCheckResult.Create(
                 _usedBeforeInitializedRule,
                 uninitializedRead.Value,
                 uninitializedRead.Key));
