@@ -53,7 +53,6 @@ steps:
     --remote "sdk:$(Agent.BuildDirectory)/sdk"
     --component-template $(Agent.BuildDirectory)/sdk/src/VirtualMonoRepo/Component.template.md
     --tpn-template $(Agent.BuildDirectory)/sdk/src/VirtualMonoRepo/THIRD-PARTY-NOTICES.template.txt
-    --ci
     --debug
     ||
     (echo "##vso[task.logissue type=error]Failed to synchronize the VMR" && exit 1)
@@ -77,7 +76,6 @@ steps:
     # -remote "sdk:$(Agent.BuildDirectory)/sdk"
     -componentTemplate $(Agent.BuildDirectory)/sdk/src/VirtualMonoRepo/Component.template.md `
     -tpnTemplate $(Agent.BuildDirectory)/sdk/src/VirtualMonoRepo/THIRD-PARTY-NOTICES.template.txt `
-    -ci
     -debugOutput
 
     if ($LASTEXITCODE -ne 0) {
