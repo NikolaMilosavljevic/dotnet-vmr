@@ -12,7 +12,6 @@ using Microsoft.VisualStudio.Threading;
 using NuGet.Commands;
 using NuGet.Common;
 using NuGet.Configuration;
-using NuGet.PackageManagement.Telemetry;
 using NuGet.PackageManagement.VisualStudio;
 using NuGet.VisualStudio;
 using NuGet.VisualStudio.Telemetry;
@@ -154,9 +153,6 @@ namespace NuGet.PackageManagement.UI.Options
         private void OnLocalsCommandButtonOnClick(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            var evt = NavigatedTelemetryEvent.CreateWithClearLocalsCommand(isUnifiedSettings: false);
-            TelemetryActivity.EmitTelemetryEvent(evt);
-
             UpdateLocalsCommandStatusText(string.Format(CultureInfo.CurrentCulture, Resources.ShowMessage_LocalsCommandWorking), visibility: true);
 
             NuGetUIThreadHelper.JoinableTaskFactory.RunAsync(async () =>

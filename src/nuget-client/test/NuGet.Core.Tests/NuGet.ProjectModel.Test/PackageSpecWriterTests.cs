@@ -833,24 +833,6 @@ namespace NuGet.ProjectModel.Test
             metadata.FallbackFolders.Should().Contain(@$"{userSettingsDirectory}fallbackFolder");
         }
 
-        [Fact]
-        public void RoundTripPackagesToPrune()
-        {
-            // Arrange
-            var json = @"{
-                  ""frameworks"": {
-                    ""net46"": {
-                        ""packagesToPrune"": {
-                            ""a"": ""(, 2.1.3]""
-                        }
-                    }
-                  }
-                }";
-
-            // Act & Assert
-            VerifyJsonPackageSpecRoundTrip(json);
-        }
-
         private static string GetJsonString(PackageSpec packageSpec)
         {
             JObject jObject = packageSpec.ToJObject();

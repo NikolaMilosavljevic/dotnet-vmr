@@ -224,28 +224,23 @@ namespace NuGet.CommandLine.XPlat
                  !string.IsNullOrEmpty(location.Value()) ||
                  !string.IsNullOrEmpty(store.Value())))
             {
-                // Throw if the user provided a path and any one of the other options
+                // Thow if the user provided a path and any one of the other options
                 throw new ArgumentException(Strings.SignCommandMultipleCertificateException);
             }
             else if (!string.IsNullOrEmpty(fingerprint.Value()) && !string.IsNullOrEmpty(subject.Value()))
             {
-                // Throw if the user provided a fingerprint and a subject
+                // Thow if the user provided a fingerprint and a subject
                 throw new ArgumentException(Strings.SignCommandMultipleCertificateException);
             }
             else if (fingerprint.Value() != null)
             {
-                bool isValidFingerprint = CertificateUtility.TryDeduceHashAlgorithm(fingerprint.Value(), out HashAlgorithmName hashAlgorithmName);
-                bool isSHA1 = hashAlgorithmName == HashAlgorithmName.SHA1;
-                int assemblyVersion = typeof(int).Assembly.GetName().Version.Major;
-                string message = string.Format(CultureInfo.CurrentCulture, Strings.SignCommandInvalidCertificateFingerprint, NuGetLogCode.NU3043);
-
-                if (!isValidFingerprint || (assemblyVersion >= 10 && isSHA1))
+                if (!CertificateUtility.TryDeduceHashAlgorithm(fingerprint.Value(), out HashAlgorithmName hashAlgorithmName))
                 {
-                    throw new ArgumentException(message);
+                    throw new ArgumentException(Strings.SignCommandInvalidCertificateFingerprint);
                 }
-                else if (isSHA1)
+                else if (hashAlgorithmName == HashAlgorithmName.SHA1)
                 {
-                    logger.Log(LogMessage.Create(LogLevel.Warning, message));
+                    logger.Log(LogMessage.CreateWarning(NuGetLogCode.NU3043, Strings.SignCommandInvalidCertificateFingerprint));
                 }
             }
         }

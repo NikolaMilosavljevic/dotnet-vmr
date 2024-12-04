@@ -523,18 +523,7 @@ namespace Dotnet.Integration.Test
         [PlatformFact(Platform.Windows, Platform.Linux)] // https://github.com/NuGet/Client.Engineering/issues/2781
         public async Task DotnetSign_SignPackageWithInsecureCertificateFingerprint_RaisesWarningAsync()
         {
-            var result = await ExecuteSignPackageTestWithCertificateFingerprintAsync(HashAlgorithmName.SHA1);
-
-            if (typeof(int).Assembly.GetName().Version.Major >= 10)
-            {
-                Assert.False(result.Success, result.AllOutput);
-                Assert.True(result.Errors.Contains(_insecureCertificateFingerprintCode), result.Errors);
-            }
-            else
-            {
-                Assert.True(result.Success, result.AllOutput);
-                Assert.True(result.AllOutput.Contains(_insecureCertificateFingerprintCode), result.AllOutput);
-            }
+            await ExecuteSignPackageTestWithCertificateFingerprintAsync(HashAlgorithmName.SHA1, expectInsecureFingerprintWarning: true);
         }
 
         [PlatformTheory(Platform.Windows, Platform.Linux)] // https://github.com/NuGet/Client.Engineering/issues/2781
@@ -543,13 +532,12 @@ namespace Dotnet.Integration.Test
         [InlineData(HashAlgorithmName.SHA512)]
         public async Task DotnetSign_SignPackageWithSecureCertificateFingerprint_SucceedsAsync(HashAlgorithmName hashAlgorithmName)
         {
-            var result = await ExecuteSignPackageTestWithCertificateFingerprintAsync(hashAlgorithmName);
-
-            Assert.True(result.Success, result.AllOutput);
-            Assert.False(result.AllOutput.Contains(_insecureCertificateFingerprintCode), result.AllOutput);
+            await ExecuteSignPackageTestWithCertificateFingerprintAsync(hashAlgorithmName, expectInsecureFingerprintWarning: false);
         }
 
-        private async Task<CommandRunnerResult> ExecuteSignPackageTestWithCertificateFingerprintAsync(HashAlgorithmName hashAlgorithmName)
+        private async Task ExecuteSignPackageTestWithCertificateFingerprintAsync(
+            HashAlgorithmName hashAlgorithmName,
+            bool expectInsecureFingerprintWarning)
         {
             // Arrange
             using SimpleTestPathContext pathContext = _dotnetFixture.CreateSimpleTestPathContext();
@@ -565,7 +553,7 @@ namespace Dotnet.Integration.Test
             var options = new TimestampServiceOptions() { SignatureHashAlgorithm = new Oid(Oids.Sha256) };
             TimestampService timestampService = TimestampService.Create(certificateAuthority, options);
             IX509StoreCertificate storeCertificate = _signFixture.UntrustedSelfIssuedCertificateInCertificateStore;
-            string certFingerprint = hashAlgorithmName == HashAlgorithmName.SHA1 ? storeCertificate.Certificate.Thumbprint :
+            string certFingerprint = expectInsecureFingerprintWarning ? storeCertificate.Certificate.Thumbprint :
                 SignatureTestUtility.GetFingerprint(storeCertificate.Certificate, hashAlgorithmName);
 
             using (testServer.RegisterResponder(timestampService))
@@ -578,7 +566,16 @@ namespace Dotnet.Integration.Test
                     $"--timestamper {timestampService.Url}",
                     testOutputHelper: _testOutputHelper);
 
-                return result;
+                // Assert
+                Assert.True(result.Success, result.AllOutput);
+                if (expectInsecureFingerprintWarning)
+                {
+                    Assert.True(result.AllOutput.Contains(_insecureCertificateFingerprintCode), result.AllOutput);
+                }
+                else
+                {
+                    Assert.False(result.AllOutput.Contains(_insecureCertificateFingerprintCode), result.AllOutput);
+                }
             }
         }
 

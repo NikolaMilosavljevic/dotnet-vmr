@@ -476,7 +476,8 @@ namespace NuGet.XPlat.FuncTest
                     //Act & Assert
                     var ex = Assert.Throws<AggregateException>(() => testApp.Execute(argList.ToArray()));
                     Assert.IsType<ArgumentException>(ex.InnerException);
-                    Assert.True(ex.InnerException.Message.Contains(NuGetLogCode.NU3043.ToString()));
+                    Assert.Equal(expected: Strings.SignCommandInvalidCertificateFingerprint, actual: ex.InnerException.Message);
+
                 });
         }
 

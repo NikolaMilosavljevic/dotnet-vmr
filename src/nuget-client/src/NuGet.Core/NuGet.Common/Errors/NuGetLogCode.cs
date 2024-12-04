@@ -293,11 +293,6 @@ namespace NuGet.Common
         NU1508 = 1508,
 
         /// <summary>
-        /// Duplicate PrunedPackageReference found
-        /// </summary>
-        NU1509 = 1509,
-
-        /// <summary>
         /// Dependency bumped up
         /// </summary>
         NU1601 = 1601,
