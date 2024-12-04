@@ -28,8 +28,6 @@ public sealed class Folders
         Assert.NotNull(folderNested);
         Assert.NotNull(folderFolder);
 
-        SolutionProjectModel projectInIs = solution.AddProject("ProjectInThis.csproj", folder: folderIs);
-        Assert.NotNull(projectInIs);
         SolutionProjectModel projectInA = solution.AddProject("ProjectInA.csproj", folder: folderA);
         Assert.NotNull(projectInA);
         SolutionProjectModel projectInFolder = solution.AddProject("ProjectInFolder.csproj", folder: folderFolder);
@@ -38,31 +36,28 @@ public sealed class Folders
         // Remove the middle 'A' folder.
         Assert.True(solution.RemoveFolder(folderA));
 
-        // Make sure child folders were removed.
+        // Make sure remaining folders have updated references.
         Assert.Equal("/This/", folderThis.ItemRef);
         Assert.Equal("/This/Is/", folderIs.ItemRef);
-        Assert.Null(solution.FindFolder(folderNested.ItemRef));
-        Assert.Null(solution.FindFolder(folderFolder.ItemRef));
+        Assert.Equal("/This/Is/Nested/", folderNested.ItemRef);
+        Assert.Equal("/This/Is/Nested/Folder/", folderFolder.ItemRef);
 
-        // Make sure child projects were removed.
-        Assert.Null(solution.FindProject(projectInA.ItemRef));
-        Assert.Null(solution.FindProject(projectInFolder.ItemRef));
+        // Make sure projects have updated references.
+        Assert.NotNull(projectInA.Parent);
+        Assert.Equal("/This/Is/", projectInA.Parent.ItemRef);
 
-        // Make sure project in 'Is' folder was not removed.
-        Assert.NotNull(projectInIs.Parent);
-        Assert.NotNull(solution.FindProject(projectInIs.ItemRef));
-        Assert.NotNull(projectInIs.Parent);
-        Assert.Equal("/This/Is/", projectInIs.Parent.ItemRef);
+        Assert.NotNull(projectInFolder.Parent);
+        Assert.Equal("/This/Is/Nested/Folder/", projectInFolder.Parent.ItemRef);
 
-        // Remove all folders in reverse.
-        Assert.False(solution.RemoveFolder(folderFolder));
-        Assert.False(solution.RemoveFolder(folderNested));
-        Assert.True(solution.RemoveFolder(folderIs));
+        // Remove all folders.
         Assert.True(solution.RemoveFolder(folderThis));
+        Assert.True(solution.RemoveFolder(folderIs));
+        Assert.True(solution.RemoveFolder(folderNested));
+        Assert.True(solution.RemoveFolder(folderFolder));
 
-        Assert.Empty(solution.SolutionItems);
-        Assert.Empty(solution.SolutionProjects);
-        Assert.Empty(solution.SolutionFolders);
+        // Make sure projects are in root.
+        Assert.Null(projectInA.Parent);
+        Assert.Null(projectInFolder.Parent);
     }
 
     /// <summary>
