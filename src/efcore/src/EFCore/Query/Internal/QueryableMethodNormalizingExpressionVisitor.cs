@@ -492,16 +492,12 @@ public class QueryableMethodNormalizingExpressionVisitor : ExpressionVisitor
 
         var sourceType = methodCallExpression.Method.DeclaringType!.GetGenericArguments()[0];
 
-        var objectExpression = methodCallExpression.Object!.Type.IsValueType
-            ? Expression.Convert(methodCallExpression.Object!, typeof(IEnumerable<>).MakeGenericType(sourceType))
-            : methodCallExpression.Object!;
-
         return VisitMethodCall(
             Expression.Call(
                 QueryableMethods.Contains.MakeGenericMethod(sourceType),
                 Expression.Call(
                     QueryableMethods.AsQueryable.MakeGenericMethod(sourceType),
-                    objectExpression),
+                    methodCallExpression.Object!),
                 methodCallExpression.Arguments[0]));
     }
 
