@@ -104,7 +104,9 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
                 flatten: true
             );
 
+#pragma warning disable SYSLIB0026 // Type or member is obsolete
             var manager = new LatestLinksManager("clientId", new System.Security.Cryptography.X509Certificates.X509Certificate2(), "tenant", "groupOwner", "createdBy", "owners", taskLoggingHelper);
+#pragma warning restore SYSLIB0026 // Type or member is obsolete
 
             var links = manager.GetLatestLinksToCreate(assetsToPublish, feedConfig, "https://example.com/feed/");
 
@@ -140,7 +142,9 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
                 flatten: true
             );
 
+#pragma warning disable SYSLIB0026 // Type or member is obsolete
             var manager = new LatestLinksManager("clientId", new System.Security.Cryptography.X509Certificates.X509Certificate2(), "tenant", "groupOwner", "createdBy", "owners", taskLoggingHelper);
+#pragma warning restore SYSLIB0026 // Type or member is obsolete
 
             var links = manager.GetLatestLinksToCreate(assetsToPublish, feedConfig, "https://example.com/feed/");
 
@@ -170,7 +174,9 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
                 flatten: true
             );
 
+#pragma warning disable SYSLIB0026 // Type or member is obsolete
             var manager = new LatestLinksManager("clientId", new System.Security.Cryptography.X509Certificates.X509Certificate2(), "tenant", "groupOwner", "createdBy", "owners", taskLoggingHelper);
+#pragma warning restore SYSLIB0026 // Type or member is obsolete
 
             var links = manager.GetLatestLinksToCreate(assetsToPublish, feedConfig, "https://example.com/feed/");
 
@@ -207,7 +213,9 @@ namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
                 flatten: false
             );
 
+#pragma warning disable SYSLIB0026 // Type or member is obsolete
             var manager = new LatestLinksManager("clientId", new System.Security.Cryptography.X509Certificates.X509Certificate2(), "tenant", "groupOwner", "createdBy", "owners", taskLoggingHelper);
+#pragma warning restore SYSLIB0026 // Type or member is obsolete
 
             var links = manager.GetLatestLinksToCreate(assetsToPublish, feedConfig, "https://example.com/feed/");
 
