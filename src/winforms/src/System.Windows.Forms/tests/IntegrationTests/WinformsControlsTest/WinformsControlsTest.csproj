@@ -13,6 +13,7 @@
     <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
     <GenerateResourceWarnOnBinaryFormatterUse>false</GenerateResourceWarnOnBinaryFormatterUse>
     <IsTestUtilityProject>true</IsTestUtilityProject>
+    <NoWarn>$(NoWarn);IDE0057</NoWarn>
   </PropertyGroup>
 
   <!--ApplicationConfiguration specific settings.-->

@@ -5,7 +5,7 @@
     <DisableTransitiveFrameworkReferences>true</DisableTransitiveFrameworkReferences>
     <AssemblyName>System.Windows.Forms.Primitives.Tests</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoWarn>$(NoWarn);618</NoWarn>
+    <NoWarn>$(NoWarn);618;IDE0052</NoWarn>
     <Nullable>enable</Nullable>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
   </PropertyGroup>
