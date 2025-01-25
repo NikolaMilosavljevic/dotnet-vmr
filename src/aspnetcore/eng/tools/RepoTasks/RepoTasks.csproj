@@ -27,8 +27,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <Compile Remove="GenerateTestDevCert.cs" />
-    <Compile Remove="shared\CertificateGeneration\*.cs" />
+    <Compile Remove="shared\CertificateGeneration\Global.cs" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == '$(DefaultNetCoreTargetFramework)'">
@@ -42,6 +41,7 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="Microsoft.IO.Redist" Version="$(MicrosoftIoRedistVersion)" />
     <PackageReference Include="Microsoft.Signed.Wix" Version="$(MicrosoftSignedWixVersion)" />
+    <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="$(SystemSecurityCryptographyX509CertificatesVersion)" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
 
     <Reference Include="Microsoft.Build" />

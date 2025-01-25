@@ -33,8 +33,7 @@
 
     <!-- This task only tries to generate a certificate if there is none existing at the location provided as path. -->
     <GenerateTestDevCert
-        CertificatePath="$(_DevCertPath)"
-        Condition="'$(MSBuildRuntimeType)' == 'core'">
+        CertificatePath="$(_DevCertPath)">
     </GenerateTestDevCert>
 
     <Error Condition="!Exists('$(_DevCertPath)') and '$(MSBuildRuntimeType)' == 'core'" Text="Failed to generate a test certificate at $(_DevCertPath)" />
