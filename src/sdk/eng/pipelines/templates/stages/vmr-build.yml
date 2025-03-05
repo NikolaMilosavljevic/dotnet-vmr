@@ -408,6 +408,7 @@ stages:
         targetOS: windows
         targetArchitecture: x64
         enableIBCOptimization: ${{ variables.ibcEnabled }}
+        extraProperties: /p:DotNetBuildTests=true
 
     - template: ../jobs/vmr-build.yml
       parameters:
