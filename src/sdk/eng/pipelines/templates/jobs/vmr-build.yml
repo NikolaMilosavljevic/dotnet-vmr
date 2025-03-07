@@ -58,6 +58,16 @@ parameters:
   type: boolean
   default: false
 
+# Overrides the project that is being built.
+- name: buildProject
+  type: string
+  default: ''
+
+# Overrides the project that is being tested.
+- name: testProject
+  type: string
+  default: ''
+
 #### SOURCE-ONLY parameters ####
 
 # Instead of building the VMR directly, exports the sources into a tarball and builds from that
@@ -86,6 +96,10 @@ parameters:
 
 # Allow downloading artifacts from the internet during the build
 - name: runOnline
+  type: boolean
+  default: true
+
+- name: runBuild
   type: boolean
   default: true
 
@@ -191,6 +205,30 @@ jobs:
 
   - name: failedJobArtifactName
     value: $(successfulJobArtifactName)_Attempt$(System.JobAttempt)
+
+  # Build project override
+  - ${{ if ne(parameters.buildProject, '') }}:
+    - ${{ if eq(parameters.targetOS, 'windows') }}:
+      - name: buildProjectArguments
+        value: -projects ${{ parameters.buildProject }}
+    - ${{ else }}:
+      - name: buildProjectArguments
+        value: --projects ${{ parameters.buildProject }}
+  - ${{ else }}:
+    - name: buildProjectArguments
+      value: ''
+
+  # Test project override
+  - ${{ if ne(parameters.testProject, '') }}:
+    - ${{ if eq(parameters.targetOS, 'windows') }}:
+      - name: testProjectArguments
+        value: -projects ${{ parameters.testProject }}
+    - ${{ else }}:
+      - name: testProjectArguments
+        value: --projects ${{ parameters.testProject }}
+  - ${{ else }}:
+    - name: testProjectArguments
+      value: ''
 
   # manually disable CodeQL until https://dev.azure.com/mseng/1ES/_workitems/edit/2211548 is implemented
   # CodeQL doesn't work on arm64 macOS, see https://portal.microsofticm.com/imp/v5/incidents/details/532165079/summary
@@ -400,16 +438,18 @@ jobs:
           azureSubscription: 'diagnostics-esrp-kvcertuser'
           scriptRoot: '$(Build.SourcesDirectory)/src/runtime'
 
-    - script: build.cmd
-        $(baseArguments)
-        $(targetArguments)
-        $(signArguments)
-        $(buildPassArguments)
-        $(ibcArguments)
-        $(_SignDiagnosticFilesArgs)
-        ${{ parameters.extraProperties }}
-      displayName: Build
-      workingDirectory: ${{ variables.sourcesPath }}
+    - ${{ if eq(parameters.runBuild, 'True') }}:
+      - script: build.cmd
+          $(buildProjectArguments)
+          $(baseArguments)
+          $(targetArguments)
+          $(signArguments)
+          $(buildPassArguments)
+          $(ibcArguments)
+          $(_SignDiagnosticFilesArgs)
+          ${{ parameters.extraProperties }}
+        displayName: Build
+        workingDirectory: ${{ variables.sourcesPath }}
 
     - ${{ if eq(variables['_EnableDacSigning'], 'true') }}:
       # TODO: Once we turn off the dotnet/runtime official build, move these templates into the VMR's eng folder.
@@ -420,6 +460,7 @@ jobs:
 
     - ${{ if eq(parameters.runTests, 'True') }}:
       - script: build.cmd
+          $(testProjectArguments)
           $(baseArguments)
           $(targetArguments)
           $(buildPassArguments)
@@ -470,88 +511,89 @@ jobs:
         displayName: Prep the Build
         workingDirectory: $(sourcesPath)
 
-    - script: |
-        set -ex
-        df -h
+    - ${{ if eq(parameters.runBuild, 'True') }}:
+      - script: |
+          set -ex
+          df -h
 
-        customEnvVars=""
-        customPreBuildArgs=""
-        customBuildArgs="--ci --clean-while-building --prepareMachine -c ${{ parameters.configuration }} $(officialBuildParameter)"
+          customEnvVars=""
+          customPreBuildArgs=""
+          customBuildArgs="--ci --clean-while-building --prepareMachine -c ${{ parameters.configuration }} $(officialBuildParameter)"
 
-        if [[ '${{ parameters.runOnline }}' == 'True' ]]; then
-          customBuildArgs="$customBuildArgs --online"
-        else
-          customPreBuildArgs="$customPreBuildArgs sudo unshare -n"
-        fi
-
-        if [[ '${{ parameters.enablePoison }}' == 'True' ]]; then
-          customBuildArgs="$customBuildArgs --poison"
-        fi
-
-        if [[ '${{ parameters.buildFromArchive }}' == 'True' ]]; then
-          customBuildArgs="$customBuildArgs --source-repository https://github.com/dotnet/dotnet"
-          customBuildArgs="$customBuildArgs --source-version $(git -C "$(vmrPath)" rev-parse HEAD)"
-        fi
-
-        if [[ '${{ parameters.buildSourceOnly }}' == 'True' ]]; then
-          customBuildArgs="$customBuildArgs --source-only"
-          extraBuildProperties="$extraBuildProperties /p:ReportSbrpUsage=true"
-        fi
-
-        if [[ '${{ parameters.useMonoRuntime }}' == 'True' ]]; then
-          customBuildArgs="$customBuildArgs --use-mono-runtime"
-        fi
-
-        if [[ '${{ parameters.sign }}' == 'True' ]] && [[ '${{ parameters.buildSourceOnly }}' != 'True' ]]; then
-          customBuildArgs="$customBuildArgs --sign"
-          if [[ '$(_SignType)' == 'real' ]] || [[ '$(_SignType)' == 'test' ]]; then
-            # Force dry run signing until https://github.com/dotnet/source-build/issues/4793 is resolved - https://github.com/dotnet/source-build/issues/4678
-            extraBuildProperties="$extraBuildProperties /p:DotNetSignType=$(_SignType) /p:TeamName=$(_TeamName) /p:ForceDryRunSigning=true"
+          if [[ '${{ parameters.runOnline }}' == 'True' ]]; then
+            customBuildArgs="$customBuildArgs --online"
           else
-            extraBuildProperties="$extraBuildProperties /p:ForceDryRunSigning=true"
+            customPreBuildArgs="$customPreBuildArgs sudo unshare -n"
           fi
-        fi
 
-        if [[ -n "${{ parameters.targetRid }}" ]]; then
-          customBuildArgs="$customBuildArgs --target-rid ${{ parameters.targetRid }}"
-        fi
-
-        if [[ -n "${{ parameters.crossRootFs }}" ]]; then
-          customEnvVars="$customEnvVars ROOTFS_DIR=${{ parameters.crossRootFs}}"
-          if [[ '${{ parameters.targetArchitecture }}' != 'wasm' ]]; then
-            extraBuildProperties="$extraBuildProperties /p:CrossBuild=true"
+          if [[ '${{ parameters.enablePoison }}' == 'True' ]]; then
+            customBuildArgs="$customBuildArgs --poison"
           fi
-        fi
 
-        if [[ ! -z '${{ parameters.targetOS }}' ]]; then
-          extraBuildProperties="$extraBuildProperties /p:TargetOS=${{ parameters.targetOS }}"
-        fi
+          if [[ '${{ parameters.buildFromArchive }}' == 'True' ]]; then
+            customBuildArgs="$customBuildArgs --source-repository https://github.com/dotnet/dotnet"
+            customBuildArgs="$customBuildArgs --source-version $(git -C "$(vmrPath)" rev-parse HEAD)"
+          fi
 
-        if [[ ! -z '${{ parameters.targetArchitecture }}' ]]; then
-          extraBuildProperties="$extraBuildProperties /p:TargetArchitecture=${{ parameters.targetArchitecture }}"
-        fi
+          if [[ '${{ parameters.buildSourceOnly }}' == 'True' ]]; then
+            customBuildArgs="$customBuildArgs --source-only"
+            extraBuildProperties="$extraBuildProperties /p:ReportSbrpUsage=true"
+          fi
 
-        if [[ -n "${{ parameters.buildPass }}" ]]; then
-          extraBuildProperties="$extraBuildProperties /p:DotNetBuildPass=${{ parameters.buildPass }}"
-        fi
+          if [[ '${{ parameters.useMonoRuntime }}' == 'True' ]]; then
+            customBuildArgs="$customBuildArgs --use-mono-runtime"
+          fi
 
-        if [[ -n "${{ parameters.extraProperties }}" ]]; then
-          extraBuildProperties="$extraBuildProperties ${{ parameters.extraProperties }}"
-        fi
+          if [[ '${{ parameters.sign }}' == 'True' ]] && [[ '${{ parameters.buildSourceOnly }}' != 'True' ]]; then
+            customBuildArgs="$customBuildArgs --sign"
+            if [[ '$(_SignType)' == 'real' ]] || [[ '$(_SignType)' == 'test' ]]; then
+              # Force dry run signing until https://github.com/dotnet/source-build/issues/4793 is resolved - https://github.com/dotnet/source-build/issues/4678
+              extraBuildProperties="$extraBuildProperties /p:DotNetSignType=$(_SignType) /p:TeamName=$(_TeamName) /p:ForceDryRunSigning=true"
+            else
+              extraBuildProperties="$extraBuildProperties /p:ForceDryRunSigning=true"
+            fi
+          fi
 
-        extraBuildProperties="$extraBuildProperties /p:VerticalName=$(Agent.JobName)"
-        extraBuildProperties="$extraBuildProperties /p:ArtifactsStagingDir=$(artifactsStagingDir)"
+          if [[ -n "${{ parameters.targetRid }}" ]]; then
+            customBuildArgs="$customBuildArgs --target-rid ${{ parameters.targetRid }}"
+          fi
 
-        buildArgs="$(additionalBuildArgs) $customBuildArgs $extraBuildProperties"
+          if [[ -n "${{ parameters.crossRootFs }}" ]]; then
+            customEnvVars="$customEnvVars ROOTFS_DIR=${{ parameters.crossRootFs}}"
+            if [[ '${{ parameters.targetArchitecture }}' != 'wasm' ]]; then
+              extraBuildProperties="$extraBuildProperties /p:CrossBuild=true"
+            fi
+          fi
 
-        for envVar in $customEnvVars; do
-          customEnvVarsWithBashSyntax="$customEnvVarsWithBashSyntax export $envVar;"
-        done
+          if [[ ! -z '${{ parameters.targetOS }}' ]]; then
+            extraBuildProperties="$extraBuildProperties /p:TargetOS=${{ parameters.targetOS }}"
+          fi
 
-        eval $customEnvVarsWithBashSyntax
-        $customPreBuildArgs ./build.sh $buildArgs
-      displayName: Build
-      workingDirectory: $(sourcesPath)
+          if [[ ! -z '${{ parameters.targetArchitecture }}' ]]; then
+            extraBuildProperties="$extraBuildProperties /p:TargetArchitecture=${{ parameters.targetArchitecture }}"
+          fi
+
+          if [[ -n "${{ parameters.buildPass }}" ]]; then
+            extraBuildProperties="$extraBuildProperties /p:DotNetBuildPass=${{ parameters.buildPass }}"
+          fi
+
+          if [[ -n "${{ parameters.extraProperties }}" ]]; then
+            extraBuildProperties="$extraBuildProperties ${{ parameters.extraProperties }}"
+          fi
+
+          extraBuildProperties="$extraBuildProperties /p:VerticalName=$(Agent.JobName)"
+          extraBuildProperties="$extraBuildProperties /p:ArtifactsStagingDir=$(artifactsStagingDir)"
+
+          buildArgs="$(buildProjectArguments) $(additionalBuildArgs) $customBuildArgs $extraBuildProperties"
+
+          for envVar in $customEnvVars; do
+            customEnvVarsWithBashSyntax="$customEnvVarsWithBashSyntax export $envVar;"
+          done
+
+          eval $customEnvVarsWithBashSyntax
+          $customPreBuildArgs ./build.sh $buildArgs
+        displayName: Build
+        workingDirectory: $(sourcesPath)
 
     - ${{ if ne(parameters.runOnline, 'True' )}}:
       - script: |
@@ -582,7 +624,7 @@ jobs:
           customPreBuildArgs=''
           customBuildArgs=''
           extraBuildProperties=''
-          customBuildArgs="--ci --prepareMachine -c ${{ parameters.configuration }} $(officialBuildParameter)"
+          customBuildArgs="$(testProjectArguments) --ci --prepareMachine -c ${{ parameters.configuration }} $(officialBuildParameter)"
 
           if [[ '${{ parameters.runOnline }}' == 'False' ]]; then
             customPreBuildArgs="$customPreBuildArgs sudo"
