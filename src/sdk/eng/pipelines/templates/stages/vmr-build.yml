@@ -965,7 +965,7 @@ stages:
           continueOnError: true
     - template: ../jobs/vmr-build.yml
       parameters:
-        buildName: Validate Installers Linux x64
+        buildName: Validate_Installers_Linux_x64
         isBuiltFromVmr: ${{ parameters.isBuiltFromVmr }}
         vmrBranch: ${{ variables.VmrBranch }}
         pool: ${{ parameters.pool_Linux }}
@@ -979,7 +979,7 @@ stages:
         - AzureLinux_x64_Cross_x64
     - template: ../jobs/vmr-build.yml
       parameters:
-        buildName: Validate Installers Linux arm64
+        buildName: Validate_Installers_Linux_arm64
         isBuiltFromVmr: ${{ parameters.isBuiltFromVmr }}
         vmrBranch: ${{ variables.VmrBranch }}
         pool: ${{ parameters.pool_LinuxArm64 }}
