@@ -974,6 +974,7 @@ stages:
         runBuild: false
         testProject: test/Microsoft.DotNet.Installer.Tests/Microsoft.DotNet.Installer.Tests.csproj
         extraProperties: /p:TestRpmPackages=true /p:TestDebPackages=true
+        doNotAddDependencyIfReusingBuildArtifacts: true
         reuseBuildArtifactsFrom:
         - AzureLinux_x64_Cross_x64
     - template: ../jobs/vmr-build.yml
@@ -987,6 +988,7 @@ stages:
         runBuild: false
         testProject: test/Microsoft.DotNet.Installer.Tests/Microsoft.DotNet.Installer.Tests.csproj
         extraProperties: /p:TestRpmPackages=true
+        doNotAddDependencyIfReusingBuildArtifacts: true
         reuseBuildArtifactsFrom:
         - AzureLinux_x64_Cross_arm64
     - ${{ if eq(variables.signEnabled, 'true') }}:

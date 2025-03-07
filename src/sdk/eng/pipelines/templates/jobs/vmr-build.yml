@@ -68,6 +68,11 @@ parameters:
   type: string
   default: ''
 
+# Set to true if reusing artifacts from another stage, i.e. in validation
+- name: doNotAddDependencyIfReusingBuildArtifacts
+  type: boolean
+  default: false
+
 #### SOURCE-ONLY parameters ####
 
 # Instead of building the VMR directly, exports the sources into a tarball and builds from that
@@ -154,7 +159,7 @@ jobs:
   ${{ else }}:
     timeoutInMinutes: 240
 
-  ${{ if ne(parameters.reuseBuildArtifactsFrom, '') }}:
+  ${{ if and(ne(parameters.reuseBuildArtifactsFrom, ''),  ne(parameters.doNotAddDependencyIfReusingBuildArtifacts, 'True'))}}:
     ${{ if eq(parameters.buildPass, '') }}:
       # For PR builds, skip the stage 2 build if the stage 1 build fails.
       # Otherwise, run the stage 2 build even if the stage 1 build fails so that we can get a complete assessment of the build status.
