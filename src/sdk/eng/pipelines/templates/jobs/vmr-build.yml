@@ -732,10 +732,11 @@ jobs:
         publishRunAttachments: true
         testRunTitle: ScenarioTests_$(Agent.JobName)
 
-  - ${{ if or(ne(variables['System.TeamProject'], 'internal'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+  - ${{ if and(eq(parameters.runBuild, 'True'), or(ne(variables['System.TeamProject'], 'internal'), eq(variables['Build.Reason'], 'PullRequest'))) }}:
     # Both publishing steps are necessary to ensure artifacts are published on both success and failure.
     # This prevents overwrite conflicts in the event of a failed build followed by a rerun.
     # Additionally, the 'Download Previous Build *' steps depend on a fixed name to acquire specific assets in multi-stage builds.
+    # Only do publishing if doing the main build. Test build publishing is done in a separate step above.
     - publish: $(artifactsStagingDir)
       artifact: $(successfulJobArtifactName)
       displayName: Publish Artifacts (On Success)

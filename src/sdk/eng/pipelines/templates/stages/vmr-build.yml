@@ -965,7 +965,7 @@ stages:
           continueOnError: true
     - template: ../jobs/vmr-build.yml
       parameters:
-        buildName: Validate_Installers_Linux_x64
+        buildName: Validate_Installers_Linux
         isBuiltFromVmr: ${{ parameters.isBuiltFromVmr }}
         vmrBranch: ${{ variables.VmrBranch }}
         pool: ${{ parameters.pool_Linux }}
@@ -979,7 +979,7 @@ stages:
         - AzureLinux_x64_Cross_x64
     - template: ../jobs/vmr-build.yml
       parameters:
-        buildName: Validate_Installers_Linux_arm64
+        buildName: Validate_Installers_Linux
         isBuiltFromVmr: ${{ parameters.isBuiltFromVmr }}
         vmrBranch: ${{ variables.VmrBranch }}
         pool: ${{ parameters.pool_LinuxArm64 }}
@@ -991,6 +991,7 @@ stages:
         doNotAddDependencyIfReusingBuildArtifacts: true
         reuseBuildArtifactsFrom:
         - AzureLinux_x64_Cross_arm64
+        - AzureLinux_x64_Cross_x64
     - ${{ if eq(variables.signEnabled, 'true') }}:
       - job: ValidateSigning_Windows
         displayName: Validate Signing - Windows
