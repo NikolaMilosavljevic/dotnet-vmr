@@ -1,0 +1,450 @@
+parameters:
+- name: artifactsRid
+  type: string
+  default: ''
+
+- name: buildPass
+  type: string
+  default: ''
+
+- name: configuration
+  type: string
+  default: 'Release'
+
+- name: crossRootFs
+  type: string
+  default: ''
+
+- name: targetOS
+  type: string
+  default: ''
+
+- name: targetArchitecture
+  type: string
+  default: ''
+
+- name: useMonoRuntime
+  displayName: True when build output uses the mono runtime
+  type: boolean
+  default: false
+
+- name: sign
+  displayName: True when build output should be signed (includes dry runs)
+  type: boolean
+  default: true
+
+# Overrides the rid that is produced by the build.
+- name: targetRid
+  type: string
+  default: ''
+
+#### SOURCE-ONLY parameters ####
+
+# Instead of building the VMR directly, exports the sources into a tarball and builds from that
+- name: buildFromArchive
+  type: boolean
+  default: false
+
+# Enable for source-building the VMR
+- name: buildSourceOnly
+  type: boolean
+  default: false
+
+- name: enablePoison
+  type: boolean
+  default: false
+
+- name: excludeOmniSharpTests
+  type: boolean
+  default: false
+
+# Name of previous job(s) (from the same template as this) whose output will be used to build this job
+# The SDK from its artifacts is copied to $(sourcesPath)/.dotnet
+- name: reuseBuildArtifactsFrom
+  type: object
+  default: ''
+
+# Allow downloading artifacts from the internet during the build
+- name: runOnline
+  type: boolean
+  default: true
+
+- name: runTests
+  type: boolean
+  default: true
+
+# Freeform field for extra values to pass to build.sh for special build modes
+- name: extraProperties
+  type: string
+  default: ''
+
+# Use the previous version's SDK to build the current one
+- name: withPreviousSDK
+  type: boolean
+  default: false
+
+- name: isBuiltFromVmr
+  displayName: True when build is running from dotnet/dotnet directly
+  type: boolean
+
+- name: vmrPath
+  type: string
+  default: ''
+
+- name: artifactsStagingDir
+  type: string
+  default: ''
+
+- name: sourcesPath
+  type: string
+  default: ''
+
+- name: runBuild
+  type: boolean
+  default: true
+
+# Overrides the project that is being built.
+- name: buildProject
+  type: string
+  default: ''
+
+# Overrides the project that is being tested.
+- name: testProject
+  type: string
+  default: ''
+
+variables:
+- name: runTestsTimeout
+  value: 30
+
+# Build project override
+- ${{ if ne(parameters.buildProject, '') }}:
+  - ${{ if eq(parameters.targetOS, 'windows') }}:
+    - name: buildProjectArguments
+      value: -projects ${{ parameters.buildProject }}
+  - ${{ else }}:
+    - name: buildProjectArguments
+      value: --projects ${{ parameters.buildProject }}
+- ${{ else }}:
+  - name: buildProjectArguments
+    value: ''
+
+# Test project override
+- ${{ if ne(parameters.testProject, '') }}:
+  - ${{ if eq(parameters.targetOS, 'windows') }}:
+    - name: testProjectArguments
+      value: -projects ${{ parameters.testProject }}
+  - ${{ else }}:
+    - name: testProjectArguments
+      value: --projects ${{ parameters.testProject }}
+- ${{ else }}:
+  - name: testProjectArguments
+    value: ''
+
+# Build up the command line variables. We avoid doing this in the script sections below
+# because AzDO will not echo command lines if they are more than a single line.
+
+## Build command line - Windows
+- ${{ if eq(parameters.targetOS, 'windows') }}:
+  ## Basic arguments
+  - name: baseArguments
+    value: -ci -cleanWhileBuilding -prepareMachine -c ${{ parameters.configuration }} $(officialBuildParameter) /p:VerticalName=$(Agent.JobName) /p:ArtifactsStagingDir=${{ parameters.artifactsStagingDir }}
+
+  - name: targetArguments
+    value: /p:TargetOS=${{ parameters.targetOS }} /p:TargetArchitecture=${{ parameters.targetArchitecture }}
+
+  ### Signing variables
+  - ${{ if eq(parameters.sign, 'True') }}:
+    - name: _SignDiagnosticFilesArgs
+      value: ''
+    - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+      # The _SignType variable is used by microbuild installation
+      - name: _SignType
+        value: ''
+      - name: signArguments
+        value: -sign /p:ForceDryRunSigning=true
+    - ${{ else }}:
+      - name: _SignType
+        value: real
+      - name: signArguments
+        value: -sign /p:DotNetSignType=real /p:TeamName=$(_TeamName)
+      - name: _EnableDacSigning
+        ${{ if and(eq(parameters.isBuiltFromVmr, true), ne(parameters.buildSourceOnly, 'True')) }}:
+          value: true
+        ${{ else }}:
+          value: false
+  - ${{ else }}:
+    - name: signArguments
+      value: ''
+    - name: _SignDiagnosticFilesArgs
+      value: ''
+
+  ### Build Pass
+  - ${{ if ne(parameters.buildPass, '') }}:
+    - name: buildPassArguments
+      value: /p:DotNetBuildPass=${{ parameters.buildPass }}
+  - ${{ else }}:
+    - name: buildPassArguments
+      value: ''
+
+  ### Additional arguments
+  - ${{ if eq(parameters.enableIBCOptimization, 'true') }}:
+    - name: ibcArguments
+      value: '/p:EnableIBCOptimization=true /p:IBCDropAccessToken=$(dn-bot-devdiv-drop-r-code-r)'
+  - ${{ else }}:
+    - name: ibcArguments
+      value: ''
+
+steps:
+# When building internal, authenticate to internal feeds that may be in use
+# We do not need these for source-only builds
+- ${{ if and(ne(variables['System.TeamProject'], 'public'), ne(parameters.buildSourceOnly, 'True')) }}:
+  # Authenticate with service connections to be able to pull packages to external nuget feeds.
+  - task: NuGetAuthenticate@1
+    inputs:
+      nuGetServiceConnections: devdiv/engineering, devdiv/dotnet-core-internal-tooling
+
+- ${{ if eq(parameters.targetOS, 'windows') }}:
+  # Node 20.x is a toolset dependency to build aspnetcore
+  # Keep in sync with aspnetcore: https://github.com/dotnet/aspnetcore/blob/7d5309210d8f7bae8fa074da495e9d009d67f1b4/.azure/pipelines/ci.yml#L719-L722
+  - task: NodeTool@0
+    displayName: Install Node 20.x
+    inputs:
+      versionSpec: 20.x
+
+  - ${{ if eq(variables['_EnableDacSigning'], 'true') }}:
+    # TODO: Once we turn off the dotnet/runtime official build, move these templates into the VMR's eng folder.
+    - template: ${{ variables['Build.SourcesDirectory'] }}/src/runtime/eng/pipelines/coreclr/templates/install-diagnostic-certs.yml
+      parameters:
+        isOfficialBuild: ${{ variables.isOfficialBuild }}
+        certNames:
+        - 'dotnetesrp-diagnostics-aad-ssl-cert'
+        - 'dotnet-diagnostics-esrp-pki-onecert'
+        vaultName: 'clrdiag-esrp-id'
+        azureSubscription: 'diagnostics-esrp-kvcertuser'
+        scriptRoot: '$(Build.SourcesDirectory)/src/runtime'
+
+  - ${{ if eq(parameters.runBuild, 'True') }}:
+    - script: build.cmd
+        $(buildProjectArguments)
+        $(baseArguments)
+        $(targetArguments)
+        $(signArguments)
+        $(buildPassArguments)
+        $(ibcArguments)
+        $(_SignDiagnosticFilesArgs)
+        ${{ parameters.extraProperties }}
+      displayName: Build
+      workingDirectory: ${{ parameters.sourcesPath }}
+
+  - ${{ if eq(variables['_EnableDacSigning'], 'true') }}:
+    # TODO: Once we turn off the dotnet/runtime official build, move these templates into the VMR's eng folder.
+    - template: ${{ variables['Build.SourcesDirectory'] }}/src/runtime/eng/pipelines/coreclr/templates/remove-diagnostic-certs.yml
+      parameters:
+        isOfficialBuild: ${{ variables.isOfficialBuild }}
+        scriptRoot: '$(Build.SourcesDirectory)/src/runtime'
+
+  - ${{ if eq(parameters.runTests, 'True') }}:
+    - script: build.cmd
+        $(testProjectArguments)
+        $(baseArguments)
+        $(targetArguments)
+        $(buildPassArguments)
+        ${{ parameters.extraProperties }}
+        -test
+        -excludeCIBinarylog
+        /bl:artifacts/log/Release/Test.binlog
+      displayName: Run Tests
+      workingDirectory: ${{ parameters.sourcesPath }}
+      timeoutInMinutes: ${{ variables.runTestsTimeout }}
+
+- ${{ else }}:
+  - ${{ if eq(parameters.targetOS, 'osx') }}:
+    - script: |
+        ${{ parameters.sourcesPath }}/eng/common/native/install-dependencies.sh osx
+      displayName: Install dependencies
+  - ${{ if eq(parameters.buildSourceOnly, 'true') }}:
+    - ${{ if eq(parameters.runBuild, 'True') }}:
+      - script: |
+          set -ex
+
+          customPrepArgs=""
+          prepSdk=true
+
+          if [[ -n '${{ parameters.artifactsRid }}' ]]; then
+            customPrepArgs="${customPrepArgs} --artifacts-rid ${{ parameters.artifactsRid }}"
+          fi
+
+          if [[ '${{ parameters.withPreviousSDK }}' == 'True' ]]; then
+            # Source-built artifacts are from CentOS 9 Stream. We want to download them without
+            # downloading portable versions from the internet.
+            customPrepArgs="${customPrepArgs} --no-sdk --no-bootstrap"
+            prepSdk=false
+          elif [[ '${{ length(parameters.reuseBuildArtifactsFrom) }}' -gt '0' ]]; then
+            customPrepArgs="${customPrepArgs} --no-sdk --no-artifacts"
+            prepSdk=false
+          fi
+
+          if [[ "$prepSdk" == "false" ]]; then
+            mkdir ${{ parameters.sourcesPath }}/.dotnet
+            previousSdkPath="${{ parameters.sourcesPath }}/prereqs/packages/archive/dotnet-sdk-*.tar.gz"
+            eval tar -ozxf "$previousSdkPath" -C "${{ parameters.sourcesPath }}/.dotnet"
+            eval rm -f "$previousSdkPath"
+
+            echo "##vso[task.setvariable variable=additionalBuildArgs]--with-sdk ${{ parameters.sourcesPath }}/.dotnet"
+          fi
+
+          ./prep-source-build.sh $customPrepArgs
+        displayName: Prep the Build
+        workingDirectory: ${{ parameters.sourcesPath }}
+
+  - ${{ if eq(parameters.runBuild, 'True') }}:
+    - script: |
+        set -ex
+        df -h
+
+        customEnvVars=""
+        customPreBuildArgs=""
+        customBuildArgs="--ci --clean-while-building --prepareMachine -c ${{ parameters.configuration }} $(officialBuildParameter)"
+
+        if [[ '${{ parameters.runOnline }}' == 'True' ]]; then
+          customBuildArgs="$customBuildArgs --online"
+        else
+          customPreBuildArgs="$customPreBuildArgs sudo unshare -n"
+        fi
+
+        if [[ '${{ parameters.enablePoison }}' == 'True' ]]; then
+          customBuildArgs="$customBuildArgs --poison"
+        fi
+
+        if [[ '${{ parameters.buildFromArchive }}' == 'True' ]]; then
+          customBuildArgs="$customBuildArgs --source-repository https://github.com/dotnet/dotnet"
+          customBuildArgs="$customBuildArgs --source-version $(git -C "${{ parameters.vmrPath }}" rev-parse HEAD)"
+        fi
+
+        if [[ '${{ parameters.buildSourceOnly }}' == 'True' ]]; then
+          customBuildArgs="$customBuildArgs --source-only"
+          extraBuildProperties="$extraBuildProperties /p:ReportSbrpUsage=true"
+        fi
+
+        if [[ '${{ parameters.useMonoRuntime }}' == 'True' ]]; then
+          customBuildArgs="$customBuildArgs --use-mono-runtime"
+        fi
+
+        if [[ '${{ parameters.sign }}' == 'True' ]] && [[ '${{ parameters.buildSourceOnly }}' != 'True' ]]; then
+          customBuildArgs="$customBuildArgs --sign"
+          if [[ '$(_SignType)' == 'real' ]] || [[ '$(_SignType)' == 'test' ]]; then
+            # Force dry run signing until https://github.com/dotnet/source-build/issues/4793 is resolved - https://github.com/dotnet/source-build/issues/4678
+            extraBuildProperties="$extraBuildProperties /p:DotNetSignType=$(_SignType) /p:TeamName=$(_TeamName) /p:ForceDryRunSigning=true"
+          else
+            extraBuildProperties="$extraBuildProperties /p:ForceDryRunSigning=true"
+          fi
+        fi
+
+        if [[ -n "${{ parameters.targetRid }}" ]]; then
+          customBuildArgs="$customBuildArgs --target-rid ${{ parameters.targetRid }}"
+        fi
+
+        if [[ -n "${{ parameters.crossRootFs }}" ]]; then
+          customEnvVars="$customEnvVars ROOTFS_DIR=${{ parameters.crossRootFs}}"
+          if [[ '${{ parameters.targetArchitecture }}' != 'wasm' ]]; then
+            extraBuildProperties="$extraBuildProperties /p:CrossBuild=true"
+          fi
+        fi
+
+        if [[ ! -z '${{ parameters.targetOS }}' ]]; then
+          extraBuildProperties="$extraBuildProperties /p:TargetOS=${{ parameters.targetOS }}"
+        fi
+
+        if [[ ! -z '${{ parameters.targetArchitecture }}' ]]; then
+          extraBuildProperties="$extraBuildProperties /p:TargetArchitecture=${{ parameters.targetArchitecture }}"
+        fi
+
+        if [[ -n "${{ parameters.buildPass }}" ]]; then
+          extraBuildProperties="$extraBuildProperties /p:DotNetBuildPass=${{ parameters.buildPass }}"
+        fi
+
+        if [[ -n "${{ parameters.extraProperties }}" ]]; then
+          extraBuildProperties="$extraBuildProperties ${{ parameters.extraProperties }}"
+        fi
+
+        extraBuildProperties="$extraBuildProperties /p:VerticalName=$(Agent.JobName)"
+        extraBuildProperties="$extraBuildProperties /p:ArtifactsStagingDir=${{ parameters.artifactsStagingDir }}"
+
+        buildArgs="$(buildProjectArguments) $(additionalBuildArgs) $customBuildArgs $extraBuildProperties"
+
+        for envVar in $customEnvVars; do
+          customEnvVarsWithBashSyntax="$customEnvVarsWithBashSyntax export $envVar;"
+        done
+
+        eval $customEnvVarsWithBashSyntax
+        $customPreBuildArgs ./build.sh $buildArgs
+      displayName: Build
+      workingDirectory: ${{ parameters.sourcesPath }}
+
+  - ${{ if ne(parameters.runOnline, 'True' )}}:
+    - script: |
+        set -ex
+        # Update the owner of the staging directory to the current user
+        sudo chown -R $(whoami) ${{ parameters.artifactsStagingDir }}
+      displayName: Update owner of artifacts staging directory
+
+  # Only run tests if enabled
+  - ${{ if eq(parameters.runTests, 'True') }}:
+    # Setup the NuGet sources used by the tests to use private feeds. This is necessary when testing internal-only product
+    # builds where the packages are only available in the private feeds. This allows the tests to restore from those feeds.
+    - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
+      - task: Bash@3
+        displayName: Setup Private Feeds Credentials
+        inputs:
+          filePath: ${{ parameters.sourcesPath }}/src/sdk/eng/common/SetupNugetSources.sh
+          arguments: ${{ parameters.sourcesPath }}/src/sdk/NuGet.config $Token
+        env:
+          Token: $(dn-bot-dnceng-artifact-feeds-rw)
+
+      - script: cp "${{ parameters.sourcesPath }}/src/sdk/NuGet.config" "${{ parameters.sourcesPath }}/test/Microsoft.DotNet.SourceBuild.Tests/assets/online.NuGet.Config"
+        displayName: Copy Test NuGet Config for Smoke Tests
+
+    - script: |
+        set -ex
+
+        customPreBuildArgs=''
+        customBuildArgs=''
+        extraBuildProperties=''
+        customBuildArgs="--ci --prepareMachine -c ${{ parameters.configuration }} $(officialBuildParameter)"
+
+        if [[ '${{ parameters.runOnline }}' == 'False' ]]; then
+          customPreBuildArgs="$customPreBuildArgs sudo"
+        fi
+
+        if [[ ! -z '${{ parameters.targetOS }}' ]]; then
+          extraBuildProperties="$extraBuildProperties /p:TargetOS=${{ parameters.targetOS }}"
+        fi
+
+        if [[ ! -z '${{ parameters.targetArchitecture }}' ]]; then
+          extraBuildProperties="$extraBuildProperties /p:TargetArchitecture=${{ parameters.targetArchitecture }}"
+        fi
+
+        if [[ '${{ parameters.buildSourceOnly }}' == 'True' ]]; then
+          if [[ '${{ parameters.enablePoison }}' == 'True' ]]; then
+            customBuildArgs="$customBuildArgs --poison"
+          fi
+          customBuildArgs="$customBuildArgs --source-only /p:SourceBuildTestsExcludeOmniSharpTests=${{ parameters.excludeOmniSharpTests }}"
+        fi
+
+        if [[ -n "${{ parameters.targetRid }}" ]]; then
+          customBuildArgs="$customBuildArgs --target-rid ${{ parameters.targetRid }}"
+        fi
+
+        extraBuildProperties="$extraBuildProperties /p:VerticalName=$(Agent.JobName)"
+        extraBuildProperties="$extraBuildProperties /p:ArtifactsStagingDir=${{ parameters.artifactsStagingDir }}"
+
+        if [[ -n "${{ parameters.extraProperties }}" ]]; then
+          extraBuildProperties="$extraBuildProperties ${{ parameters.extraProperties }}"
+        fi
+
+        cd ${{ parameters.sourcesPath }}
+        $customPreBuildArgs ./build.sh --test $(testProjectArguments) --excludeCIBinarylog /bl:artifacts/log/Release/Test.binlog $customBuildArgs $extraBuildProperties $(additionalBuildArgs)
+
+      displayName: Run Tests
+      timeoutInMinutes: ${{ variables.runTestsTimeout }}

@@ -3,9 +3,13 @@ parameters:
   type: boolean
   default: false
 
-- name: targetArchitecture
-  type: string
-  default: ''
+- name: testRpmPackages
+  type: boolean
+  default: true
+
+- name: testDebPackages
+  type: boolean
+  default: true
 
 - name: OS
   type: string
@@ -13,6 +17,15 @@ parameters:
     - Windows_NT
     - Linux
     - Darwin
+
+variables:
+- name: osSpecificTestProperties
+  ${{ if eq(parameters.OS, 'Linux') }}:
+    value: /p:TestRpmPackages=${{ parameters.testRpmPackages }} /p:TestDebPackages=${{ parameters.testDebPackages }}
+  ${{ else }}:
+    value: ''
+- name: testProperties
+  value: $(osSpecificTestProperties) /p:BlobArtifactsDir=$(Build.ArtifactStagingDirectory)/BlobArtifacts /p:PackageArtifactsDir=$(Build.ArtifactStagingDirectory)/PackageArtifacts
 
 steps:
 - task: DownloadBuildArtifacts@1
@@ -36,22 +49,12 @@ steps:
   displayName: 'Authenticate to AzDO Feeds'
 
 - ${{ if eq(parameters.OS, 'Linux') }}:
-  - script: |
-      extraBuildProperties="/p:TestRpmPackages=true"
-      if [[ '${{ parameters.targetArchitecture }}' == 'x64' ]]; then
-        # At the moment Deb packages are only available for x64
-        extraBuildProperties="$extraBuildProperties /p:TestDebPackages=true"
-      fi
-
-      ./build.sh \
-      -t \
-      --projects test/Microsoft.DotNet.Installer.Tests/Microsoft.DotNet.Installer.Tests.csproj \
-      /p:BlobArtifactsDir=$(Build.ArtifactStagingDirectory)/BlobArtifacts \
-      /p:PackageArtifactsDir=$(Build.ArtifactStagingDirectory)/PackageArtifacts \
-      $extraBuildProperties
-    displayName: Validate installer packages
-    workingDirectory: $(Build.SourcesDirectory)
-    continueOnError: ${{ parameters.continueOnError }}
+  - template: vmr-build.yml
+    parameters:
+      runBuild: false
+      sourcesPath: $(Build.SourcesDirectory)
+      testProject: test/Microsoft.DotNet.Installer.Tests/Microsoft.DotNet.Installer.Tests.csproj
+      extraProperties: $(testProperties)
 
   - task: PublishTestResults@2
     displayName: Publish Test Results
