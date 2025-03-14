@@ -198,6 +198,60 @@ jobs:
     - name: ONEES_ENFORCED_CODEQL_ENABLED
       value: false
 
+  # Build up the command line variables. We avoid doing this in the script sections below
+  # because AzDO will not echo command lines if they are more than a single line.
+
+  ## Build command line - Windows
+  - ${{ if eq(parameters.targetOS, 'windows') }}:
+    ## Basic arguments
+    - name: baseArguments
+      value: -ci -cleanWhileBuilding -prepareMachine -c ${{ parameters.configuration }} $(officialBuildParameter) /p:VerticalName=$(Agent.JobName) /p:ArtifactsStagingDir=$(artifactsStagingDir)
+
+    - name: targetArguments
+      value: /p:TargetOS=${{ parameters.targetOS }} /p:TargetArchitecture=${{ parameters.targetArchitecture }}
+
+    ### Signing variables
+    - ${{ if eq(parameters.sign, 'True') }}:
+      - name: _SignDiagnosticFilesArgs
+        value: ''
+      - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+        # The _SignType variable is used by microbuild installation
+        - name: _SignType
+          value: ''
+        - name: signArguments
+          value: -sign /p:ForceDryRunSigning=true
+      - ${{ else }}:
+        - name: _SignType
+          value: real
+        - name: signArguments
+          value: -sign /p:DotNetSignType=real /p:TeamName=$(_TeamName)
+        - name: _EnableDacSigning
+          ${{ if and(eq(parameters.isBuiltFromVmr, true), ne(parameters.buildSourceOnly, 'True')) }}:
+            value: true
+          ${{ else }}:
+            value: false
+    - ${{ else }}:
+      - name: signArguments
+        value: ''
+      - name: _SignDiagnosticFilesArgs
+        value: ''
+
+    ### Build Pass
+    - ${{ if ne(parameters.buildPass, '') }}:
+      - name: buildPassArguments
+        value: /p:DotNetBuildPass=${{ parameters.buildPass }}
+    - ${{ else }}:
+      - name: buildPassArguments
+        value: ''
+
+    ### Additional arguments
+    - ${{ if eq(parameters.enableIBCOptimization, 'true') }}:
+      - name: ibcArguments
+        value: '/p:EnableIBCOptimization=true /p:IBCDropAccessToken=$(dn-bot-devdiv-drop-r-code-r)'
+    - ${{ else }}:
+      - name: ibcArguments
+        value: ''
+
   templateContext:
     outputParentDirectory: $(Build.ArtifactStagingDirectory)
     outputs:

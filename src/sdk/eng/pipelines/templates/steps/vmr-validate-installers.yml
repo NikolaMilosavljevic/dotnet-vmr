@@ -18,16 +18,17 @@ parameters:
     - Linux
     - Darwin
 
-variables:
-- name: osSpecificTestProperties
-  ${{ if eq(parameters.OS, 'Linux') }}:
-    value: /p:TestRpmPackages=${{ parameters.testRpmPackages }} /p:TestDebPackages=${{ parameters.testDebPackages }}
-  ${{ else }}:
-    value: ''
-- name: testProperties
-  value: $(osSpecificTestProperties) /p:BlobArtifactsDir=$(Build.ArtifactStagingDirectory)/BlobArtifacts /p:PackageArtifactsDir=$(Build.ArtifactStagingDirectory)/PackageArtifacts
-
 steps:
+- script: |
+    osSpecificTestProperties=""
+
+    if [[ '${{ parameters.OS }}' == 'Linux' ]]; then
+      osSpecificTestProperties="/p:TestRpmPackages=${{ parameters.testRpmPackages }} /p:TestDebPackages=${{ parameters.testDebPackages }}"
+    fi
+
+    testProperties="(osSpecificTestProperties) /p:BlobArtifactsDir=$(Build.ArtifactStagingDirectory)/BlobArtifacts /p:PackageArtifactsDir=$(Build.ArtifactStagingDirectory)/PackageArtifacts"
+    echo "##vso[task.setvariable variable=testProperties;isOutput=true]$testProperties"
+
 - task: DownloadBuildArtifacts@1
   inputs:
     artifactName: BlobArtifacts
