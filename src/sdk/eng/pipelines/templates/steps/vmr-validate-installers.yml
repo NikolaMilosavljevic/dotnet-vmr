@@ -27,7 +27,7 @@ steps:
     fi
 
     testProperties="(osSpecificTestProperties) /p:BlobArtifactsDir=$(Build.ArtifactStagingDirectory)/BlobArtifacts /p:PackageArtifactsDir=$(Build.ArtifactStagingDirectory)/PackageArtifacts"
-    echo "##vso[task.setvariable variable=testProperties;isOutput=true]$testProperties"
+    echo "##vso[task.setvariable variable=testProperties]$testProperties"
 
 - task: DownloadBuildArtifacts@1
   inputs:
