@@ -20,14 +20,17 @@ parameters:
 
 steps:
 - script: |
-    osSpecificTestProperties=""
+    set -ex
+
+    osSpecificTestProperties=''
 
     if [[ '${{ parameters.OS }}' == 'Linux' ]]; then
       osSpecificTestProperties="/p:TestRpmPackages=${{ parameters.testRpmPackages }} /p:TestDebPackages=${{ parameters.testDebPackages }}"
     fi
 
-    testProperties="(osSpecificTestProperties) /p:BlobArtifactsDir=$(Build.ArtifactStagingDirectory)/BlobArtifacts /p:PackageArtifactsDir=$(Build.ArtifactStagingDirectory)/PackageArtifacts"
+    testProperties="$osSpecificTestProperties /p:BlobArtifactsDir=$(Build.ArtifactStagingDirectory)/BlobArtifacts /p:PackageArtifactsDir=$(Build.ArtifactStagingDirectory)/PackageArtifacts"
     echo "##vso[task.setvariable variable=testProperties]$testProperties"
+  displayName: Set additional arguments
 
 - task: DownloadBuildArtifacts@1
   inputs:

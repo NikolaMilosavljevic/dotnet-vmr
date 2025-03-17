@@ -130,6 +130,7 @@ steps:
 - powershell: |
     $buildProjectArguments = ""
     $testProjectArguments = ""
+    $additionalBuildArgs = ""
 
     if ("${{ parameters.buildProject }}" -ne "") {
       if ("${{ parameters.targetOS }}" -eq "windows") {
@@ -149,7 +150,8 @@ steps:
 
     echo "##vso[task.setvariable variable=buildProjectArguments]$buildProjectArguments"
     echo "##vso[task.setvariable variable=testProjectArguments]$testProjectArguments"
-  displayName: Set custom project argument
+    echo "##vso[task.setvariable variable=additionalBuildArgs]$additionalBuildArgs"
+  displayName: Set additional arguments
   workingDirectory: ${{ parameters.sourcesPath }}
 
 - ${{ if eq(parameters.targetOS, 'windows') }}:
