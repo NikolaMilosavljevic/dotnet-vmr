@@ -2,10 +2,15 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using NuGet.Commands;
+using NuGet.Configuration;
 using NuGet.Frameworks;
-using NuGet.LibraryModel;
 using NuGet.ProjectModel;
+using NuGet.Protocol;
+using NuGet.Protocol.Core.Types;
 using NuGet.Test.Utility;
+using Test.Utility;
 
 namespace NuGet.CommandLine.XPlat.Tests
 {
@@ -33,19 +38,36 @@ namespace NuGet.CommandLine.XPlat.Tests
             return projects;
         }
 
-        public static PackageSpec GetProject(string projectName, string framework, LibraryDependency dependency)
+        public static async Task<IReadOnlyList<RestoreSummary>> RunRestore(
+            SimpleTestPathContext pathContext,
+            TestLogger logger,
+            List<PackageSource> sources,
+            DependencyGraphSpec dgFile,
+            SourceCacheContext cacheContext)
         {
-            var targetFrameworkInfo = dependency == null ?
-                new TargetFrameworkInformation()
+            var restoreContext = new RestoreArgs()
+            {
+                CacheContext = cacheContext,
+                DisableParallel = true,
+                GlobalPackagesFolder = pathContext.UserPackagesFolder,
+                Sources = new List<string>() { pathContext.PackageSource },
+                Log = logger,
+                CachingSourceProvider = new CachingSourceProvider(new TestPackageSourceProvider(sources)),
+                PreLoadedRequestProviders = new List<IPreLoadedRestoreRequestProvider>()
                 {
-                    FrameworkName = NuGetFramework.Parse(framework)
-                } :
-                new TargetFrameworkInformation()
-                {
-                    FrameworkName = NuGetFramework.Parse(framework),
-                    Dependencies = [dependency]
-                };
+                    new DependencyGraphSpecRequestProvider(new RestoreCommandProvidersCache(), dgFile)
+                }
+            };
 
+            return await RestoreRunner.RunAsync(restoreContext);
+        }
+
+        public static PackageSpec GetProject(string projectName, string framework)
+        {
+            var targetFrameworkInfo = new TargetFrameworkInformation()
+            {
+                FrameworkName = NuGetFramework.Parse(framework)
+            };
             var frameworks = new[] { targetFrameworkInfo };
 
             // Create two net45 projects

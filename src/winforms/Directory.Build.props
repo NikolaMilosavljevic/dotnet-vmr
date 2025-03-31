@@ -11,7 +11,6 @@
     <Product>Microsoft&#xAE; .NET</Product>
     <Copyright>$(CopyrightNetFoundation)</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/dotnet/winforms</PackageProjectUrl>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <LangVersion Condition="'$(LangVersion)' == ''">preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>

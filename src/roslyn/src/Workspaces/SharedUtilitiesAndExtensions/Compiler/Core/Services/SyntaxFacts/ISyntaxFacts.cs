@@ -100,7 +100,6 @@ internal interface ISyntaxFacts
     bool SupportsIsNotTypeExpression(ParseOptions options);
     bool SupportsLocalFunctionDeclaration(ParseOptions options);
     bool SupportsNotPattern(ParseOptions options);
-    bool SupportsNullConditionalAssignment(ParseOptions options);
     bool SupportsRecord(ParseOptions options);
     bool SupportsRecordStruct(ParseOptions options);
     bool SupportsTargetTypedConditionalExpression(ParseOptions options);

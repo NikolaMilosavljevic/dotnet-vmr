@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.LanguageServer;
 using Roslyn.LanguageServer.Protocol;
 using Xunit;
 

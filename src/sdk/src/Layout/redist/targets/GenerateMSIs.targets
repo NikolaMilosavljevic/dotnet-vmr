@@ -34,7 +34,7 @@
     <SdkStableFileIdForApphostTransform>$(SdkPkgSourcesWindowsDirectory)\stablefileidforapphosttransform.xslt</SdkStableFileIdForApphostTransform>
     <SdkGenerateBundlePowershellScript>$(SdkPkgSourcesWindowsDirectory)\generatebundle.ps1</SdkGenerateBundlePowershellScript>
 
-    <FinalizerExe>$(ArtifactsBinDir)finalizer\win-$(TargetArchitecture)\$(Configuration)\bin\finalizer.exe</FinalizerExe>
+    <FinalizerExe>$(ArtifactsBinDir)finalizer\win-$(Architecture)\$(Configuration)\bin\finalizer.exe</FinalizerExe>
 
     <!-- Temp directory for light command layouts -->
     <LightCommandObjDir>$(ArtifactsObjDir)LightCommandPackages</LightCommandObjDir>
@@ -114,7 +114,7 @@
                       '$(VersionMinor)' ^
                       '$(SdkInstallerUpgradeCode)' ^
                       '$(SdkDependencyKeyName)' ^
-                      '$(TargetArchitecture)' ^
+                      '$(Architecture)' ^
                       '$(SdkStableFileIdForApphostTransform)' ^
                       -InformationAction Continue" />
 
@@ -158,7 +158,7 @@
                       '$(VersionMinor)' ^
                       '$(SdkPlaceholderInstallerUpgradeCode)' ^
                       '$(SdkPlaceholderDependencyKeyName)' ^
-                      '$(TargetArchitecture)' ^
+                      '$(Architecture)' ^
                       -InformationAction Continue" />
 
     <ItemGroup>
@@ -195,7 +195,7 @@
                       '$(VersionMinor)' ^
                       '%(TemplatesMsiComponent.UpgradeCode)' ^
                       '%(TemplatesMsiComponent.DependencyKeyName)' ^
-                      '$(TargetArchitecture)' ^
+                      '$(Architecture)' ^
                       -InformationAction Continue" />
 
     <ItemGroup>
@@ -321,7 +321,7 @@
                       -WindowsDesktopVersion '$(MicrosoftWindowsDesktopAppRuntimePackageVersion)' ^
                       -UpgradeCode '$(CombinedFrameworkSDKHostInstallerUpgradeCode)' ^
                       -DependencyKeyName '$(SdkDependencyKeyName)' ^
-                      -Architecture '$(TargetArchitecture)' ^
+                      -Architecture '$(Architecture)' ^
                       -DotNetRuntimeVersion '$(MicrosoftNETCoreAppRuntimePackageVersion)' ^
                       -AspNetCoreVersion '$(MicrosoftAspNetCoreAppRuntimePackageVersion)' ^
                       -SDKProductBandVersion '$(CliProductBandVersion)' ^

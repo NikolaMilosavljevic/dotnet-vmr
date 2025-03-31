@@ -93,28 +93,20 @@ internal sealed partial class CSharpGenerateVariableService :
         if (identifierToken.ValueText != string.Empty &&
             !IsProbablyGeneric(identifierName, cancellationToken))
         {
-            if (identifierName.Parent is MemberAccessExpressionSyntax memberAccessExpression &&
-                memberAccessExpression.Name == identifierName)
+            var memberAccess = identifierName.Parent as MemberAccessExpressionSyntax;
+            var conditionalMemberAccess = identifierName.Parent.Parent as ConditionalAccessExpressionSyntax;
+            if (memberAccess?.Name == identifierName)
             {
-                simpleNameOrMemberAccessExpression = memberAccessExpression;
+                simpleNameOrMemberAccessExpression = memberAccess;
             }
-            else if (identifierName.Parent.Parent is ConditionalAccessExpressionSyntax conditionalAccessExpression &&
-                conditionalAccessExpression.WhenNotNull == identifierName.Parent)
+            else if ((conditionalMemberAccess?.WhenNotNull as MemberBindingExpressionSyntax)?.Name == identifierName)
             {
-                simpleNameOrMemberAccessExpression = conditionalAccessExpression;
-            }
-            else if (identifierName.Parent is MemberBindingExpressionSyntax memberBindingExpression &&
-                identifierName.Parent.Parent is AssignmentExpressionSyntax assignmentExpression &&
-                assignmentExpression.Left == memberBindingExpression)
-            {
-                simpleNameOrMemberAccessExpression = memberBindingExpression;
+                simpleNameOrMemberAccessExpression = conditionalMemberAccess;
             }
             else
             {
                 simpleNameOrMemberAccessExpression = identifierName;
             }
-
-            isConditionalAccessExpression = identifierName.Parent.Parent is ConditionalAccessExpressionSyntax;
 
             // If we're being invoked, then don't offer this, offer generate method instead.
             // Note: we could offer to generate a field with a delegate type.  However, that's
@@ -128,6 +120,7 @@ internal sealed partial class CSharpGenerateVariableService :
 
             var block = identifierName.GetAncestor<BlockSyntax>();
             isInExecutableBlock = block != null && !block.OverlapsHiddenPosition(cancellationToken);
+            isConditionalAccessExpression = conditionalMemberAccess != null;
             return true;
         }
 

@@ -11,9 +11,6 @@ internal sealed class UpdateBufferRequest
     [JsonPropertyName("hostDocumentVersion")]
     public int? HostDocumentVersion { get; set; }
 
-    [JsonPropertyName("previousHostDocumentVersion")]
-    public int? PreviousHostDocumentVersion { get; set; }
-
     [JsonPropertyName("projectKeyId")]
     public string? ProjectKeyId { get; set; }
 

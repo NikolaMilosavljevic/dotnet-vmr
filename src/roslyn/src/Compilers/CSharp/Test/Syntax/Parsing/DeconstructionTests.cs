@@ -3304,15 +3304,15 @@ class C
             UsingStatement(@"var?.var (x, y) = e;");
             N(SyntaxKind.ExpressionStatement);
             {
-                N(SyntaxKind.ConditionalAccessExpression);
+                N(SyntaxKind.SimpleAssignmentExpression);
                 {
-                    N(SyntaxKind.IdentifierName);
+                    N(SyntaxKind.ConditionalAccessExpression);
                     {
-                        N(SyntaxKind.IdentifierToken, "var");
-                    }
-                    N(SyntaxKind.QuestionToken);
-                    N(SyntaxKind.SimpleAssignmentExpression);
-                    {
+                        N(SyntaxKind.IdentifierName);
+                        {
+                            N(SyntaxKind.IdentifierToken, "var");
+                        }
+                        N(SyntaxKind.QuestionToken);
                         N(SyntaxKind.InvocationExpression);
                         {
                             N(SyntaxKind.MemberBindingExpression);
@@ -3344,11 +3344,11 @@ class C
                                 N(SyntaxKind.CloseParenToken);
                             }
                         }
-                        N(SyntaxKind.EqualsToken);
-                        N(SyntaxKind.IdentifierName);
-                        {
-                            N(SyntaxKind.IdentifierToken, "e");
-                        }
+                    }
+                    N(SyntaxKind.EqualsToken);
+                    N(SyntaxKind.IdentifierName);
+                    {
+                        N(SyntaxKind.IdentifierToken, "e");
                     }
                 }
                 N(SyntaxKind.SemicolonToken);

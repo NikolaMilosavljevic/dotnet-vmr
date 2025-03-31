@@ -283,7 +283,6 @@ namespace NuGet.PackageManagement.UI
                 {
                     VersionRange allowedVersions = VersionRange.All;
                     VersionRange versionOverride = null;
-                    bool autoReferenced = false;
 
                     // get the allowed version range and pass it to package item view model to choose the latest version based on that
                     if (_packageReferences != null)
@@ -302,7 +301,6 @@ namespace NuGet.PackageManagement.UI
                             {
                                 versionOverrides.Add(reference.VersionOverride);
                             }
-                            autoReferenced = reference.IsAutoReferenced;
                         }
 
                         allowedVersions = allowedVersionsRange.FirstOrDefault() ?? VersionRange.All;
@@ -339,7 +337,6 @@ namespace NuGet.PackageManagement.UI
                         PackageFileService = _packageFileService,
                         IncludePrerelease = _includePrerelease,
                         PackageLevel = packageLevel,
-                        AutoReferenced = autoReferenced,
                     };
 
                     if (listItem.PackageLevel == PackageLevel.TopLevel)

@@ -10,9 +10,8 @@ using System;
 namespace Microsoft.CommonLanguageServerProtocol.Framework;
 internal interface ILspLogger
 {
-    IDisposable? CreateContext(string context);
-
-    void LogDebug(string message, params object[] @params);
+    void LogStartContext(string message, params object[] @params);
+    void LogEndContext(string message, params object[] @params);
     void LogInformation(string message, params object[] @params);
     void LogWarning(string message, params object[] @params);
     void LogError(string message, params object[] @params);

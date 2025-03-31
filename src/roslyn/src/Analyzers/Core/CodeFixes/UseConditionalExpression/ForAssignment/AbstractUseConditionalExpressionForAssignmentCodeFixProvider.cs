@@ -104,25 +104,19 @@ internal abstract class AbstractUseConditionalExpressionForAssignmentCodeFixProv
     private void ConvertOnlyIfToConditionalExpression(
         SyntaxEditor editor,
         IConditionalOperation ifOperation,
-        ISimpleAssignmentOperation assignmentOperation,
+        ISimpleAssignmentOperation assignment,
         TExpressionSyntax conditionalExpression)
     {
         var generator = editor.Generator;
         var ifStatement = (TIfStatementSyntax)ifOperation.Syntax;
-        var assignment = generator.AssignmentStatement(assignmentOperation.Target.Syntax, conditionalExpression);
-
-        if (assignmentOperation.Parent is IConditionalAccessOperation conditionalAccess)
-        {
-            assignment = generator.ConditionalAccessExpression(
-                conditionalAccess.Operation.Syntax,
-                assignment);
-        }
-
-        var expressionStatement = (TStatementSyntax)generator.ExpressionStatement(assignment);
+        var expressionStatement = (TStatementSyntax)generator.ExpressionStatement(
+            generator.AssignmentStatement(
+                assignment.Target.Syntax,
+                conditionalExpression)).WithTriviaFrom(ifStatement);
 
         editor.ReplaceNode(
             ifOperation.Syntax,
-            WrapWithBlockIfAppropriate(ifStatement, expressionStatement).WithTriviaFrom(ifStatement));
+            WrapWithBlockIfAppropriate(ifStatement, expressionStatement));
     }
 
     private bool TryConvertWhenAssignmentToLocalDeclaredImmediateAbove(

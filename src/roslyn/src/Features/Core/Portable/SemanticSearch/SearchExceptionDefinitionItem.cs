@@ -28,7 +28,7 @@ internal sealed class SearchExceptionDefinitionItem(string message, ImmutableArr
             .. stackTrace
         ],
         nameDisplayParts: exceptionTypeName,
-        sourceSpans: documentSpan.SourceSpan.IsEmpty ? [] : [documentSpan],
+        sourceSpans: [documentSpan],
         classifiedSpans: [],
         metadataLocations: [],
         properties: null,

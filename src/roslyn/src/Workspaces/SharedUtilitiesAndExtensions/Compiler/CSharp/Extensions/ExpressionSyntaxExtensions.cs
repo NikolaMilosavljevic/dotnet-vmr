@@ -492,8 +492,8 @@ internal static partial class ExpressionSyntaxExtensions
             return true;
         }
 
-        if (expression is not ObjectCreationExpressionSyntax &&
-            expression is not AnonymousObjectCreationExpressionSyntax &&
+        if (!(expression is ObjectCreationExpressionSyntax) &&
+            !(expression is AnonymousObjectCreationExpressionSyntax) &&
             !expression.IsLeftSideOfAssignExpression())
         {
             var symbolInfo = semanticModel.GetSymbolInfo(expression, cancellationToken);

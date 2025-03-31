@@ -18,21 +18,20 @@ namespace NuGet.ProjectModel.Test
         {
             // Arrange
             var json = @"{
-                            ""frameworks"": {
-                                ""net46"": {
-                                    ""dependencies"": {
-                                        ""packageA"": {
-                                            ""version"": ""1.0.0"",
-                                            ""target"": ""externalProject""
-                                        }
-                                    }
+                          ""dependencies"": {
+                                ""packageA"": {
+                                    ""version"": ""1.0.0"",
+                                    ""target"": ""externalProject""
                                 }
+                            },
+                            ""frameworks"": {
+                                ""net46"": {}
                             }
                         }";
 
             // Act
             var spec = GetPackageSpec(json, "TestProject", "project.json", environmentVariableReader);
-            var dependency = spec.TargetFrameworks[0].Dependencies.Single();
+            var dependency = spec.Dependencies.Single();
 
             // Assert
             Assert.Equal(LibraryDependencyTarget.ExternalProject, dependency.LibraryRange.TypeConstraint);
@@ -44,21 +43,20 @@ namespace NuGet.ProjectModel.Test
         {
             // Arrange
             var json = @"{
-                            ""frameworks"": {
-                                ""net46"": {
-                                    ""dependencies"": {
-                                        ""packageA"": {
-                                            ""version"": ""1.0.0"",
-                                            ""target"": ""project""
-                                        }
-                                    }
+                          ""dependencies"": {
+                                ""packageA"": {
+                                    ""version"": ""1.0.0"",
+                                    ""target"": ""project""
                                 }
+                            },
+                            ""frameworks"": {
+                                ""net46"": {}
                             }
                         }";
 
             // Act
             var spec = GetPackageSpec(json, "TestProject", "project.json", environmentVariableReader);
-            var dependency = spec.TargetFrameworks[0].Dependencies.Single();
+            var dependency = spec.Dependencies.Single();
 
             // Assert
             Assert.Equal(LibraryDependencyTarget.Project, dependency.LibraryRange.TypeConstraint);
@@ -70,21 +68,20 @@ namespace NuGet.ProjectModel.Test
         {
             // Arrange
             var json = @"{
-                            ""frameworks"": {
-                                ""net46"": {
-                                    ""dependencies"": {
-                                        ""packageA"": {
-                                            ""version"": ""1.0.0"",
-                                            ""target"": ""package""
-                                        }
-                                    }
+                          ""dependencies"": {
+                                ""packageA"": {
+                                    ""version"": ""1.0.0"",
+                                    ""target"": ""package""
                                 }
+                            },
+                            ""frameworks"": {
+                                ""net46"": {}
                             }
                         }";
 
             // Act
             var spec = GetPackageSpec(json, "TestProject", "project.json", environmentVariableReader);
-            var dependency = spec.TargetFrameworks[0].Dependencies.Single();
+            var dependency = spec.Dependencies.Single();
 
             // Assert
             Assert.Equal(LibraryDependencyTarget.Package, dependency.LibraryRange.TypeConstraint);
@@ -96,21 +93,20 @@ namespace NuGet.ProjectModel.Test
         {
             // Arrange
             var json = @"{
-                            ""frameworks"": {
-                                ""net46"": {
-                                    ""dependencies"": {
-                                        ""packageA"": {
-                                            ""version"": ""1.0.0"",
-                                            ""target"": ""PACKage""
-                                        }
-                                    }
+                          ""dependencies"": {
+                                ""packageA"": {
+                                    ""version"": ""1.0.0"",
+                                    ""target"": ""PACKage""
                                 }
+                            },
+                            ""frameworks"": {
+                                ""net46"": {}
                             }
                         }";
 
             // Act
             var spec = GetPackageSpec(json, "TestProject", "project.json", environmentVariableReader);
-            var dependency = spec.TargetFrameworks[0].Dependencies.Single();
+            var dependency = spec.Dependencies.Single();
 
             // Assert
             Assert.Equal(LibraryDependencyTarget.Package, dependency.LibraryRange.TypeConstraint);
@@ -122,18 +118,17 @@ namespace NuGet.ProjectModel.Test
         {
             // Arrange
             var json = @"{
+                          ""dependencies"": {
+                                ""packageA"": ""1.0.0""
+                            },
                             ""frameworks"": {
-                                ""net46"": {
-                                    ""dependencies"": {
-                                        ""packageA"": ""1.0.0""
-                                    }
-                                }
+                                ""net46"": {}
                             }
                         }";
 
             // Act
             var spec = GetPackageSpec(json, "TestProject", "project.json", environmentVariableReader);
-            var dependency = spec.TargetFrameworks[0].Dependencies.Single();
+            var dependency = spec.Dependencies.Single();
 
             // Assert
             var expected = LibraryDependencyTarget.All & ~LibraryDependencyTarget.Reference;
@@ -164,7 +159,7 @@ namespace NuGet.ProjectModel.Test
             try
             {
                 var spec = GetPackageSpec(json, "TestProject", "project.json", environmentVariableReader);
-                var dependency = spec.TargetFrameworks[0].Dependencies.Single();
+                var dependency = spec.Dependencies.Single();
             }
             catch (FileFormatException ex)
             {
@@ -206,7 +201,7 @@ namespace NuGet.ProjectModel.Test
             try
             {
                 var spec = GetPackageSpec(json, "TestProject", "project.json", environmentVariableReader);
-                var dependency = spec.TargetFrameworks[0].Dependencies.Single();
+                var dependency = spec.Dependencies.Single();
             }
             catch (FileFormatException ex)
             {
@@ -248,7 +243,7 @@ namespace NuGet.ProjectModel.Test
             try
             {
                 var spec = GetPackageSpec(json, "TestProject", "project.json", environmentVariableReader);
-                var dependency = spec.TargetFrameworks[0].Dependencies.Single();
+                var dependency = spec.Dependencies.Single();
             }
             catch (FileFormatException ex)
             {
@@ -272,15 +267,14 @@ namespace NuGet.ProjectModel.Test
         {
             // Arrange
             var json = @"{
-                            ""frameworks"": {
-                                ""net46"": {
-                                    ""dependencies"": {
-                                        ""packageA"": {
-                                            ""version"": ""1.0.0"",
-                                            ""target"": "" package ""
-                                        }
-                                    }
+                          ""dependencies"": {
+                                ""packageA"": {
+                                    ""version"": ""1.0.0"",
+                                    ""target"": "" package ""
                                 }
+                            },
+                            ""frameworks"": {
+                                ""net46"": {}
                             }
                         }";
 
@@ -289,7 +283,7 @@ namespace NuGet.ProjectModel.Test
             var spec = GetPackageSpec(json, "TestProject", "project.json", environmentVariableReader);
 
             // Assert
-            var dependency = spec.TargetFrameworks[0].Dependencies.Single();
+            var dependency = spec.Dependencies.Single();
             Assert.Equal(LibraryDependencyTarget.Package, dependency.LibraryRange.TypeConstraint);
         }
 

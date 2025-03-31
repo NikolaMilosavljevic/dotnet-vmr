@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,14 +35,13 @@ namespace NuGet.Commands.Test
                     new PackageSource(pathContext.PackageSource)
                 };
 
-                var spec = GetProject("projectA", new LibraryDependency()
-                {
-                    LibraryRange = new LibraryRange("x", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
-                },
-                "net462", "netstandard1.6");
+                var spec = GetProject("projectA", "net462", "netstandard1.6");
 
                 spec.RestoreMetadata.CrossTargeting = true;
-
+                spec.Dependencies.Add(new LibraryDependency()
+                {
+                    LibraryRange = new LibraryRange("x", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
+                });
 
                 // Create fake projects, the real data is in the specs
                 var projects = CreateProjectsFromSpecs(pathContext, spec);
@@ -102,13 +100,13 @@ namespace NuGet.Commands.Test
                     new PackageSource(pathContext.PackageSource)
                 };
 
-                var spec = GetProject("projectA", new LibraryDependency()
-                {
-                    LibraryRange = new LibraryRange("x", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
-                },
-                "net462");
+                var spec = GetProject("projectA", "net462");
 
                 spec.RestoreMetadata.CrossTargeting = false;
+                spec.Dependencies.Add(new LibraryDependency()
+                {
+                    LibraryRange = new LibraryRange("x", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
+                });
 
                 // Create fake projects, the real data is in the specs
                 var projects = CreateProjectsFromSpecs(pathContext, spec);
@@ -164,13 +162,13 @@ namespace NuGet.Commands.Test
                     new PackageSource(pathContext.PackageSource)
                 };
 
-                var spec = GetProject("projectA", new LibraryDependency()
-                {
-                    LibraryRange = new LibraryRange("x", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
-                },
-                "net462");
+                var spec = GetProject("projectA", "net462");
 
                 spec.RestoreMetadata.CrossTargeting = true;
+                spec.Dependencies.Add(new LibraryDependency()
+                {
+                    LibraryRange = new LibraryRange("x", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
+                });
 
                 // Create fake projects, the real data is in the specs
                 var projects = CreateProjectsFromSpecs(pathContext, spec);
@@ -226,13 +224,13 @@ namespace NuGet.Commands.Test
                     new PackageSource(pathContext.PackageSource)
                 };
 
-                var spec = GetProject("projectA", new LibraryDependency()
-                {
-                    LibraryRange = new LibraryRange("x", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
-                },
-                "net462", "netstandard1.6");
+                var spec = GetProject("projectA", "net462", "netstandard1.6");
 
                 spec.RestoreMetadata.CrossTargeting = true;
+                spec.Dependencies.Add(new LibraryDependency()
+                {
+                    LibraryRange = new LibraryRange("x", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
+                });
 
                 // Create fake projects, the real data is in the specs
                 var projects = CreateProjectsFromSpecs(pathContext, spec);
@@ -288,14 +286,13 @@ namespace NuGet.Commands.Test
                     new PackageSource(pathContext.PackageSource)
                 };
 
-                var spec = GetProject("projectA", new LibraryDependency()
-                {
-                    LibraryRange = new LibraryRange("x", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
-                },
-                "net462", "netstandard1.6");
+                var spec = GetProject("projectA", "net462", "netstandard1.6");
 
                 spec.RestoreMetadata.CrossTargeting = true;
-
+                spec.Dependencies.Add(new LibraryDependency()
+                {
+                    LibraryRange = new LibraryRange("x", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
+                });
 
                 // Create fake projects, the real data is in the specs
                 var projects = CreateProjectsFromSpecs(pathContext, spec);
@@ -350,13 +347,13 @@ namespace NuGet.Commands.Test
                     new PackageSource(pathContext.PackageSource)
                 };
 
-                var spec = GetProject("projectA", new LibraryDependency()
-                {
-                    LibraryRange = new LibraryRange("x", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
-                },
-                "net462", "netstandard1.6");
+                var spec = GetProject("projectA", "net462", "netstandard1.6");
 
                 spec.RestoreMetadata.CrossTargeting = true;
+                spec.Dependencies.Add(new LibraryDependency()
+                {
+                    LibraryRange = new LibraryRange("x", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
+                });
 
                 // Create fake projects, the real data is in the specs
                 var projects = CreateProjectsFromSpecs(pathContext, spec);
@@ -396,18 +393,11 @@ namespace NuGet.Commands.Test
                 var success = summaries.All(s => s.Success);
                 Assert.True(success, "Failed: " + string.Join(Environment.NewLine, logger.Messages));
 
-                var dependencies = spec.TargetFrameworks[0].Dependencies.ToList();
-
-                dependencies.Add(new LibraryDependency()
+                // Modify spec
+                spec.Dependencies.Add(new LibraryDependency()
                 {
                     LibraryRange = new LibraryRange("y", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
                 });
-
-                // Modify spec
-                spec.TargetFrameworks[0] = new TargetFrameworkInformation(spec.TargetFrameworks[0])
-                {
-                    Dependencies = dependencies.ToImmutableArray()
-                };
 
                 // Act
                 summaries = await RunRestoreAsync(pathContext, logger, sources, dgFile, cacheContext);
@@ -467,14 +457,13 @@ namespace NuGet.Commands.Test
             return await RestoreRunner.RunAsync(restoreContext);
         }
 
-        private static PackageSpec GetProject(string projectName, LibraryDependency libraryDependency, params string[] frameworks)
+        private static PackageSpec GetProject(string projectName, params string[] frameworks)
         {
             var frameworkGroups = frameworks.Select(s =>
                 new TargetFrameworkInformation()
                 {
                     FrameworkName = NuGetFramework.Parse(s),
                     TargetAlias = s,
-                    Dependencies = [libraryDependency]
                 })
                 .ToList();
 

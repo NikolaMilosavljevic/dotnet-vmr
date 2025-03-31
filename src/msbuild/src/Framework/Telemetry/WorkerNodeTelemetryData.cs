@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Build.Framework.Telemetry;
+namespace Microsoft.Build.Framework;
 
 internal class WorkerNodeTelemetryData : IWorkerNodeTelemetryData
 {
@@ -18,7 +18,7 @@ internal class WorkerNodeTelemetryData : IWorkerNodeTelemetryData
     {
         foreach (var task in other.TasksExecutionData)
         {
-            AddTask(task.Key, task.Value.CumulativeExecutionTime, task.Value.ExecutionsCount, task.Value.TotalMemoryBytes);
+            AddTask(task.Key, task.Value.CumulativeExecutionTime, task.Value.ExecutionsCount, task.Value.TotalMemoryConsumption);
         }
 
         foreach (var target in other.TargetsExecutionData)
@@ -39,7 +39,7 @@ internal class WorkerNodeTelemetryData : IWorkerNodeTelemetryData
         {
             taskExecutionStats.CumulativeExecutionTime += cumulativeExectionTime;
             taskExecutionStats.ExecutionsCount += executionsCount;
-            taskExecutionStats.TotalMemoryBytes += totalMemoryConsumption;
+            taskExecutionStats.TotalMemoryConsumption += totalMemoryConsumption;
         }
     }
 

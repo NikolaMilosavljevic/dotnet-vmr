@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Linq;
@@ -14,8 +14,6 @@ namespace Microsoft.AspNetCore.Mvc.Testing;
 /// </summary>
 public class WebApplicationFactoryClientOptions
 {
-    internal static readonly Uri DefaultBaseAddres = new Uri("http://localhost");
-
     /// <summary>
     /// Initializes a new instance of <see cref="WebApplicationFactoryClientOptions"/>.
     /// </summary>
@@ -37,7 +35,7 @@ public class WebApplicationFactoryClientOptions
     /// <see cref="WebApplicationFactory{TEntryPoint}.CreateClient(WebApplicationFactoryClientOptions)"/>.
     /// The default is <c>http://localhost</c>.
     /// </summary>
-    public Uri BaseAddress { get; set; } = DefaultBaseAddres;
+    public Uri BaseAddress { get; set; } = new Uri("http://localhost");
 
     /// <summary>
     /// Gets or sets whether or not <see cref="HttpClient"/> instances created by calling

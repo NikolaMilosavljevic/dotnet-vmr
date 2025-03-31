@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using NuGet.Configuration;
+using NuGet.Frameworks;
 using NuGet.LibraryModel;
 using NuGet.ProjectModel;
 using NuGet.Protocol.Core.Types;
@@ -28,7 +29,20 @@ namespace NuGet.Commands.Test
             using (var cacheContext = new SourceCacheContext())
             using (var pathContext = new SimpleTestPathContext())
             {
-                var spec = NETCoreRestoreTestUtility.GetProject(projectName: "projectA", framework: "net46", new LibraryRange("a", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package));
+                var tfi = new List<TargetFrameworkInformation>
+                {
+                    new TargetFrameworkInformation()
+                    {
+                        FrameworkName = NuGetFramework.Parse("net462")
+                    }
+                };
+
+                var spec = NETCoreRestoreTestUtility.GetProject(projectName: "projectA", framework: "net46");
+                spec.Dependencies.Add(new LibraryDependency()
+                {
+                    LibraryRange = new LibraryRange("a", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
+                });
+
                 var project = NETCoreRestoreTestUtility.CreateProjectsFromSpecs(pathContext, spec).Single();
 
                 var packageA = new SimpleTestPackageContext("a");
@@ -77,7 +91,19 @@ namespace NuGet.Commands.Test
             using (var cacheContext = new SourceCacheContext())
             using (var pathContext = new SimpleTestPathContext())
             {
-                var spec = NETCoreRestoreTestUtility.GetProject(projectName: "projectA", framework: "net46", new LibraryRange("a", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package));
+                var tfi = new List<TargetFrameworkInformation>
+                {
+                    new TargetFrameworkInformation()
+                    {
+                        FrameworkName = NuGetFramework.Parse("net462")
+                    }
+                };
+
+                var spec = NETCoreRestoreTestUtility.GetProject(projectName: "projectA", framework: "net46");
+                spec.Dependencies.Add(new LibraryDependency()
+                {
+                    LibraryRange = new LibraryRange("a", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
+                });
 
                 var project = NETCoreRestoreTestUtility.CreateProjectsFromSpecs(pathContext, spec).Single();
 
@@ -126,7 +152,20 @@ namespace NuGet.Commands.Test
             using (var cacheContext = new SourceCacheContext())
             using (var pathContext = new SimpleTestPathContext())
             {
-                var spec = NETCoreRestoreTestUtility.GetProject(projectName: "projectA", framework: "net46", new LibraryRange("a", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package));
+                var tfi = new List<TargetFrameworkInformation>
+                {
+                    new TargetFrameworkInformation()
+                    {
+                        FrameworkName = NuGetFramework.Parse("net462")
+                    }
+                };
+
+                var spec = NETCoreRestoreTestUtility.GetProject(projectName: "projectA", framework: "net46");
+                spec.Dependencies.Add(new LibraryDependency()
+                {
+                    LibraryRange = new LibraryRange("a", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
+                });
+
                 var project = NETCoreRestoreTestUtility.CreateProjectsFromSpecs(pathContext, spec).Single();
 
                 var packageA = new SimpleTestPackageContext("a");

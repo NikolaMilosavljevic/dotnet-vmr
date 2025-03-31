@@ -5,7 +5,6 @@ using System;
 using Microsoft.Build.Experimental.BuildCheck.Infrastructure;
 using Microsoft.Build.Experimental.BuildCheck;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Framework.Telemetry;
 using Microsoft.Build.Shared;
 
 using InternalLoggerException = Microsoft.Build.Exceptions.InternalLoggerException;

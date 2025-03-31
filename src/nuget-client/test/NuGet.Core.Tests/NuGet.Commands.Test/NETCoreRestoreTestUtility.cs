@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NuGet.Configuration;
 using NuGet.Frameworks;
-using NuGet.LibraryModel;
 using NuGet.ProjectModel;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
@@ -61,19 +60,12 @@ namespace NuGet.Commands.Test
             return await RestoreRunner.RunAsync(restoreContext);
         }
 
-        public static PackageSpec GetProject(string projectName, string framework, LibraryRange libraryRange = null)
+        public static PackageSpec GetProject(string projectName, string framework)
         {
-            var targetFrameworkInfo = libraryRange == null ?
-                new TargetFrameworkInformation()
-                {
-                    FrameworkName = NuGetFramework.Parse(framework)
-                } :
-                new TargetFrameworkInformation()
-                {
-                    FrameworkName = NuGetFramework.Parse(framework),
-                    Dependencies = [new LibraryDependency() { LibraryRange = libraryRange }]
-                };
-
+            var targetFrameworkInfo = new TargetFrameworkInformation()
+            {
+                FrameworkName = NuGetFramework.Parse(framework)
+            };
             var frameworks = new[] { targetFrameworkInfo };
 
             // Create two net45 projects
