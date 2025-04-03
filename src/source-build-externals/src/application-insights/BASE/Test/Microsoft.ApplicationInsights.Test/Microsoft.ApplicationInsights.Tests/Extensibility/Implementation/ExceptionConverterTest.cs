@@ -185,19 +185,6 @@
             Assert.AreEqual(5, expDetails.message.Length);
         }
 
-        [TestMethod]
-        [DataRow(null)]
-        [DataRow("")]
-        [DataRow(" ")]
-        public void ProvidesDefaultMessage(string message)
-        {
-            var exp = new ExceptionWithMessageOverride(message);
-
-            ExceptionDetails expDetails = ExceptionConverter.ConvertToExceptionDetails(exp, null);
-
-            Assert.AreEqual("n/a", expDetails.message);
-        }
-
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         private Exception CreateException(int numberOfStackpoints)
         {
@@ -224,21 +211,6 @@
             }
 
             throw new AggregateException("exception message");
-        }
-        
-        /// <summary>
-        /// Overrides the Message property of the base exception, so that null messages are
-        /// returned as null, rather than a default, e.g. "Exception of type 'System.Exception' was thrown".
-        /// </summary>
-        private class ExceptionWithMessageOverride : Exception
-        {
-            public ExceptionWithMessageOverride(string message)
-                : base(message)
-            {
-                Message = message;
-            }
-            
-            public override string Message { get; }
         }
     }
 }
