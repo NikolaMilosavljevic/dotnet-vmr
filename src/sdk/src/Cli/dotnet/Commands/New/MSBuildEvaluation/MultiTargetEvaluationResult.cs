@@ -1,9 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using MSBuildProject = Microsoft.Build.Evaluation.Project;
+using Microsoft.Build.Evaluation;
 
-namespace Microsoft.DotNet.Cli.Commands.New.MSBuildEvaluation;
+namespace Microsoft.TemplateEngine.MSBuildEvaluation;
 
 /// <summary>
 /// Represents the result of evaluation for multi-target project.
@@ -12,11 +12,11 @@ internal class MultiTargetEvaluationResult : MSBuildEvaluationResult
 {
     private MultiTargetEvaluationResult(string projectPath) : base(EvalStatus.Succeeded, projectPath) { }
 
-    internal IReadOnlyDictionary<string, MSBuildProject?> EvaluatedProjects { get; private set; } = new Dictionary<string, MSBuildProject?>();
+    internal IReadOnlyDictionary<string, Project?> EvaluatedProjects { get; private set; } = new Dictionary<string, Project?>();
 
     internal IEnumerable<string> TargetFrameworks => EvaluatedProjects.Keys;
 
-    internal static MultiTargetEvaluationResult CreateSuccess(string path, MSBuildProject project, IReadOnlyDictionary<string, MSBuildProject?> frameworkBasedResults)
+    internal static MultiTargetEvaluationResult CreateSuccess(string path, Project project, IReadOnlyDictionary<string, Project?> frameworkBasedResults)
     {
         return new MultiTargetEvaluationResult(path)
         {

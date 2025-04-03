@@ -52,7 +52,7 @@ internal class ShellShimTemplateFinder(
         var packageId = new PackageId($"microsoft.netcore.app.host.{rid}");
         NuGetVersion packageVersion = null;
         var packagePath = await _nugetPackageDownloader.DownloadPackageAsync(packageId, packageVersion, packageSourceLocation: _packageSourceLocation);
-        _ = await _nugetPackageDownloader.ExtractPackageAsync(packagePath, _tempDir);
+        var content = await _nugetPackageDownloader.ExtractPackageAsync(packagePath, _tempDir);
 
         return Path.Combine(_tempDir.Value, "runtimes", rid, "native");
     }

@@ -3,7 +3,7 @@
 
 using Microsoft.Deployment.DotNet.Releases;
 
-namespace Microsoft.DotNet.Cli.Commands.Workload;
+namespace Microsoft.DotNet.Workloads.Workload;
 
 internal class WorkloadUtilities
 {

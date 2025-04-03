@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
-using Microsoft.DotNet.Cli.Commands.Workload.Install;
+using Microsoft.DotNet.Workloads.Workload.Repair;
 using LocalizableStrings = Microsoft.DotNet.Workloads.Workload.Repair.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Workload.Repair;
+namespace Microsoft.DotNet.Cli;
 
 internal static class WorkloadRepairCommandParser
 {

@@ -2,12 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
-using Microsoft.DotNet.Cli.Commands.MSBuild;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Extensions;
 using Microsoft.DotNet.Cli.Utils;
-using LocalizableStrings = Microsoft.DotNet.Tools.Store.LocalizableStrings;
+using Microsoft.DotNet.Tools.MSBuild;
+using Parser = Microsoft.DotNet.Cli.Parser;
 
-namespace Microsoft.DotNet.Cli.Commands.Store;
+namespace Microsoft.DotNet.Tools.Store;
 
 public class StoreCommand : MSBuildForwardingApp
 {
@@ -38,7 +39,7 @@ public class StoreCommand : MSBuildForwardingApp
 
         msbuildArgs.AddRange(result.OptionValuesToBeForwarded(StoreCommandParser.GetCommand()));
 
-        msbuildArgs.AddRange(result.GetValue(StoreCommandParser.Argument) ?? []);
+        msbuildArgs.AddRange(result.GetValue(StoreCommandParser.Argument) ?? Array.Empty<string>());
 
         return new StoreCommand(msbuildArgs, msbuildPath);
     }

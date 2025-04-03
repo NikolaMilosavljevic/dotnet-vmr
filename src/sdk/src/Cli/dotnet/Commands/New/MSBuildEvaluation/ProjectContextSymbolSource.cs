@@ -1,13 +1,13 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Build.Evaluation;
 using Microsoft.Extensions.Logging;
 using Microsoft.TemplateEngine.Abstractions;
 using Microsoft.TemplateEngine.Abstractions.Components;
 using LocalizableStrings = Microsoft.DotNet.Tools.New.LocalizableStrings;
-using MSBuildProject = Microsoft.Build.Evaluation.Project;
 
-namespace Microsoft.DotNet.Cli.Commands.New.MSBuildEvaluation;
+namespace Microsoft.TemplateEngine.MSBuildEvaluation;
 
 /// <summary>
 /// Allows to bind symbols to MSBuild properties.
@@ -52,7 +52,7 @@ internal class ProjectContextSymbolSource : IBindSymbolSource
             //we check only for null as property may exist with empty value
             if (propertyValue == null && evaluationResult is MultiTargetEvaluationResult multiTargetResult)
             {
-                foreach (MSBuildProject? tfmBasedProject in multiTargetResult.EvaluatedProjects.Values)
+                foreach (Project? tfmBasedProject in multiTargetResult.EvaluatedProjects.Values)
                 {
                     propertyValue = evaluationResult.EvaluatedProject.GetProperty(bindname)?.EvaluatedValue;
                     if (propertyValue != null)

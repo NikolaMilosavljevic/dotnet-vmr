@@ -3,18 +3,19 @@
 
 using System.CommandLine;
 using Microsoft.DotNet.Cli.NuGetPackageDownloader;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Utils;
+using Microsoft.DotNet.Workloads.Workload.Install;
 using Microsoft.NET.Sdk.WorkloadManifestReader;
 using Microsoft.Deployment.DotNet.Releases;
-using Microsoft.DotNet.Cli.Commands.Workload.Install;
-using LocalizableStrings = Microsoft.DotNet.Workloads.Workload.History.LocalizableStrings;
+using Microsoft.DotNet.Cli.Commands.DotNetWorkloads;
 
-namespace Microsoft.DotNet.Cli.Commands.Workload.History;
+namespace Microsoft.DotNet.Workloads.Workload.History;
 
 internal class WorkloadHistoryCommand : WorkloadCommandBase
 {
     private readonly IInstaller _workloadInstaller;
-    private readonly IWorkloadResolver _workloadResolver;
+    private IWorkloadResolver _workloadResolver;
     private readonly ReleaseVersion _sdkVersion;
     private readonly SdkFeatureBand _sdkFeatureBand;
 

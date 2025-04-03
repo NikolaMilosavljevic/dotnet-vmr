@@ -8,7 +8,7 @@
 
 using System.Text.RegularExpressions;
 
-namespace Microsoft.DotNet.Cli.Commands.Test.Terminal;
+namespace Microsoft.Testing.Platform.OutputDevice.Terminal;
 
 /// <summary>
 /// Works together with the <see cref="NativeMethods"/> to figure out if the current console is capable of using ANSI output codes.
@@ -37,5 +37,5 @@ internal static class AnsiDetector
     ];
 
     public static bool IsAnsiSupported(string? termType)
-        => !string.IsNullOrEmpty(termType) && TerminalsRegexes.Any(regex => regex.IsMatch(termType));
+        => !String.IsNullOrEmpty(termType) && TerminalsRegexes.Any(regex => regex.IsMatch(termType));
 }

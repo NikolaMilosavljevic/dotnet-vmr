@@ -3,7 +3,7 @@
 
 using Microsoft.DotNet.Cli.ToolPackage;
 
-namespace Microsoft.DotNet.Cli.Commands.Tool.Search;
+namespace Microsoft.DotNet.Tools.Tool.Search;
 
 /// <summary>
 /// All fields are possibly null other than Id, Version, Tags, Authors, Versions

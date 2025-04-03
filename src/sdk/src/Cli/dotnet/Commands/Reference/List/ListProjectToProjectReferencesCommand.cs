@@ -3,11 +3,11 @@
 
 using System.CommandLine;
 using Microsoft.Build.Evaluation;
-using Microsoft.DotNet.Cli.Commands.List;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Extensions;
 using Microsoft.DotNet.Cli.Utils;
 
-namespace Microsoft.DotNet.Cli.Commands.Reference.List;
+namespace Microsoft.DotNet.Tools.Reference.List;
 
 internal class ListProjectToProjectReferencesCommand : CommandBase
 {

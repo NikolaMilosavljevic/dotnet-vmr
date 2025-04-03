@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Microsoft.DotNet.Cli.Commands.Test.Terminal;
+using Microsoft.Testing.Platform.Helpers;
+
+namespace Microsoft.Testing.Platform.OutputDevice.Terminal;
 
 internal sealed class TestProgressState(long id, string assembly, string? targetFramework, string? architecture, IStopwatch stopwatch)
 {
@@ -27,8 +29,6 @@ internal sealed class TestProgressState(long id, string assembly, string? target
 
     public int TotalTests { get; internal set; }
 
-    public int RetriedFailedTests { get; internal set; }
-
     public TestNodeResultsState? TestNodeResultsState { get; internal set; }
 
     public int SlotIndex { get; internal set; }
@@ -41,17 +41,9 @@ internal sealed class TestProgressState(long id, string assembly, string? target
     public int? ExitCode { get; internal set; }
     public bool Success { get; internal set; }
 
-    public List<string> Tries { get; } = [];
-    public HashSet<string> FlakyTests { get; } = [];
-
     internal void AddError(string text)
         => Messages.Add(new ErrorMessage(text));
 
     internal void AddWarning(string text)
         => Messages.Add(new WarningMessage(text));
-
-    internal void ClearAllMessages()
-    {
-        Messages.Clear();
-    }
 }

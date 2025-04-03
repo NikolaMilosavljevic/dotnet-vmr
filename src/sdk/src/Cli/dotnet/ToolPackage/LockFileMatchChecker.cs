@@ -44,7 +44,7 @@ internal class LockFileMatcher
 
     private static bool SubPathMatchesTargetFilePath(string[] pathInLockFilePathInArray, string[] targetInArray)
     {
-        string[] pathAfterToolsTfmRid = [.. pathInLockFilePathInArray.Skip(3)];
+        string[] pathAfterToolsTfmRid = pathInLockFilePathInArray.Skip(3).ToArray();
         return !targetInArray
             .Where((directoryOnEveryLevel, i) => directoryOnEveryLevel != pathAfterToolsTfmRid[i])
             .Any();

@@ -26,7 +26,7 @@ public class ResolveFingerprintedStaticWebAssetEndpointsForAssets : Task
     public override bool Execute()
     {
         var candidateEndpoints = StaticWebAssetEndpoint.FromItemGroup(CandidateEndpoints);
-        var candidateAssets = StaticWebAsset.FromTaskItemGroup(CandidateAssets);
+        var candidateAssets = CandidateAssets.Select(StaticWebAsset.FromTaskItem).ToArray();
         var resolvedEndpoints = new List<StaticWebAssetEndpoint>();
 
         var endpointsByAsset = candidateEndpoints.GroupBy(e => e.AssetFile, OSPath.PathComparer)

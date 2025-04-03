@@ -3,7 +3,7 @@
 
 using Microsoft.NET.Sdk.WorkloadManifestReader;
 
-namespace Microsoft.DotNet.Cli.Commands.Workload.List;
+namespace Microsoft.DotNet.Workloads.Workload.List;
 
 internal interface IWorkloadsRepositoryEnumerator
 {

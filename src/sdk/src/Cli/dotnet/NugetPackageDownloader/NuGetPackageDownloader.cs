@@ -296,7 +296,7 @@ internal class NuGetPackageDownloader : INuGetPackageDownloader
         return (source, packageVersion);
     }
 
-    private static string GetNupkgUrl(string baseUri, PackageId id, NuGetVersion version) => baseUri + id.ToString() + "/" + version.ToNormalizedString() + "/" + id.ToString() +
+    private string GetNupkgUrl(string baseUri, PackageId id, NuGetVersion version) => baseUri + id.ToString() + "/" + version.ToNormalizedString() + "/" + id.ToString() +
         "." + version.ToNormalizedString().ToLowerInvariant() + ".nupkg";
 
     internal IEnumerable<FilePath> FindAllFilesNeedExecutablePermission(IEnumerable<string> files,
@@ -304,7 +304,7 @@ internal class NuGetPackageDownloader : INuGetPackageDownloader
     {
         if (!PackageIsInAllowList(files))
         {
-            return [];
+            return Array.Empty<FilePath>();
         }
 
         bool FileUnderToolsWithoutSuffix(string p)
@@ -381,7 +381,7 @@ internal class NuGetPackageDownloader : INuGetPackageDownloader
         }
 
         PackageSourceProvider packageSourceProvider = new(settings);
-        defaultSources = [.. packageSourceProvider.LoadPackageSources().Where(source => source.IsEnabled)];
+        defaultSources = packageSourceProvider.LoadPackageSources().Where(source => source.IsEnabled).ToList();
 
         packageSourceMapping ??= PackageSourceMapping.GetPackageSourceMapping(settings);
 
@@ -394,7 +394,7 @@ internal class NuGetPackageDownloader : INuGetPackageDownloader
             {
                 throw new NuGetPackageInstallerException(string.Format(LocalizableStrings.FailedToFindSourceUnderPackageSourceMapping, packageId));
             }
-            defaultSources = [.. defaultSources.Where(source => sources.Contains(source.Name))];
+            defaultSources = defaultSources.Where(source => sources.Contains(source.Name)).ToList();
             if (defaultSources.Count == 0)
             {
                 throw new NuGetPackageInstallerException(string.Format(LocalizableStrings.FailedToMapSourceUnderPackageSourceMapping, packageId));
@@ -461,9 +461,9 @@ internal class NuGetPackageDownloader : INuGetPackageDownloader
 
         if (_restoreActionConfig.DisableParallel)
         {
-            foundPackagesBySource = [.. packageSources.Select(source => GetPackageMetadataAsync(source,
+            foundPackagesBySource = packageSources.Select(source => GetPackageMetadataAsync(source,
                 packageIdentifier,
-                true, false, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult())];
+                true, false, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult()).ToArray();
         }
         else
         {
@@ -547,9 +547,9 @@ internal class NuGetPackageDownloader : INuGetPackageDownloader
 
         if (_restoreActionConfig.DisableParallel)
         {
-            foundPackagesBySource = [.. packageSources.Select(source => GetPackageMetadataAsync(source,
+            foundPackagesBySource = packageSources.Select(source => GetPackageMetadataAsync(source,
                 packageIdentifier,
-                true, false, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult())];
+                true, false, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult()).ToArray();
         }
         else
         {
@@ -631,9 +631,9 @@ internal class NuGetPackageDownloader : INuGetPackageDownloader
         bool atLeastOneSourceValid = false;
         using CancellationTokenSource linkedCts =
             CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        List<Task<(PackageSource source, IEnumerable<IPackageSearchMetadata> foundPackages)>> tasks = [.. sources
+        List<Task<(PackageSource source, IEnumerable<IPackageSearchMetadata> foundPackages)>> tasks = sources
             .Select(source =>
-                GetPackageMetadataAsync(source, packageIdentifier, true, includeUnlisted, linkedCts.Token))];
+                GetPackageMetadataAsync(source, packageIdentifier, true, includeUnlisted, linkedCts.Token)).ToList();
 
         bool TryGetPackageMetadata(
             (PackageSource source, IEnumerable<IPackageSearchMetadata> foundPackages) sourceAndFoundPackages,
@@ -790,7 +790,7 @@ internal class NuGetPackageDownloader : INuGetPackageDownloader
         {
             return [resource];
         }
-        else return [];
+        else return Enumerable.Empty<AutoCompleteResource>();
     }
 
     // only exposed for testing
@@ -807,11 +807,11 @@ internal class NuGetPackageDownloader : INuGetPackageDownloader
         }
         catch (FatalProtocolException)  // this most often means that the source didn't actually have a SearchAutocompleteService
         {
-            return [];
+            return Enumerable.Empty<NuGetVersion>();
         }
         catch (Exception) // any errors (i.e. auth) should just be ignored for completions
         {
-            return [];
+            return Enumerable.Empty<NuGetVersion>();
         }
     }
 
@@ -826,11 +826,11 @@ internal class NuGetPackageDownloader : INuGetPackageDownloader
         }
         catch (FatalProtocolException)  // this most often means that the source didn't actually have a SearchAutocompleteService
         {
-            return [];
+            return Enumerable.Empty<string>();
         }
         catch (Exception) // any errors (i.e. auth) should just be ignored for completions
         {
-            return [];
+            return Enumerable.Empty<string>();
         }
     }
 

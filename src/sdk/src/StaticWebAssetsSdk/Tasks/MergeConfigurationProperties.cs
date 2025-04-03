@@ -25,7 +25,7 @@ public class MergeConfigurationProperties : Task
     {
         try
         {
-            ProjectConfigurations = new ITaskItem[CandidateConfigurations.Length];
+            ProjectConfigurations = new TaskItem[CandidateConfigurations.Length];
 
             for (var i = 0; i < CandidateConfigurations.Length; i++)
             {

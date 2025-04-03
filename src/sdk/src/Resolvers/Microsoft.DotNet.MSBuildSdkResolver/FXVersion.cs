@@ -74,9 +74,9 @@ internal sealed class FXVersion(int major, int minor, int patch, string pre = ""
                 string id1 = GetId(s1.Pre, idStart);
                 string id2 = GetId(s2.Pre, idStart);
 
-                int id1num;
+                int id1num = 0;
                 bool id1IsNum = int.TryParse(id1, out id1num);
-                int id2num;
+                int id2num = 0;
                 bool id2IsNum = int.TryParse(id2, out id2num);
 
                 if (id1IsNum && id2IsNum)
@@ -148,7 +148,8 @@ internal sealed class FXVersion(int major, int minor, int patch, string pre = ""
             return false;
         }
 
-        if (!buildMeta && id[0] == '0' && id.Length > 1 && int.TryParse(id, out _))
+        int ignored;
+        if (!buildMeta && id[0] == '0' && id.Length > 1 && int.TryParse(id, out ignored))
         {
             // numeric identifiers must not be padded with 0s
             return false;
@@ -217,7 +218,7 @@ internal sealed class FXVersion(int major, int minor, int patch, string pre = ""
             return false;
         }
 
-        int major;
+        int major = 0;
         if (!int.TryParse(fxVersionString.Substring(0, majorSeparator), out major))
         {
             return false;
@@ -236,7 +237,7 @@ internal sealed class FXVersion(int major, int minor, int patch, string pre = ""
             return false;
         }
 
-        int minor;
+        int minor = 0;
         if (!int.TryParse(fxVersionString.Substring(minorStart, minorSeparator - minorStart), out minor))
         {
             return false;
@@ -248,10 +249,9 @@ internal sealed class FXVersion(int major, int minor, int patch, string pre = ""
             return false;
         }
 
+        int patch = 0;
         int patchStart = minorSeparator + 1;
         int patchSeparator = IndexOfNonNumeric(fxVersionString, patchStart);
-
-        int patch;
         if (patchSeparator == -1)
         {
             if (!int.TryParse(fxVersionString.Substring(patchStart), out patch))

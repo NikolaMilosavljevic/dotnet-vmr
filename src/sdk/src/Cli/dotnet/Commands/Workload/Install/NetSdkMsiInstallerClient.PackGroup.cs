@@ -3,7 +3,6 @@
 
 using System.Text.Json;
 using Microsoft.DotNet.Cli;
-using Microsoft.DotNet.Cli.Commands.Workload.Install;
 using Microsoft.NET.Sdk.WorkloadManifestReader;
 using static Microsoft.NET.Sdk.WorkloadManifestReader.WorkloadResolver;
 
@@ -11,7 +10,7 @@ namespace Microsoft.DotNet.Workloads.Workload.Install;
 
 internal partial class NetSdkMsiInstallerClient
 {
-    private class WorkloadPackGroupJson
+    class WorkloadPackGroupJson
     {
         public string GroupPackageId { get; set; }
         public string GroupPackageVersion { get; set; }
@@ -19,14 +18,14 @@ internal partial class NetSdkMsiInstallerClient
         public List<WorkloadPackJson> Packs { get; set; } = [];
     }
 
-    private class WorkloadPackJson
+    class WorkloadPackJson
     {
         public string PackId { get; set; }
 
         public string PackVersion { get; set; }
     }
 
-    private Dictionary<(string packId, string packVersion), List<WorkloadPackGroupJson>> GetWorkloadPackGroups()
+    Dictionary<(string packId, string packVersion), List<WorkloadPackGroupJson>> GetWorkloadPackGroups()
     {
         Dictionary<(string packId, string packVersion), List<WorkloadPackGroupJson>> ret = [];
 
@@ -61,8 +60,7 @@ internal partial class NetSdkMsiInstallerClient
 
         return ret;
     }
-
-    private List<WorkloadDownload> GetMsisForWorkloads(IEnumerable<WorkloadId> workloads)
+    List<WorkloadDownload> GetMsisForWorkloads(IEnumerable<WorkloadId> workloads)
     {
         var packs = workloads
             .SelectMany(workloadId => _workloadResolver.GetPacksInWorkload(workloadId))
@@ -73,7 +71,8 @@ internal partial class NetSdkMsiInstallerClient
         return GetMsisForPacks(packs);
     }
 
-    private List<WorkloadDownload> GetMsisForPacks(IEnumerable<PackInfo> packInfos)
+
+    List<WorkloadDownload> GetMsisForPacks(IEnumerable<PackInfo> packInfos)
     {
         List<WorkloadDownload> msisToInstall = [];
         HashSet<(string packId, string packVersion)> packsProcessed = [];
@@ -106,7 +105,7 @@ internal partial class NetSdkMsiInstallerClient
         return msisToInstall;
     }
 
-    private static WorkloadDownload GetWorkloadDownloadForPack(PackInfo packInfo)
+    WorkloadDownload GetWorkloadDownloadForPack(PackInfo packInfo)
     {
         return new WorkloadDownload(packInfo.ResolvedPackageId, GetMsiPackageId(packInfo), packInfo.Version);
     }

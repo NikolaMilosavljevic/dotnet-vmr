@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.SolutionPersistence.Model;
 using Microsoft.VisualStudio.SolutionPersistence.Serializer;
 using LocalizableStrings = Microsoft.DotNet.Tools.Sln.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Solution.Migrate;
+namespace Microsoft.DotNet.Cli;
 
 internal class SlnMigrateCommand(
     ParseResult parseResult,

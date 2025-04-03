@@ -3,7 +3,7 @@
 
 using System.Globalization;
 
-namespace Microsoft.DotNet.Cli.Commands.Test.Terminal;
+namespace Microsoft.Testing.Platform.OutputDevice.Terminal;
 
 internal static class HumanReadableDurationFormatter
 {

@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
+using Microsoft.DotNet.Tools.BuildServer.Shutdown;
 using LocalizableStrings = Microsoft.DotNet.Tools.BuildServer.Shutdown.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.BuildServer.Shutdown;
+namespace Microsoft.DotNet.Cli;
 
 internal static class ServerShutdownCommandParser
 {

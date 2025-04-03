@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
-using Microsoft.DotNet.Cli.Commands.Tool.Common;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Utils;
-using LocalizableStrings = Microsoft.DotNet.Tools.Tool.Install.LocalizableStrings;
+using Microsoft.DotNet.Tools.Tool.Common;
 
-namespace Microsoft.DotNet.Cli.Commands.Tool.Install;
+namespace Microsoft.DotNet.Tools.Tool.Install;
 
 internal class ToolInstallCommand(
     ParseResult parseResult,

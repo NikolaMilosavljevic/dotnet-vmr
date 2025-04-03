@@ -3,7 +3,7 @@
 
 using Microsoft.DotNet.Cli.Utils;
 
-namespace Microsoft.DotNet.Cli.Commands.Fsi;
+namespace Microsoft.DotNet.Cli;
 
 public class FsiForwardingApp(string[] arguments) : ForwardingApp(GetFsiAppPath(), processArguments(arguments))
 {
@@ -19,7 +19,7 @@ public class FsiForwardingApp(string[] arguments) : ForwardingApp(GetFsiAppPath(
         }
         else
         {
-            return [.. args, $"--preferreduilang:{lang.Name}"];
+            return args.Append($"--preferreduilang:{lang.Name}").ToArray();
         }
     }
 

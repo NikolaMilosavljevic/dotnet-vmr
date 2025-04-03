@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
-using Microsoft.DotNet.Cli.Commands.Package.List;
+using Microsoft.DotNet.Tools.Package.List;
 using LocalizableStrings = Microsoft.DotNet.Tools.Package.List.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.List.Package;
+namespace Microsoft.DotNet.Cli;
 
 internal static class ListPackageReferencesCommandParser
 {

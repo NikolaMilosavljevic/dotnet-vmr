@@ -71,7 +71,7 @@ public class EnvironmentProvider(
     {
         if (!extensions.Any())
         {
-            extensions = [.. ExecutableExtensions];
+            extensions = ExecutableExtensions.ToArray();
         }
 
         var commandPath = SearchPaths.Join(
@@ -87,7 +87,7 @@ public class EnvironmentProvider(
     {
         if (!extensions.Any())
         {
-            extensions = [.. ExecutableExtensions];
+            extensions = ExecutableExtensions.ToArray();
         }
 
         var commandPath = extensions.Select(e => Path.Combine(rootPath, commandName + e))

@@ -13,8 +13,9 @@ internal sealed class PerformanceLogManager
     private const string PerfLogRoot = "PerformanceLogs";
     private const int DefaultNumLogsToKeep = 10;
 
-    private readonly IFileSystem _fileSystem;
+    private IFileSystem _fileSystem;
     private string _perfLogRoot;
+    private string _currentLogDir;
 
     internal static PerformanceLogManager Instance
     {
@@ -54,7 +55,10 @@ internal sealed class PerformanceLogManager
         _fileSystem = fileSystem;
     }
 
-    internal string CurrentLogDirectory { get; private set; }
+    internal string CurrentLogDirectory
+    {
+        get { return _currentLogDir; }
+    }
 
     private void CreateLogDirectory()
     {
@@ -65,13 +69,13 @@ internal sealed class PerformanceLogManager
         }
 
         // Create a new perf log directory.
-        CurrentLogDirectory = Path.Combine(_perfLogRoot, Guid.NewGuid().ToString("N"));
-        _fileSystem.Directory.CreateDirectory(CurrentLogDirectory);
+        _currentLogDir = Path.Combine(_perfLogRoot, Guid.NewGuid().ToString("N"));
+        _fileSystem.Directory.CreateDirectory(_currentLogDir);
     }
 
     private void UseExistingLogDirectory(string logDirectory)
     {
-        CurrentLogDirectory = logDirectory;
+        _currentLogDir = logDirectory;
     }
 
     private void CleanupOldLogs()

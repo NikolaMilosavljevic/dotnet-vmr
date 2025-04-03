@@ -25,7 +25,7 @@ public class GenerateStaticWebAssetEndpointsPropsFile : Task
     public override bool Execute()
     {
         var endpoints = StaticWebAssetEndpoint.FromItemGroup(StaticWebAssetEndpoints);
-        var assets = StaticWebAsset.ToAssetDictionary(StaticWebAssets);
+        var assets = StaticWebAssets.Select(StaticWebAsset.FromTaskItem).ToDictionary(a => a.Identity, a => a);
         if (!ValidateArguments(endpoints, assets))
         {
             return false;

@@ -4,7 +4,6 @@
 #nullable disable
 
 using Microsoft.Deployment.DotNet.Releases;
-using Microsoft.DotNet.Cli.Commands.Sdk.Check;
 
 namespace Microsoft.DotNet.Tools.Sdk.Check
 {

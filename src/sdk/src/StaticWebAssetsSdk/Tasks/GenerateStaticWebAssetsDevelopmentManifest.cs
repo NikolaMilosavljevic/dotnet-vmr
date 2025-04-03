@@ -49,7 +49,7 @@ public class GenerateStaticWebAssetsDevelopmentManifest : Task
             }
 
             var manifest = ComputeDevelopmentManifest(
-                StaticWebAsset.FromTaskItemGroup(Assets),
+                Assets.Select(StaticWebAsset.FromTaskItem),
                 DiscoveryPatterns.Select(StaticWebAssetsDiscoveryPattern.FromTaskItem));
 
             PersistManifest(manifest);

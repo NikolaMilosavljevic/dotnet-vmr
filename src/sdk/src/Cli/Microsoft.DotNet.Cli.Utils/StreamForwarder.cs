@@ -99,7 +99,10 @@ public sealed class StreamForwarder
             _capture.WriteLine(str);
         }
 
-        _writeLine?.Invoke(str);
+        if (_writeLine != null)
+        {
+            _writeLine(str);
+        }
     }
 
     private void ThrowIfNull(object obj)

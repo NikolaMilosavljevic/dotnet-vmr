@@ -9,7 +9,7 @@ namespace Microsoft.DotNet.Cli;
 internal class PrintableTable<T>
 {
     public const string ColumnDelimiter = "      ";
-    private readonly List<Column> _columns = [];
+    private List<Column> _columns = [];
 
     private class Column
     {
@@ -94,7 +94,9 @@ internal class PrintableTable<T>
             throw new InvalidOperationException();
         }
 
-        return EnumerateLines(widths, [.. _columns.Select(c => new StringInfo(c.Header ?? ""))]);
+        return EnumerateLines(
+            widths,
+            _columns.Select(c => new StringInfo(c.Header ?? "")).ToArray());
     }
 
     private IEnumerable<string> EnumerateRowLines(T row, int[] widths)
@@ -104,7 +106,9 @@ internal class PrintableTable<T>
             throw new InvalidOperationException();
         }
 
-        return EnumerateLines(widths, [.. _columns.Select(c => new StringInfo(c.GetContent(row) ?? ""))]);
+        return EnumerateLines(
+            widths,
+            _columns.Select(c => new StringInfo(c.GetContent(row) ?? "")).ToArray());
     }
 
     private static IEnumerable<string> EnumerateLines(int[] widths, StringInfo[] contents)
@@ -174,19 +178,21 @@ internal class PrintableTable<T>
 
     private int[] CalculateColumnWidths(IEnumerable<T> rows)
     {
-        return [.. _columns.Select(c =>
-        {
-            var width = new StringInfo(c.Header ?? "").LengthInTextElements;
-
-            foreach (var row in rows)
+        return _columns
+            .Select(c =>
             {
-                width = Math.Max(
-                    width,
-                    new StringInfo(c.GetContent(row) ?? "").LengthInTextElements);
-            }
+                var width = new StringInfo(c.Header ?? "").LengthInTextElements;
 
-            return Math.Min(width, c.MaxWidth);
-        })];
+                foreach (var row in rows)
+                {
+                    width = Math.Max(
+                        width,
+                        new StringInfo(c.GetContent(row) ?? "").LengthInTextElements);
+                }
+
+                return Math.Min(width, c.MaxWidth);
+            })
+            .ToArray();
     }
 
     private static int CalculateTotalWidth(int[] widths)

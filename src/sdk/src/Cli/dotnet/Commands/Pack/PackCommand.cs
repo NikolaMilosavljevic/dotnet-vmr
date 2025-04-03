@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
-using Microsoft.DotNet.Cli.Commands.Restore;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Extensions;
+using Parser = Microsoft.DotNet.Cli.Parser;
 
-namespace Microsoft.DotNet.Cli.Commands.Pack;
+namespace Microsoft.DotNet.Tools.Pack;
 
 public class PackCommand(
     IEnumerable<string> msbuildArgs,
@@ -41,7 +42,7 @@ public class PackCommand(
         );
         msbuildArgs.AddRange(projectLocator.GetCustomDefaultConfigurationValueIfSpecified());
 
-        msbuildArgs.AddRange(slnOrProjectArgs ?? []);
+        msbuildArgs.AddRange(slnOrProjectArgs ?? Array.Empty<string>());
 
         bool noRestore = parseResult.HasOption(PackCommandParser.NoRestoreOption) || parseResult.HasOption(PackCommandParser.NoBuildOption);
 

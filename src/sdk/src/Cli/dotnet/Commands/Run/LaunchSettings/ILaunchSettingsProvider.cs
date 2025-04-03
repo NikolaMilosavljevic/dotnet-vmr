@@ -3,7 +3,7 @@
 
 using System.Text.Json;
 
-namespace Microsoft.DotNet.Cli.Commands.Run.LaunchSettings;
+namespace Microsoft.DotNet.Tools.Run.LaunchSettings;
 
 internal interface ILaunchSettingsProvider
 {

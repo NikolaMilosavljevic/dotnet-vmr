@@ -4,7 +4,8 @@
 #nullable disable
 
 using Microsoft.Deployment.DotNet.Releases;
-using Microsoft.DotNet.Cli.Commands.Workload.Install;
+using Microsoft.DotNet.Workloads.Workload.Install;
+using Microsoft.Extensions.EnvironmentAbstractions;
 using Microsoft.NET.Sdk.WorkloadManifestReader;
 
 namespace Microsoft.DotNet.Cli.Workload.Install.Tests

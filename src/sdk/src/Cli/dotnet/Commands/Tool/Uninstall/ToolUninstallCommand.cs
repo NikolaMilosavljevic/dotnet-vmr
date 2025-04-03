@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
-using Microsoft.DotNet.Cli.Commands.Tool.Common;
-using LocalizableStrings = Microsoft.DotNet.Tools.Tool.Uninstall.LocalizableStrings;
+using Microsoft.DotNet.Cli;
+using Microsoft.DotNet.Tools.Tool.Common;
 
-namespace Microsoft.DotNet.Cli.Commands.Tool.Uninstall;
+namespace Microsoft.DotNet.Tools.Tool.Uninstall;
 
 internal class ToolUninstallCommand(
     ParseResult result,

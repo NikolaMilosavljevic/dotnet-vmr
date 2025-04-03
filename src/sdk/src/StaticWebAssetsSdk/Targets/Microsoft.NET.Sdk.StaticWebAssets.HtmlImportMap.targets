@@ -1,6 +1,6 @@
 <!--
 ***********************************************************************************************
-Microsoft.NET.Sdk.StaticWebAssets.OverrideHtmlAssetPlaceholders.targets
+Microsoft.NET.Sdk.StaticWebAssets.HtmlImportMap.targets
 
 WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
           created a backup copy.  Incorrect changes to this file will make it
@@ -12,79 +12,74 @@ Copyright (c) .NET Foundation. All rights reserved.
 
 <Project ToolsVersion="14.0">
     
-  <UsingTask TaskName="Microsoft.AspNetCore.StaticWebAssets.Tasks.OverrideHtmlAssetPlaceholders" AssemblyFile="$(StaticWebAssetsSdkBuildTasksAssembly)" />
-
-  <PropertyGroup>
-    <!-- Workaround until we update runtime -->
-    <WriteImportMapToHtml>true</WriteImportMapToHtml>
-  </PropertyGroup>
+  <UsingTask TaskName="Microsoft.AspNetCore.StaticWebAssets.Tasks.WriteImportMapToHtml" AssemblyFile="$(StaticWebAssetsSdkBuildTasksAssembly)" />
 
   <PropertyGroup>
 
     <!--
         ResolveBuildRelatedStaticWebAssets
-          ResolveHtmlAssetPlaceholdersBuildStaticWebAssets
-            GenerateHtmlAssetPlaceholdersBuildStaticWebAssets
-              ResolveHtmlAssetPlaceholdersBuildConfiguration
+          ResolveHtmlImportMapBuildStaticWebAssets
+            GenerateHtmlImportMapBuildStaticWebAssets
+              ResolveHtmlImportMapBuildConfiguration
      -->
     <ResolveBuildRelatedStaticWebAssetsDependsOn>
       $(ResolveBuildRelatedStaticWebAssetsDependsOn);
-      ResolveHtmlAssetPlaceholdersBuildStaticWebAssets;
+      ResolveHtmlImportMapBuildStaticWebAssets;
     </ResolveBuildRelatedStaticWebAssetsDependsOn>
     <ResolveCompressedFilesDependsOn>
       $(ResolveCompressedFilesDependsOn);
-      ResolveHtmlAssetPlaceholdersBuildStaticWebAssets
+      ResolveHtmlImportMapBuildStaticWebAssets
     </ResolveCompressedFilesDependsOn>
     <ResolveBuildServiceWorkerStaticWebAssetsDependsOn>
       $(ResolveBuildServiceWorkerStaticWebAssetsDependsOn);
-      ResolveHtmlAssetPlaceholdersBuildStaticWebAssets
+      ResolveHtmlImportMapBuildStaticWebAssets
     </ResolveBuildServiceWorkerStaticWebAssetsDependsOn>
-    <ResolveHtmlAssetPlaceholdersBuildStaticWebAssetsDependsOn>
-      $(ResolveHtmlAssetPlaceholdersBuildStaticWebAssetsDependsOn);
-      GenerateHtmlAssetPlaceholdersBuildStaticWebAssets
-    </ResolveHtmlAssetPlaceholdersBuildStaticWebAssetsDependsOn>
-    <GenerateHtmlAssetPlaceholdersBuildStaticWebAssetsDependsOn>
-      $(GenerateHtmlAssetPlaceholdersBuildStaticWebAssetsDependsOn);
-      ResolveHtmlAssetPlaceholdersBuildConfiguration
-    </GenerateHtmlAssetPlaceholdersBuildStaticWebAssetsDependsOn>
+    <ResolveHtmlImportMapBuildStaticWebAssetsDependsOn>
+      GenerateHtmlImportMapBuildStaticWebAssets;
+      $(ResolveHtmlImportMapBuildStaticWebAssetsDependsOn)
+    </ResolveHtmlImportMapBuildStaticWebAssetsDependsOn>
+    <GenerateHtmlImportMapBuildStaticWebAssetsDependsOn>
+      ResolveHtmlImportMapBuildConfiguration;
+      $(GenerateHtmlImportMapBuildStaticWebAssetsDependsOn)
+    </GenerateHtmlImportMapBuildStaticWebAssetsDependsOn>
 
     <!--
         ResolvePublishRelatedStaticWebAssets
-          ResolveHtmlAssetPlaceholdersPublishStaticWebAssets
-            GenerateHtmlAssetPlaceholdersPublishStaticWebAssets
-              ResolveHtmlAssetPlaceholdersPublishConfiguration
+          ResolveHtmlImportMapPublishStaticWebAssets
+            GenerateHtmlImportMapPublishStaticWebAssets
+              ResolveHtmlImportMapPublishConfiguration
      -->
     <ResolvePublishRelatedStaticWebAssetsDependsOn>
       $(ResolvePublishRelatedStaticWebAssetsDependsOn);
-      ResolveHtmlAssetPlaceholdersPublishStaticWebAssets
+      ResolveHtmlImportMapPublishStaticWebAssets
     </ResolvePublishRelatedStaticWebAssetsDependsOn>
     <ResolvePublishCompressedStaticWebAssetsDependsOn>
       $(ResolvePublishCompressedStaticWebAssetsDependsOn);
-      ResolveHtmlAssetPlaceholdersPublishStaticWebAssets
+      ResolveHtmlImportMapPublishStaticWebAssets
     </ResolvePublishCompressedStaticWebAssetsDependsOn>
     <ResolvePublishServiceWorkerStaticWebAssetsDependsOn>
       $(ResolvePublishServiceWorkerStaticWebAssetsDependsOn);
-      ResolveHtmlAssetPlaceholdersPublishStaticWebAssets
+      ResolveHtmlImportMapPublishStaticWebAssets
     </ResolvePublishServiceWorkerStaticWebAssetsDependsOn>
-    <ResolveHtmlAssetPlaceholdersPublishStaticWebAssetsDependsOn>
-      $(ResolveHtmlAssetPlaceholdersPublishStaticWebAssetsDependsOn);
-      GenerateHtmlAssetPlaceholdersPublishStaticWebAssets
-    </ResolveHtmlAssetPlaceholdersPublishStaticWebAssetsDependsOn>
-    <GenerateHtmlAssetPlaceholdersPublishStaticWebAssetsDependsOn>
-      $(GenerateHtmlAssetPlaceholdersPublishStaticWebAssetsDependsOn);
-      ResolveHtmlAssetPlaceholdersPublishConfiguration
-    </GenerateHtmlAssetPlaceholdersPublishStaticWebAssetsDependsOn>
+    <ResolveHtmlImportMapPublishStaticWebAssetsDependsOn>
+      GenerateHtmlImportMapPublishStaticWebAssets;
+      $(ResolveHtmlImportMapPublishStaticWebAssetsDependsOn)
+    </ResolveHtmlImportMapPublishStaticWebAssetsDependsOn>
+    <GenerateHtmlImportMapPublishStaticWebAssetsDependsOn>
+      ResolveHtmlImportMapPublishConfiguration;
+      $(GenerateHtmlImportMapPublishStaticWebAssetsDependsOn)
+    </GenerateHtmlImportMapPublishStaticWebAssetsDependsOn>
 
   </PropertyGroup>
 
   <!-- Build -->
 
-  <Target Name="ResolveHtmlAssetPlaceholdersBuildConfiguration">
+  <Target Name="ResolveHtmlImportMapBuildConfiguration">
     <PropertyGroup>
-      <_BuildHtmlAssetPlaceholdersPath>$([MSBuild]::NormalizeDirectory($(_StaticWebAssetsIntermediateOutputPath), 'htmlassetplaceholders', 'build'))</_BuildHtmlAssetPlaceholdersPath>
+      <_BuildImportMapHtmlPath>$([MSBuild]::NormalizeDirectory($(_StaticWebAssetsIntermediateOutputPath), 'importmaphtml', 'build'))</_BuildImportMapHtmlPath>
     </PropertyGroup>
 
-    <MakeDir Directories="$(_BuildHtmlAssetPlaceholdersPath)"/>
+    <MakeDir Directories="$(_BuildImportMapHtmlPath)"/>
 
     <ItemGroup>
       <_HtmlStaticWebAssets Include="@(StaticWebAsset)" Condition="'%(AssetKind)' != 'Publish' and '%(Extension)' == '.html'" />
@@ -100,25 +95,25 @@ Copyright (c) .NET Foundation. All rights reserved.
     </FilterStaticWebAssetEndpoints>
   </Target>
 
-  <Target Name="GenerateHtmlAssetPlaceholdersBuildStaticWebAssets" DependsOnTargets="$(GenerateHtmlAssetPlaceholdersBuildStaticWebAssetsDependsOn)">
-    <OverrideHtmlAssetPlaceholders
+  <Target Name="GenerateHtmlImportMapBuildStaticWebAssets" DependsOnTargets="$(GenerateHtmlImportMapBuildStaticWebAssetsDependsOn)">
+    <WriteImportMapToHtml
       Assets="@(_EsModuleCandidate)"
       Endpoints="@(_EsModuleCandidateEndpoints)"
       IncludeOnlyHardFingerprintedModules="false"
       HtmlFiles="@(_HtmlStaticWebAssets)"
-      OutputPath="$(_BuildHtmlAssetPlaceholdersPath)">
+      OutputPath="$(_BuildImportMapHtmlPath)">
       <Output TaskParameter="HtmlCandidates" ItemName="_HtmlCandidates" />
       <Output TaskParameter="HtmlFilesToRemove" ItemName="_HtmlFilesToRemove" />
       <Output TaskParameter="FileWrites" ItemName="FileWrites" />
-    </OverrideHtmlAssetPlaceholders>
+    </WriteImportMapToHtml>
   </Target>
 
-  <Target Name="ResolveHtmlAssetPlaceholdersBuildStaticWebAssets" DependsOnTargets="$(ResolveHtmlAssetPlaceholdersBuildStaticWebAssetsDependsOn)">
+  <Target Name="ResolveHtmlImportMapBuildStaticWebAssets" DependsOnTargets="$(ResolveHtmlImportMapBuildStaticWebAssetsDependsOn)">
     <ItemGroup>
       <_HtmlCandidatesNoMetadata
         Include="@(_HtmlCandidates)"
         RemoveMetadata="SourceType;AssetKind;Integrity;Fingerprint" />
-      <_HtmlCandidatesNoMetadata ContentRoot="$(_BuildHtmlAssetPlaceholdersPath)" />
+      <_HtmlCandidatesNoMetadata ContentRoot="$(_BuildImportMapHtmlPath)" />
     </ItemGroup>
     <DefineStaticWebAssets CandidateAssets="@(_HtmlCandidatesNoMetadata)"
       SourceType="Computed"
@@ -150,12 +145,12 @@ Copyright (c) .NET Foundation. All rights reserved.
   
   <!-- Publish -->
 
-  <Target Name="ResolveHtmlAssetPlaceholdersPublishConfiguration">
+  <Target Name="ResolveHtmlImportMapPublishConfiguration">
     <PropertyGroup>
-      <_PublishHtmlAssetPlaceholdersPath>$([MSBuild]::NormalizeDirectory($(_StaticWebAssetsIntermediateOutputPath), 'htmlassetplaceholders', 'publish'))</_PublishHtmlAssetPlaceholdersPath>
+      <_PublishImportMapHtmlPath>$([MSBuild]::NormalizeDirectory($(_StaticWebAssetsIntermediateOutputPath), 'importmaphtml', 'publish'))</_PublishImportMapHtmlPath>
     </PropertyGroup>
 
-    <MakeDir Directories="$(_PublishHtmlAssetPlaceholdersPath)"/>
+    <MakeDir Directories="$(_PublishImportMapHtmlPath)"/>
 
     <ItemGroup>
       <_EsModuleCandidateForPublish Include="@(StaticWebAsset)" Condition="'%(AssetKind)' != 'Build'" />
@@ -170,25 +165,25 @@ Copyright (c) .NET Foundation. All rights reserved.
     </FilterStaticWebAssetEndpoints>
   </Target>
 
-  <Target Name="GenerateHtmlAssetPlaceholdersPublishStaticWebAssets" DependsOnTargets="$(GenerateHtmlAssetPlaceholdersPublishStaticWebAssetsDependsOn)">
-    <OverrideHtmlAssetPlaceholders
+  <Target Name="GenerateHtmlImportMapPublishStaticWebAssets" DependsOnTargets="$(GenerateHtmlImportMapPublishStaticWebAssetsDependsOn)">
+    <WriteImportMapToHtml
       Assets="@(_EsModuleCandidateForPublish)"
       Endpoints="@(_EsModuleCandidateForPublishEndpoints)"
       IncludeOnlyHardFingerprintedModules="true"
       HtmlFiles="@(_HtmlStaticWebAssets)"
-      OutputPath="$(_PublishHtmlAssetPlaceholdersPath)">
+      OutputPath="$(_PublishImportMapHtmlPath)">
       <Output TaskParameter="HtmlCandidates" ItemName="_HtmlPublishCandidates" />
       <Output TaskParameter="HtmlFilesToRemove" ItemName="_HtmlPublishFilesToRemove" />
       <Output TaskParameter="FileWrites" ItemName="FileWrites" />
-    </OverrideHtmlAssetPlaceholders>
+    </WriteImportMapToHtml>
   </Target>
 
-  <Target Name="ResolveHtmlAssetPlaceholdersPublishStaticWebAssets" DependsOnTargets="$(ResolveHtmlAssetPlaceholdersPublishStaticWebAssetsDependsOn)">
+  <Target Name="ResolveHtmlImportMapPublishStaticWebAssets" DependsOnTargets="$(ResolveHtmlImportMapPublishStaticWebAssetsDependsOn)">
     <ItemGroup>
       <_HtmlPublishCandidatesNoMetadata
         Include="@(_HtmlPublishCandidates)"
         RemoveMetadata="SourceType;AssetKind;Integrity;Fingerprint" />
-      <_HtmlPublishCandidatesNoMetadata ContentRoot="$(_PublishHtmlAssetPlaceholdersPath)" />
+      <_HtmlPublishCandidatesNoMetadata ContentRoot="$(_PublishImportMapHtmlPath)" />
     </ItemGroup>
     <DefineStaticWebAssets CandidateAssets="@(_HtmlPublishCandidatesNoMetadata)"
       SourceType="Computed"

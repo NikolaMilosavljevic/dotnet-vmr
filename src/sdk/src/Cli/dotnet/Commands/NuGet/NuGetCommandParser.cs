@@ -3,9 +3,9 @@
 
 using System.CommandLine;
 using Microsoft.DotNet.Cli.Extensions;
-using NuGetWhyCommand = NuGet.CommandLine.XPlat.Commands.Why.WhyCommand;
+using Microsoft.DotNet.Tools.NuGet;
 
-namespace Microsoft.DotNet.Cli.Commands.NuGet;
+namespace Microsoft.DotNet.Cli;
 
 // This parser is used for completion and telemetry.
 // See https://github.com/NuGet/NuGet.Client for the actual implementation.
@@ -40,7 +40,7 @@ internal static class NuGetCommandParser
         command.Subcommands.Add(GetVerifyCommand());
         command.Subcommands.Add(GetTrustCommand());
         command.Subcommands.Add(GetSignCommand());
-        NuGetWhyCommand.GetWhyCommand(command);
+        NuGet.CommandLine.XPlat.Commands.Why.WhyCommand.GetWhyCommand(command);
 
         command.SetAction(NuGetCommand.Run);
 

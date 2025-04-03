@@ -5,7 +5,6 @@
 
 using System.CommandLine;
 using Microsoft.DotNet.Cli.BuildServer;
-using Microsoft.DotNet.Cli.Commands.BuildServer.Shutdown;
 using Microsoft.DotNet.Cli.Utils.Extensions;
 using Microsoft.DotNet.Tools.Test.Utilities;
 using Microsoft.Extensions.EnvironmentAbstractions;
@@ -194,14 +193,14 @@ namespace Microsoft.DotNet.Tests.Commands
                         pidFile.ProcessId));
         }
 
-        private BuildServerShutdownCommand CreateCommand(
+        private Tools.BuildServer.Shutdown.BuildServerShutdownCommand CreateCommand(
             string options = "",
             IBuildServerProvider serverProvider = null,
             IEnumerable<IBuildServer> buildServers = null,
             ServerEnumerationFlags expectedFlags = ServerEnumerationFlags.None)
         {
             ParseResult result = Parser.Instance.Parse($"dotnet build-server shutdown {options}".Trim());
-            return new BuildServerShutdownCommand(
+            return new Tools.BuildServer.Shutdown.BuildServerShutdownCommand(
                 result: result,
                 serverProvider: serverProvider,
                 useOrderedWait: true,

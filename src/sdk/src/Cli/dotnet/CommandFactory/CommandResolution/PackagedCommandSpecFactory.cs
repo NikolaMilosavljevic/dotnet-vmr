@@ -11,7 +11,7 @@ public class PackagedCommandSpecFactory : IPackagedCommandSpecFactory
 {
     private const string PackagedCommandSpecFactoryName = "packagedcommandspecfactory";
 
-    private readonly Action<string, IList<string>> _addAdditionalArguments;
+    private Action<string, IList<string>> _addAdditionalArguments;
 
     internal PackagedCommandSpecFactory(Action<string, IList<string>> addAdditionalArguments = null)
     {
@@ -66,7 +66,7 @@ public class PackagedCommandSpecFactory : IPackagedCommandSpecFactory
             runtimeConfigPath);
     }
 
-    private static string GetCommandFilePath(
+    private string GetCommandFilePath(
         LockFile lockFile,
         LockFileTargetLibrary toolLibrary,
         LockFileItem runtimeAssembly)
@@ -116,11 +116,12 @@ public class PackagedCommandSpecFactory : IPackagedCommandSpecFactory
         IEnumerable<string> packageFolders,
         string runtimeConfigPath)
     {
+        var host = string.Empty;
         var arguments = new List<string>();
 
         var muxer = new Muxer();
 
-        string host = muxer.MuxerPath;
+        host = muxer.MuxerPath;
         if (host == null)
         {
             throw new Exception(LocalizableStrings.UnableToLocateDotnetMultiplexer);
@@ -157,7 +158,7 @@ public class PackagedCommandSpecFactory : IPackagedCommandSpecFactory
         return CreateCommandSpec(host, arguments);
     }
 
-    private static CommandSpec CreateCommandSpec(
+    private CommandSpec CreateCommandSpec(
         string commandPath,
         IEnumerable<string> commandArguments)
     {

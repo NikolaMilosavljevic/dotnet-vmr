@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
-using Microsoft.DotNet.Cli.Commands.Tool.Install;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Utils;
-using LocalizableStrings = Microsoft.DotNet.Tools.Tool.Common.LocalizableStrings;
 using UpdateToolsLocalizableStrings = Microsoft.DotNet.Tools.Tool.Update.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Tool.Common;
+namespace Microsoft.DotNet.Tools.Tool.Common;
 
 internal class ToolAppliedOption
 {
@@ -33,12 +32,12 @@ internal class ToolAppliedOption
 
     public static CliOption<string> ToolPathOption = new("--tool-path")
     {
-        HelpName = Tools.Tool.Install.LocalizableStrings.ToolPathOptionName
+        HelpName = Install.LocalizableStrings.ToolPathOptionName
     };
 
     public static CliOption<string> ToolManifestOption = new("--tool-manifest")
     {
-        HelpName = Tools.Tool.Install.LocalizableStrings.ManifestPathOptionName,
+        HelpName = Install.LocalizableStrings.ManifestPathOptionName,
         Arity = ArgumentArity.ZeroOrOne
     };
 

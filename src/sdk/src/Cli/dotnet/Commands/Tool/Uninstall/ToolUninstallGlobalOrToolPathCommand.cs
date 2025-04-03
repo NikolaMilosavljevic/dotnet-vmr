@@ -3,16 +3,15 @@
 
 using System.CommandLine;
 using System.Transactions;
-using Microsoft.DotNet.Cli.Commands.Tool.Common;
-using Microsoft.DotNet.Cli.Commands.Tool.Install;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.ShellShim;
 using Microsoft.DotNet.Cli.ToolPackage;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.Cli.Utils.Extensions;
+using Microsoft.DotNet.Tools.Tool.Common;
 using Microsoft.Extensions.EnvironmentAbstractions;
-using LocalizableStrings = Microsoft.DotNet.Tools.Tool.Uninstall.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Tool.Uninstall;
+namespace Microsoft.DotNet.Tools.Tool.Uninstall;
 
 internal delegate IShellShimRepository CreateShellShimRepository(string appHostSourceDirectory, DirectoryPath? nonGlobalLocation = null);
 internal delegate (IToolPackageStore, IToolPackageStoreQuery, IToolPackageUninstaller) CreateToolPackageStoresAndUninstaller(DirectoryPath? nonGlobalLocation = null);
@@ -24,8 +23,8 @@ internal class ToolUninstallGlobalOrToolPathCommand(
 {
     private readonly IReporter _reporter = reporter ?? Reporter.Output;
     private readonly IReporter _errorReporter = reporter ?? Reporter.Error;
-    private readonly CreateShellShimRepository _createShellShimRepository = createShellShimRepository ?? ShellShimRepositoryFactory.CreateShellShimRepository;
-    private readonly CreateToolPackageStoresAndUninstaller _createToolPackageStoresAndUninstaller = createToolPackageStoreAndUninstaller ??
+    private CreateShellShimRepository _createShellShimRepository = createShellShimRepository ?? ShellShimRepositoryFactory.CreateShellShimRepository;
+    private CreateToolPackageStoresAndUninstaller _createToolPackageStoresAndUninstaller = createToolPackageStoreAndUninstaller ??
                                                 ToolPackageFactory.CreateToolPackageStoresAndUninstaller;
 
     public override int Execute()
@@ -53,7 +52,7 @@ internal class ToolUninstallGlobalOrToolPathCommand(
         IShellShimRepository shellShimRepository = _createShellShimRepository(appHostSourceDirectory, toolDirectoryPath);
 
         var packageId = new PackageId(_parseResult.GetValue(ToolInstallCommandParser.PackageIdArgument));
-        IToolPackage package;
+        IToolPackage package = null;
         try
         {
             package = toolPackageStoreQuery.EnumeratePackageVersions(packageId).SingleOrDefault();

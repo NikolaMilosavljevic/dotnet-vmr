@@ -62,16 +62,22 @@ internal class FrameworkDependencyFile
 
         if (!string.IsNullOrEmpty(currentRuntimeIdentifier))
         {
-            runtimeFallbacksCandidates = [.. runtimeGraph.Where(g => string.Equals(g.Runtime, currentRuntimeIdentifier, StringComparison.OrdinalIgnoreCase))];
+            runtimeFallbacksCandidates =
+                runtimeGraph
+                .Where(g => string.Equals(g.Runtime, currentRuntimeIdentifier, StringComparison.OrdinalIgnoreCase))
+                .ToArray();
         }
         else
         {
-            runtimeFallbacksCandidates = [];
+            runtimeFallbacksCandidates = Array.Empty<RuntimeFallbacks>();
         }
 
         if (runtimeFallbacksCandidates.Length == 0 && !string.IsNullOrEmpty(alternativeCurrentRuntimeIdentifier))
         {
-            runtimeFallbacksCandidates = [.. runtimeGraph.Where(g => string.Equals(g.Runtime, alternativeCurrentRuntimeIdentifier, StringComparison.OrdinalIgnoreCase))];
+            runtimeFallbacksCandidates =
+                runtimeGraph
+                .Where(g => string.Equals(g.Runtime, alternativeCurrentRuntimeIdentifier, StringComparison.OrdinalIgnoreCase))
+                .ToArray();
         }
 
         if (runtimeFallbacksCandidates.Length == 0)

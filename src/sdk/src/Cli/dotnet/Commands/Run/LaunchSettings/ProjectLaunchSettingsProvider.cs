@@ -2,15 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Text.Json;
-using Microsoft.DotNet.Tools.Run;
 
-namespace Microsoft.DotNet.Cli.Commands.Run.LaunchSettings;
+namespace Microsoft.DotNet.Tools.Run.LaunchSettings;
 
 internal class ProjectLaunchSettingsProvider : ILaunchSettingsProvider
 {
     public static readonly string CommandNameValue = "Project";
 
-    public static string CommandName => CommandNameValue;
+    public string CommandName => CommandNameValue;
 
     public LaunchSettingsApplyResult TryGetLaunchSettings(string? launchProfileName, JsonElement model)
     {

@@ -3,13 +3,13 @@
 
 using LocalizableStrings = Microsoft.DotNet.Tools.New.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.New.MSBuildEvaluation;
+namespace Microsoft.TemplateEngine.MSBuildEvaluation;
 
 internal class MultipleProjectsEvaluationResult : MSBuildEvaluationResult
 {
     private MultipleProjectsEvaluationResult() : base(EvalStatus.MultipleProjectFound) { }
 
-    internal IReadOnlyList<string> ProjectPaths { get; private set; } = [];
+    internal IReadOnlyList<string> ProjectPaths { get; private set; } = Array.Empty<string>();
 
     internal static MultipleProjectsEvaluationResult Create(IReadOnlyList<string> projectPaths)
     {

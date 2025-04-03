@@ -323,7 +323,7 @@ internal sealed class TestResultMessagesSerializer : BaseSerializer, INamedPipeS
             exceptionMessages.Add(new ExceptionMessage(errorMessage, errorType, stackTrace));
         }
 
-        return [.. exceptionMessages];
+        return exceptionMessages.ToArray();
     }
 
     public void Serialize(object objectToSerialize, Stream stream)

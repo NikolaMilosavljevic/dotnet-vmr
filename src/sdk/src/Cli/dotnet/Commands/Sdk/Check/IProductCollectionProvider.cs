@@ -3,7 +3,7 @@
 
 using Microsoft.Deployment.DotNet.Releases;
 
-namespace Microsoft.DotNet.Cli.Commands.Sdk.Check;
+namespace Microsoft.DotNet.Tools.Sdk.Check;
 
 public interface IProductCollectionProvider
 {

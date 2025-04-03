@@ -1,9 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using MSBuildProject = Microsoft.Build.Evaluation.Project;
+using Microsoft.Build.Evaluation;
 
-namespace Microsoft.DotNet.Cli.Commands.New.MSBuildEvaluation;
+namespace Microsoft.TemplateEngine.MSBuildEvaluation;
 
 /// <summary>
 /// Represents the result of evaluation for mon-SDK style project.
@@ -16,7 +16,7 @@ internal class NonSDKStyleEvaluationResult : MSBuildEvaluationResult
 
     internal string? PlatformTarget => EvaluatedProject?.GetProperty("PlatformTarget").EvaluatedValue;
 
-    internal static NonSDKStyleEvaluationResult CreateSuccess(string path, MSBuildProject project)
+    internal static NonSDKStyleEvaluationResult CreateSuccess(string path, Project project)
     {
         return new NonSDKStyleEvaluationResult(path)
         {

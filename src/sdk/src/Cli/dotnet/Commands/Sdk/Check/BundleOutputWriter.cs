@@ -5,7 +5,7 @@ using Microsoft.Deployment.DotNet.Releases;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.NativeWrapper;
 
-namespace Microsoft.DotNet.Cli.Commands.Sdk.Check;
+namespace Microsoft.DotNet.Tools.Sdk.Check;
 
 internal class BundleOutputWriter(
     ProductCollection productCollection,

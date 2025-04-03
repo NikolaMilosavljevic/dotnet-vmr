@@ -4,16 +4,15 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Microsoft.DotNet.Cli.Utils;
-using LocalizableStrings = Microsoft.DotNet.Tools.Run.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Run.LaunchSettings;
+namespace Microsoft.DotNet.Tools.Run.LaunchSettings;
 
 internal class LaunchSettingsManager
 {
     private const string ProfilesKey = "profiles";
     private const string CommandNameKey = "commandName";
     private const string DefaultProfileCommandName = "Project";
-    private static readonly IReadOnlyDictionary<string, ILaunchSettingsProvider> _providers;
+    private static IReadOnlyDictionary<string, ILaunchSettingsProvider> _providers;
 
     static LaunchSettingsManager()
     {
@@ -52,9 +51,10 @@ internal class LaunchSettingsManager
                 }
                 else // Find a profile match for the given profileName
                 {
-                    IEnumerable<JsonProperty> caseInsensitiveProfileMatches = [.. profilesObject
+                    IEnumerable<JsonProperty> caseInsensitiveProfileMatches = profilesObject
                         .EnumerateObject() // p.Name shouldn't fail, as profileObject enumerables here are only created from an existing JsonObject
-                        .Where(p => string.Equals(p.Name, profileName, StringComparison.OrdinalIgnoreCase))];
+                        .Where(p => string.Equals(p.Name, profileName, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
 
                     if (caseInsensitiveProfileMatches.Count() > 1)
                     {

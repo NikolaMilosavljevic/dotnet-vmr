@@ -2,9 +2,10 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Globalization;
+using Microsoft.Testing.Platform.Helpers;
 using LocalizableStrings = Microsoft.DotNet.Tools.Test.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Test.Terminal;
+namespace Microsoft.Testing.Platform.OutputDevice.Terminal;
 
 /// <summary>
 /// Non-ANSI terminal that writes text using the standard Console.Foreground color capabilities to stay compatible with
@@ -177,7 +178,6 @@ internal sealed class NonAnsiTerminal : ITerminal
             int passed = p.PassedTests;
             int failed = p.FailedTests;
             int skipped = p.SkippedTests;
-            int retried = p.RetriedFailedTests;
 
             // Use just ascii here, so we don't put too many restrictions on fonts needing to
             // properly show unicode, or logs being saved in particular encoding.
@@ -200,15 +200,6 @@ internal sealed class NonAnsiTerminal : ITerminal
             Append('?');
             Append(skipped.ToString(CultureInfo.CurrentCulture));
             ResetColor();
-
-            if (retried > 0)
-            {
-                SetColor(TerminalColor.Gray);
-                Append('r');
-                Append(retried.ToString(CultureInfo.CurrentCulture));
-                ResetColor();
-            }
-
             Append(']');
 
             Append(' ');
@@ -232,7 +223,7 @@ internal sealed class NonAnsiTerminal : ITerminal
             }
 
             TestDetailState? activeTest = p.TestNodeResultsState?.GetRunningTasks(1).FirstOrDefault();
-            if (!string.IsNullOrWhiteSpace(activeTest?.Text))
+            if (!String.IsNullOrWhiteSpace(activeTest?.Text))
             {
                 Append(" - ");
                 Append(activeTest.Text);

@@ -2,12 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.VisualStudio.SolutionPersistence;
 using Microsoft.VisualStudio.SolutionPersistence.Model;
 using Microsoft.VisualStudio.SolutionPersistence.Serializer.SlnV12;
 
-namespace Microsoft.DotNet.Cli.Commands.Solution.Remove;
+namespace Microsoft.DotNet.Tools.Sln.Remove;
 
 internal class RemoveProjectFromSolutionCommand : CommandBase
 {
@@ -18,7 +19,7 @@ internal class RemoveProjectFromSolutionCommand : CommandBase
     {
         _fileOrDirectory = parseResult.GetValue(SlnCommandParser.SlnArgument);
 
-        _projects = (parseResult.GetValue(SlnRemoveParser.ProjectPathArgument) ?? []).ToList().AsReadOnly();
+        _projects = (parseResult.GetValue(SlnRemoveParser.ProjectPathArgument) ?? Array.Empty<string>()).ToList().AsReadOnly();
 
         SlnArgumentValidator.ParseAndValidateArguments(_fileOrDirectory, _projects, SlnArgumentValidator.CommandType.Remove);
     }
@@ -54,7 +55,7 @@ internal class RemoveProjectFromSolutionCommand : CommandBase
         }
     }
 
-    private static async Task RemoveProjectsAsync(string solutionFileFullPath, IEnumerable<string> projectPaths, CancellationToken cancellationToken)
+    private async Task RemoveProjectsAsync(string solutionFileFullPath, IEnumerable<string> projectPaths, CancellationToken cancellationToken)
     {
         SolutionModel solution = SlnFileFactory.CreateFromFileOrDirectory(solutionFileFullPath);
         ISolutionSerializer serializer = solution.SerializerExtension.Serializer;

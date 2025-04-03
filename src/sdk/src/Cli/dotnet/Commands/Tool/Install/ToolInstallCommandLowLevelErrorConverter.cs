@@ -3,9 +3,8 @@
 
 using Microsoft.DotNet.Cli.ShellShim;
 using Microsoft.DotNet.Cli.ToolPackage;
-using LocalizableStrings = Microsoft.DotNet.Tools.Tool.Install.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Tool.Install;
+namespace Microsoft.DotNet.Tools.Tool.Install;
 
 internal static class InstallToolCommandLowLevelErrorConverter
 {

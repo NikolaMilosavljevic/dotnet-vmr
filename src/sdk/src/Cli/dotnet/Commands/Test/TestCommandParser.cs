@@ -3,10 +3,11 @@
 
 using System.CommandLine;
 using Microsoft.DotNet.Cli.Extensions;
+using Microsoft.DotNet.Tools.Test;
 using Microsoft.Extensions.Configuration;
 using LocalizableStrings = Microsoft.DotNet.Tools.Test.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Test;
+namespace Microsoft.DotNet.Cli;
 
 internal static class TestCommandParser
 {

@@ -3,7 +3,7 @@
 
 using System.Threading.Channels;
 
-namespace Microsoft.DotNet.Cli.Commands.Test;
+namespace Microsoft.DotNet.Cli;
 
 internal class TestApplicationActionQueue
 {

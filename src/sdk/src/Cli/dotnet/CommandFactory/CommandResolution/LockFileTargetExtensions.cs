@@ -52,7 +52,7 @@ internal static class LockFileTargetExtensions
             allExclusionList.UnionWith(lockFileTarget.GetPlatformExclusionList(libraryLookup));
         }
 
-        return [.. runtimeLibraries.Filter(allExclusionList)];
+        return runtimeLibraries.Filter(allExclusionList).ToArray();
     }
 
     public static IEnumerable<LockFileTargetLibrary> GetCompileLibraries(this LockFileTarget lockFileTarget)

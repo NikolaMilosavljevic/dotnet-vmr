@@ -18,7 +18,7 @@ public class DefaultCommandResolverPolicy : ICommandResolverPolicy
         var packagedCommandSpecFactory = new PackagedCommandSpecFactoryWithCliRuntime();
         var publishedPathCommandSpecFactory = new PublishPathCommandSpecFactory();
 
-        IPlatformCommandSpecFactory platformCommandSpecFactory;
+        var platformCommandSpecFactory = default(IPlatformCommandSpecFactory);
         if (OperatingSystem.IsWindows())
         {
             platformCommandSpecFactory = new WindowsExePreferredCommandSpecFactory();

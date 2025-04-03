@@ -3,7 +3,7 @@
 
 using System.Diagnostics;
 
-namespace Microsoft.DotNet.Cli.Commands.Test.Terminal;
+namespace Microsoft.Testing.Platform.Helpers;
 
 internal sealed class SystemStopwatch : IStopwatch
 {

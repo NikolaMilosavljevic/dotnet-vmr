@@ -208,7 +208,7 @@ public class GenerateStaticWebAssetEndpointsPropsFileTest
         return result.ToTaskItem();
     }
 
-    private static ITaskItem CreateStaticWebAssetEndpoint(
+    private static TaskItem CreateStaticWebAssetEndpoint(
         string route,
         string assetFile,
         StaticWebAssetEndpointResponseHeader[] responseHeaders = null,

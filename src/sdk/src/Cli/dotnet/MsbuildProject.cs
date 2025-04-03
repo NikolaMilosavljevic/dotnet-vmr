@@ -20,11 +20,11 @@ internal class MsbuildProject
     public ProjectRootElement ProjectRootElement { get; private set; }
     public string ProjectDirectory { get; private set; }
 
-    private readonly ProjectCollection _projects;
+    private ProjectCollection _projects;
     private List<NuGetFramework> _cachedTfms = null;
     private IEnumerable<string> cachedRuntimeIdentifiers;
     private IEnumerable<string> cachedConfigurations;
-    private readonly bool _interactive = false;
+    private bool _interactive = false;
 
     private MsbuildProject(ProjectCollection projects, ProjectRootElement project, bool interactive)
     {
@@ -153,7 +153,8 @@ internal class MsbuildProject
 
     public IEnumerable<string> GetRuntimeIdentifiers()
     {
-        return cachedRuntimeIdentifiers ??= GetEvaluatedProject().GetRuntimeIdentifiers();
+        return cachedRuntimeIdentifiers ??
+               (cachedRuntimeIdentifiers = GetEvaluatedProject().GetRuntimeIdentifiers());
     }
 
     public IEnumerable<NuGetFramework> GetTargetFrameworks()
@@ -164,13 +165,14 @@ internal class MsbuildProject
         }
 
         var project = GetEvaluatedProject();
-        _cachedTfms = [.. project.GetTargetFrameworks()];
+        _cachedTfms = project.GetTargetFrameworks().ToList();
         return _cachedTfms;
     }
 
     public IEnumerable<string> GetConfigurations()
     {
-        return cachedConfigurations ??= GetEvaluatedProject().GetConfigurations();
+        return cachedConfigurations ??
+               (cachedConfigurations = GetEvaluatedProject().GetConfigurations());
     }
 
     public bool CanWorkOnFramework(NuGetFramework framework)

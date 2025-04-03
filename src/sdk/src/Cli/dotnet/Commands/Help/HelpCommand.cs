@@ -3,14 +3,15 @@
 
 using System.CommandLine;
 using System.Diagnostics;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Extensions;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.Cli.Utils.Extensions;
 using Microsoft.TemplateEngine.Cli.Commands;
-using LocalizableStrings = Microsoft.DotNet.Tools.Help.LocalizableStrings;
+
 using NuGetDocumentedCommand = NuGet.CommandLine.XPlat.Commands.DocumentedCommand;
 
-namespace Microsoft.DotNet.Cli.Commands.Help;
+namespace Microsoft.DotNet.Tools.Help;
 
 public class HelpCommand(string[] helpArgs)
 {
@@ -102,7 +103,7 @@ public class HelpCommand(string[] helpArgs)
         }
     }
 
-    private static bool TryGetDocsLink(string[] command, out string docsLink)
+    private bool TryGetDocsLink(string[] command, out string docsLink)
     {
         var parsedCommand = Parser.Instance.Parse(["dotnet", .. command]);
         if (parsedCommand?.CommandResult?.Command is ICommandDocument dc)

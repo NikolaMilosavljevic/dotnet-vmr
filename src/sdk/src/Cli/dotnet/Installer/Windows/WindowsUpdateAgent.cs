@@ -14,7 +14,7 @@ internal sealed class WindowsUpdateAgent
 {
     private readonly ServiceController _wuauserv;
 
-    private readonly ISetupLogger _log;
+    private ISetupLogger _log;
 
     private bool _wasRunning;
     private bool _wasStopped;

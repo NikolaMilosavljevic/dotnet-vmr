@@ -3,7 +3,7 @@
 
 using System.CommandLine;
 
-namespace Microsoft.DotNet.Cli.Commands.InternalReportInstallSuccess;
+namespace Microsoft.DotNet.Cli;
 
 internal static class InternalReportinstallsuccessCommandParser
 {

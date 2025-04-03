@@ -3,9 +3,8 @@
 
 using Microsoft.Deployment.DotNet.Releases;
 using Microsoft.DotNet.Cli.Utils;
-using LocalizableStrings = Microsoft.DotNet.Tools.Sdk.Check.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Sdk.Check;
+namespace Microsoft.DotNet.Tools.Sdk.Check;
 
 public class ProductCollectionProvider : IProductCollectionProvider
 {

@@ -5,7 +5,7 @@ using System.CommandLine;
 using Microsoft.DotNet.Cli.Extensions;
 using Microsoft.DotNet.Tools.Package.Remove;
 
-namespace Microsoft.DotNet.Cli.Commands.Package.Remove;
+namespace Microsoft.DotNet.Cli;
 
 internal static class PackageRemoveCommandParser
 {

@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
+using Microsoft.DotNet.Workloads.Workload.Install;
 using LocalizableStrings = Microsoft.DotNet.Workloads.Workload.Install.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Workload.Install;
+namespace Microsoft.DotNet.Cli;
 
 internal static class WorkloadInstallCommandParser
 {

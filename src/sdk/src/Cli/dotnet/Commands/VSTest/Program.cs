@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
-using Microsoft.DotNet.Cli.Commands.Test;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Extensions;
+using Microsoft.DotNet.Tools.Test;
 
-namespace Microsoft.DotNet.Cli.Commands.VSTest;
+namespace Microsoft.DotNet.Tools.VSTest;
 
 public class VSTestCommand
 {
@@ -50,6 +51,6 @@ public class VSTestCommand
             args = loggerArgs.Concat(args);
         }
 
-        return [.. args];
+        return args.ToArray();
     }
 }

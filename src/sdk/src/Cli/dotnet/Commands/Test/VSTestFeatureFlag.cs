@@ -3,7 +3,7 @@
 
 using System.Collections.Concurrent;
 
-namespace Microsoft.DotNet.Cli.Commands.Test;
+namespace Microsoft.DotNet.Tools.Test;
 
 // !!! USED FEATURE NAMES MUST BE KEPT IN SYNC WITH https://github.com/microsoft/vstest/blob/main/src/Microsoft.TestPlatform.CoreUtilities/FeatureFlag/FeatureFlag.cs !!!
 internal class FeatureFlag

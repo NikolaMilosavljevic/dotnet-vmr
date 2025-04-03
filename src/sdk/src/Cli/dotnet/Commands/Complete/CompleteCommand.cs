@@ -6,7 +6,7 @@ using System.CommandLine.Completions;
 using Microsoft.DotNet.Cli.Extensions;
 using Microsoft.DotNet.Cli.Utils;
 
-namespace Microsoft.DotNet.Cli.Commands.Complete;
+namespace Microsoft.DotNet.Cli;
 
 public class CompleteCommand
 {
@@ -61,6 +61,8 @@ public class CompleteCommand
 
         var result = Parser.Instance.Parse(input);
 
-        return [.. result.GetCompletions(position).Distinct()];
+        return result.GetCompletions(position)
+            .Distinct()
+            .ToArray();
     }
 }

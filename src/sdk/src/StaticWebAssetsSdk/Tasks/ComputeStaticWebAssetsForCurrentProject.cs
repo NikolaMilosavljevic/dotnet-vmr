@@ -28,19 +28,28 @@ public class ComputeStaticWebAssetsForCurrentProject : Task
     {
         try
         {
-            var currentProjectAssets = StaticWebAsset.AssetsByTargetPath(Assets, Source, AssetKind);
+            var currentProjectAssets = Assets
+                .Where(asset => StaticWebAsset.HasSourceId(asset, Source))
+                .Select(StaticWebAsset.FromTaskItem)
+                .GroupBy(
+                    a => a.ComputeTargetPath("", '/'),
+                    (key, group) => (key, StaticWebAsset.ChooseNearestAssetKind(group, AssetKind)));
 
-            var resultAssets = new List<StaticWebAsset>(currentProjectAssets.Count);
-            foreach (var kvp in currentProjectAssets)
+            var resultAssets = new List<StaticWebAsset>();
+            foreach (var (key, group) in currentProjectAssets)
             {
-                var targetPath = kvp.Key;
-                var (selected, all) = kvp.Value;
-                if (all != null)
+                if (!TryGetUniqueAsset(group, out var selected))
                 {
-                    Log.LogError("More than one compatible asset found for target path '{0}' -> {1}.",
-                        targetPath,
-                        Environment.NewLine + string.Join(Environment.NewLine, all.Select(a => $"({a.Identity},{a.AssetKind})")));
-                    return false;
+                    if (selected == null)
+                    {
+                        Log.LogMessage(MessageImportance.Low, "No compatible asset found for '{0}'", key);
+                        continue;
+                    }
+                    else
+                    {
+                        Log.LogError("More than one compatible asset found for '{0}'.", selected.Identity);
+                        return false;
+                    }
                 }
 
                 if (!selected.IsForReferencedProjectsOnly())
@@ -64,5 +73,21 @@ public class ComputeStaticWebAssetsForCurrentProject : Task
         }
 
         return !Log.HasLoggedErrors;
+    }
+
+    private static bool TryGetUniqueAsset(IEnumerable<StaticWebAsset> candidates, out StaticWebAsset selected)
+    {
+        selected = null;
+        foreach (var asset in candidates)
+        {
+            if (selected != null)
+            {
+                return false;
+            }
+
+            selected = asset;
+        }
+
+        return selected != null;
     }
 }

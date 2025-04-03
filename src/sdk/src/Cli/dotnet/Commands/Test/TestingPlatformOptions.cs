@@ -5,7 +5,7 @@ using System.CommandLine;
 using Microsoft.DotNet.Cli.Extensions;
 using Microsoft.DotNet.Tools.Test;
 
-namespace Microsoft.DotNet.Cli.Commands.Test;
+namespace Microsoft.DotNet.Cli;
 
 internal static class TestingPlatformOptions
 {

@@ -13,7 +13,10 @@ internal static class EnvironmentPathFactory
         bool isDotnetBeingInvokedFromNativeInstaller = false,
         IEnvironmentProvider environmentProvider = null)
     {
-        environmentProvider ??= new EnvironmentProvider();
+        if (environmentProvider == null)
+        {
+            environmentProvider = new EnvironmentProvider();
+        }
 
         IEnvironmentPath environmentPath = new DoNothingEnvironmentPath();
         if (OperatingSystem.IsWindows())
@@ -56,7 +59,10 @@ internal static class EnvironmentPathFactory
     public static IEnvironmentPathInstruction CreateEnvironmentPathInstruction(
         IEnvironmentProvider environmentProvider = null)
     {
-        environmentProvider ??= new EnvironmentProvider();
+        if (environmentProvider == null)
+        {
+            environmentProvider = new EnvironmentProvider();
+        }
 
         if (OperatingSystem.IsMacOS() && ZshDetector.IsZshTheUsersShell(environmentProvider))
         {

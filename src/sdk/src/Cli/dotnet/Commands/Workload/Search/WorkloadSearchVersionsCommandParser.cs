@@ -3,9 +3,10 @@
 
 using System.CommandLine;
 using Microsoft.DotNet.Workloads.Workload;
+using Microsoft.DotNet.Workloads.Workload.Search;
 using LocalizableStrings = Microsoft.DotNet.Workloads.Workload.Search.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Workload.Search;
+namespace Microsoft.DotNet.Cli;
 
 internal static class WorkloadSearchVersionsCommandParser
 {

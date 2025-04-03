@@ -16,10 +16,10 @@ public class ProjectToolsCommandResolver(
 {
     private const string ProjectToolsCommandResolverName = "projecttoolscommandresolver";
 
-    private readonly List<string> _allowedCommandExtensions = [FileNameSuffixes.DotNet.DynamicLib];
-    private readonly IPackagedCommandSpecFactory _packagedCommandSpecFactory = packagedCommandSpecFactory;
+    private List<string> _allowedCommandExtensions = [FileNameSuffixes.DotNet.DynamicLib];
+    private IPackagedCommandSpecFactory _packagedCommandSpecFactory = packagedCommandSpecFactory;
 
-    private readonly IEnvironmentProvider _environment = environment;
+    private IEnvironmentProvider _environment = environment;
 
     public CommandSpec Resolve(CommandResolverArguments commandResolverArguments)
     {
@@ -199,14 +199,14 @@ public class ProjectToolsCommandResolver(
         return commandSpec;
     }
 
-    private static IEnumerable<string> GetPossiblePackageRoots(IProject project)
+    private IEnumerable<string> GetPossiblePackageRoots(IProject project)
     {
         if (project.TryGetLockFile(out LockFile lockFile))
         {
             return lockFile.PackageFolders.Select((packageFolder) => packageFolder.Path);
         }
 
-        return [];
+        return Enumerable.Empty<string>();
     }
 
     private LockFile GetToolLockFile(
@@ -262,7 +262,7 @@ public class ProjectToolsCommandResolver(
         return true;
     }
 
-    private static string GetToolLockFilePath(
+    private string GetToolLockFilePath(
         SingleProjectInfo toolLibrary,
         NuGetFramework framework,
         string nugetPackagesRoot)

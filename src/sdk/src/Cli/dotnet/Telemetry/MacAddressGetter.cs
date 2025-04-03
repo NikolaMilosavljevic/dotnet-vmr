@@ -64,12 +64,13 @@ internal static class MacAddressGetter
                        File.Exists(@"/usr/sbin/ip") ? @"/usr/sbin/ip" :
                        File.Exists(@"/sbin/ip") ? @"/sbin/ip" :
                        "ip";
+
         var ipResult = new ProcessStartInfo
         {
             FileName = fileName,
             Arguments = "link",
             UseShellExecute = false
-        }.ExecuteAndCaptureOutput(out string ipStdOut, out _);
+        }.ExecuteAndCaptureOutput(out string ipStdOut, out string ipStdErr);
 
         if (ipResult == 0)
         {
@@ -89,7 +90,7 @@ internal static class MacAddressGetter
             {
                 FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "getmac.exe"),
                 UseShellExecute = false
-            }.ExecuteAndCaptureOutput(out string stdOut, out _);
+            }.ExecuteAndCaptureOutput(out string stdOut, out string stdErr);
 
             if (result == 0)
             {

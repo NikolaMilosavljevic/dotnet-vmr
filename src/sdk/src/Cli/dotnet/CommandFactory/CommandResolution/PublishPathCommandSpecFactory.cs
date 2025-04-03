@@ -75,7 +75,7 @@ public class PublishPathCommandSpecFactory : IPublishedPathCommandSpecFactory
         return CreateCommandSpec(host, arguments);
     }
 
-    private static CommandSpec CreateCommandSpec(
+    private CommandSpec CreateCommandSpec(
         string commandPath,
         IEnumerable<string> commandArguments)
     {

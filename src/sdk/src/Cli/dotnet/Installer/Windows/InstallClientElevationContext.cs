@@ -14,7 +14,7 @@ namespace Microsoft.DotNet.Cli.Installer.Windows;
 [SupportedOSPlatform("windows")]
 internal sealed class InstallClientElevationContext(ISynchronizingLogger logger) : InstallElevationContextBase
 {
-    private readonly ISynchronizingLogger _log = logger;
+    private ISynchronizingLogger _log = logger;
 
     private Process _serverProcess;
 

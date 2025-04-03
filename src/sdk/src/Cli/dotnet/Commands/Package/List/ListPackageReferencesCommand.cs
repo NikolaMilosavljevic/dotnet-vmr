@@ -2,13 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
-using Microsoft.DotNet.Cli.Commands.List;
-using Microsoft.DotNet.Cli.Commands.NuGet;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Extensions;
 using Microsoft.DotNet.Cli.Utils;
-using LocalizableStrings = Microsoft.DotNet.Tools.Package.List.LocalizableStrings;
+using Microsoft.DotNet.Tools.NuGet;
 
-namespace Microsoft.DotNet.Cli.Commands.Package.List;
+namespace Microsoft.DotNet.Tools.Package.List;
 
 internal class ListPackageReferencesCommand(
     ParseResult parseResult) : CommandBase(parseResult)
@@ -54,7 +53,7 @@ internal class ListPackageReferencesCommand(
 
         EnforceOptionRules(_parseResult);
 
-        return [.. args];
+        return args.ToArray();
     }
 
     /// <summary>

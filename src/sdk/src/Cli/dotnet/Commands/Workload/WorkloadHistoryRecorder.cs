@@ -1,18 +1,19 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.DotNet.Cli.Commands.Workload.Install;
+using Microsoft.DotNet.Workloads.Workload.History;
+using Microsoft.DotNet.Workloads.Workload.Install;
 using Microsoft.NET.Sdk.WorkloadManifestReader;
 
-namespace Microsoft.DotNet.Cli.Commands.Workload;
+namespace Microsoft.DotNet.Workloads.Workload;
 
 internal class WorkloadHistoryRecorder
 {
     public WorkloadHistoryRecord HistoryRecord { get; set; } = new();
 
-    private readonly IWorkloadResolver _workloadResolver;
-    private readonly IInstaller _workloadInstaller;
-    private readonly Func<IWorkloadResolver> _workloadResolverFunc;
+    IWorkloadResolver _workloadResolver;
+    IInstaller _workloadInstaller;
+    Func<IWorkloadResolver> _workloadResolverFunc;
 
     public WorkloadHistoryRecorder(IWorkloadResolver workloadResolver, IInstaller workloadInstaller, Func<IWorkloadResolver> workloadResolverFunc)
     {
@@ -56,8 +57,10 @@ internal class WorkloadHistoryRecorder
         return new WorkloadHistoryState()
         {
             ManifestVersions = resolver.GetInstalledManifests().ToDictionary(manifest => manifest.Id.ToString(), manifest => $"{manifest.Version}/{manifest.ManifestFeatureBand}"),
-            InstalledWorkloads = [.. _workloadInstaller.GetWorkloadInstallationRecordRepository()
-                .GetInstalledWorkloads(new SdkFeatureBand(_workloadResolver.GetSdkFeatureBand())).Select(id => id.ToString())],
+            InstalledWorkloads = _workloadInstaller.GetWorkloadInstallationRecordRepository()
+                                                   .GetInstalledWorkloads(new SdkFeatureBand(_workloadResolver.GetSdkFeatureBand()))
+                                                   .Select(id => id.ToString())
+                                                   .ToList(),
             WorkloadSetVersion = currentWorkloadVersion
         };
 

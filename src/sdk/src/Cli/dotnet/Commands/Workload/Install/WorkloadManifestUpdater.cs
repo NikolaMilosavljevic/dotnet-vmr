@@ -2,14 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Text.Json;
-using Microsoft.DotNet.Cli.Commands.Workload.List;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.NuGetPackageDownloader;
 using Microsoft.DotNet.Cli.ToolPackage;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.Cli.Utils.Extensions;
 using Microsoft.DotNet.Configurer;
-using Microsoft.DotNet.Workloads.Workload;
-using Microsoft.DotNet.Workloads.Workload.Install;
+using Microsoft.DotNet.Workloads.Workload.History;
 using Microsoft.DotNet.Workloads.Workload.Install.InstallRecord;
 using Microsoft.DotNet.Workloads.Workload.List;
 using Microsoft.Extensions.EnvironmentAbstractions;
@@ -17,9 +16,8 @@ using Microsoft.NET.Sdk.WorkloadManifestReader;
 using NuGet.Common;
 using NuGet.Packaging;
 using NuGet.Versioning;
-using LocalizableStrings = Microsoft.DotNet.Workloads.Workload.Install.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Workload.Install;
+namespace Microsoft.DotNet.Workloads.Workload.Install;
 
 internal class WorkloadManifestUpdater : IWorkloadManifestUpdater
 {
@@ -67,7 +65,7 @@ internal class WorkloadManifestUpdater : IWorkloadManifestUpdater
         var workloadManifestProvider = new SdkDirectoryWorkloadManifestProvider(dotnetPath, sdkVersion, userProfileDir, SdkDirectoryWorkloadManifestProvider.GetGlobalJsonPath(Environment.CurrentDirectory));
         var workloadResolver = WorkloadResolver.Create(workloadManifestProvider, dotnetPath, sdkVersion, userProfileDir);
         var tempPackagesDir = new DirectoryPath(PathUtilities.CreateTempSubdirectory());
-        var nugetPackageDownloader = new NuGetPackageDownloader.NuGetPackageDownloader(tempPackagesDir,
+        var nugetPackageDownloader = new NuGetPackageDownloader(tempPackagesDir,
                                       filePermissionSetter: null,
                                       new FirstPartyNuGetPackageSigningVerifier(),
                                       new NullLogger(),
@@ -203,7 +201,7 @@ internal class WorkloadManifestUpdater : IWorkloadManifestUpdater
 
             var (installedVersion, installedBand) = GetInstalledManifestVersion(manifestId);
             var ((adVersion, adBand), adWorkloads) = advertisingInfo.Value;
-            if (adVersion.CompareTo(installedVersion) > 0 && adBand.Equals(installedBand) ||
+            if ((adVersion.CompareTo(installedVersion) > 0 && adBand.Equals(installedBand)) ||
                 adBand.CompareTo(installedBand) > 0)
             {
                 var update = new ManifestVersionUpdate(manifestId, adVersion, adBand.ToString());
@@ -222,7 +220,7 @@ internal class WorkloadManifestUpdater : IWorkloadManifestUpdater
                 //  Also advertise updates for workloads installed by Visual Studio
                 InstalledWorkloadsCollection installedVSWorkloads = new InstalledWorkloadsCollection();
                 VisualStudioWorkloads.GetInstalledWorkloads(_workloadResolver, installedVSWorkloads, _sdkFeatureBand);
-                installedWorkloads = [.. installedWorkloads.Concat(installedVSWorkloads.AsEnumerable().Select(kvp => new WorkloadId(kvp.Key))).Distinct()];
+                installedWorkloads = installedWorkloads.Concat(installedVSWorkloads.AsEnumerable().Select(kvp => new WorkloadId(kvp.Key))).Distinct().ToList();
             }
 #endif
 
@@ -232,7 +230,7 @@ internal class WorkloadManifestUpdater : IWorkloadManifestUpdater
         }
         catch
         {
-            return [];
+            return Array.Empty<WorkloadId>();
         }
     }
 

@@ -70,7 +70,7 @@ public class ToolPathCalculator(string packagesDirectory)
         var toolBase = GetBaseToolPath(packageId);
         if (!Directory.Exists(toolBase))
         {
-            return [];
+            return Enumerable.Empty<NuGetVersion>();
         }
 
         var versionDirectories = Directory.EnumerateDirectories(toolBase);
@@ -79,7 +79,7 @@ public class ToolPathCalculator(string packagesDirectory)
         {
             var version = Path.GetFileName(versionDirectory);
 
-            NuGetVersion nugetVersion;
+            NuGetVersion nugetVersion = null;
             NuGetVersion.TryParse(version, out nugetVersion);
 
             if (nugetVersion != null)

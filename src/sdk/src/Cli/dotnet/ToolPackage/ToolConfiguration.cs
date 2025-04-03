@@ -31,7 +31,7 @@ internal class ToolConfiguration
         Warnings = warnings ?? [];
     }
 
-    private static void EnsureNoInvalidFilenameCharacters(string commandName)
+    private void EnsureNoInvalidFilenameCharacters(string commandName)
     {
         var invalidCharacters = Path.GetInvalidFileNameChars();
         if (commandName.IndexOfAny(invalidCharacters) != -1)
@@ -44,7 +44,7 @@ internal class ToolConfiguration
         }
     }
 
-    private static void EnsureNoLeadingDot(string commandName)
+    private void EnsureNoLeadingDot(string commandName)
     {
         if (commandName.StartsWith(".", StringComparison.OrdinalIgnoreCase))
         {

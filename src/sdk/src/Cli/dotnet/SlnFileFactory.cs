@@ -47,11 +47,10 @@ public static class SlnFileFactory
 
     public static string[] ListSolutionFilesInDirectory(string directory, bool includeSolutionFilterFiles = false, bool includeSolutionXmlFiles = true)
     {
-        return
-        [
-            .. Directory.GetFiles(directory, "*.sln", SearchOption.TopDirectoryOnly),
-            .. includeSolutionXmlFiles ? Directory.GetFiles(directory, "*.slnx", SearchOption.TopDirectoryOnly) : [],
-            .. includeSolutionFilterFiles ? Directory.GetFiles(directory, "*.slnf", SearchOption.TopDirectoryOnly) : []
+        return [
+            ..Directory.GetFiles(directory, "*.sln", SearchOption.TopDirectoryOnly),
+            ..includeSolutionXmlFiles ? Directory.GetFiles(directory, "*.slnx", SearchOption.TopDirectoryOnly) : [],
+            ..includeSolutionFilterFiles ? Directory.GetFiles(directory, "*.slnf", SearchOption.TopDirectoryOnly) : []
         ];
     }
 
@@ -79,7 +78,7 @@ public static class SlnFileFactory
         {
             JsonElement root = JsonDocument.Parse(File.ReadAllText(filteredSolutionPath)).RootElement;
             originalSolutionPath = Uri.UnescapeDataString(root.GetProperty("solution").GetProperty("path").GetString());
-            filteredSolutionProjectPaths = [.. root.GetProperty("solution").GetProperty("projects").EnumerateArray().Select(p => p.GetString())];
+            filteredSolutionProjectPaths = root.GetProperty("solution").GetProperty("projects").EnumerateArray().Select(p => p.GetString()).ToArray();
             originalSolutionPathAbsolute = Path.GetFullPath(originalSolutionPath, Path.GetDirectoryName(filteredSolutionPath));
         }
         catch (Exception ex)

@@ -53,10 +53,10 @@ internal class ToolPackageInstance : IToolPackage
     private const string AssetsFileName = "project.assets.json";
     private const string ToolSettingsFileName = "DotnetToolSettings.xml";
 
-    private readonly Lazy<RestoredCommand> _command;
-    private readonly Lazy<ToolConfiguration> _toolConfiguration;
-    private readonly Lazy<LockFile> _lockFile;
-    private readonly Lazy<IReadOnlyList<FilePath>> _packagedShims;
+    private Lazy<RestoredCommand> _command;
+    private Lazy<ToolConfiguration> _toolConfiguration;
+    private Lazy<LockFile> _lockFile;
+    private Lazy<IReadOnlyList<FilePath>> _packagedShims;
 
     public ToolPackageInstance(PackageId id,
         NuGetVersion version,
@@ -160,7 +160,7 @@ internal class ToolPackageInstance : IToolPackage
 
         if (filesUnderShimsDirectory == null)
         {
-            return [];
+            return Array.Empty<FilePath>();
         }
 
         IEnumerable<string> allAvailableShimRuntimeIdentifiers = filesUnderShimsDirectory
@@ -169,15 +169,19 @@ internal class ToolPackageInstance : IToolPackage
 
         if (new FrameworkDependencyFile().TryGetMostFitRuntimeIdentifier(
             DotnetFiles.VersionFileObject.BuildRid,
-            [.. allAvailableShimRuntimeIdentifiers],
+            allAvailableShimRuntimeIdentifiers.ToArray(),
             out var mostFitRuntimeIdentifier))
         {
-            return library?.ToolsAssemblies?.Where(l => LockFileMatcher.MatchesDirectoryPath(l, $"{PackagedShimsDirectoryConvention}/{mostFitRuntimeIdentifier}"))
-                .Select(l => LockFileRelativePathToFullFilePath(l.Path, library)).ToArray() ?? [];
+            return library
+                       ?.ToolsAssemblies
+                       ?.Where(l =>
+                           LockFileMatcher.MatchesDirectoryPath(l, $"{PackagedShimsDirectoryConvention}/{mostFitRuntimeIdentifier}"))
+                       .Select(l => LockFileRelativePathToFullFilePath(l.Path, library)).ToArray()
+                   ?? Array.Empty<FilePath>();
         }
         else
         {
-            return [];
+            return Array.Empty<FilePath>();
         }
     }
 

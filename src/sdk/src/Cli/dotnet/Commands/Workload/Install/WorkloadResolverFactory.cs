@@ -6,7 +6,7 @@ using Microsoft.DotNet.Configurer;
 using Microsoft.NET.Sdk.WorkloadManifestReader;
 using Product = Microsoft.DotNet.Cli.Utils.Product;
 
-namespace Microsoft.DotNet.Cli.Commands.Workload.Install;
+namespace Microsoft.DotNet.Workloads.Workload.Install;
 
 internal interface IWorkloadResolverFactory
 {

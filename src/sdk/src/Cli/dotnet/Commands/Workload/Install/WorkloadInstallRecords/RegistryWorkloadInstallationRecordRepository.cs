@@ -3,11 +3,10 @@
 
 using System.Runtime.Versioning;
 using Microsoft.DotNet.Cli.Installer.Windows;
-using Microsoft.DotNet.Workloads.Workload.Install.InstallRecord;
 using Microsoft.NET.Sdk.WorkloadManifestReader;
 using Microsoft.Win32;
 
-namespace Microsoft.DotNet.Cli.Commands.Workload.Install.WorkloadInstallRecords;
+namespace Microsoft.DotNet.Workloads.Workload.Install.InstallRecord;
 
 /// <summary>
 /// Provides support for reading and writing workload installation records in the registry
@@ -26,7 +25,7 @@ internal class RegistryWorkloadInstallationRecordRepository : InstallerBase, IWo
     /// <summary>
     /// The base key to use when reading/writing records.
     /// </summary>
-    private readonly RegistryKey _baseKey = Registry.LocalMachine;
+    private RegistryKey _baseKey = Registry.LocalMachine;
 
     internal RegistryWorkloadInstallationRecordRepository(InstallElevationContextBase elevationContext, ISetupLogger logger, bool verifySignatures)
         : base(elevationContext, logger, verifySignatures)
@@ -71,10 +70,10 @@ internal class RegistryWorkloadInstallationRecordRepository : InstallerBase, IWo
         // ToList() is needed to ensure deferred execution does not reference closed registry keys.
         return key is null
             ? Enumerable.Empty<SdkFeatureBand>()
-            : [.. (from string name in key.GetSubKeyNames()
+            : (from string name in key.GetSubKeyNames()
                let subkey = key.OpenSubKey(name)
                where subkey.GetSubKeyNames().Length > 0
-               select new SdkFeatureBand(name))];
+               select new SdkFeatureBand(name)).ToList();
     }
 
     public IEnumerable<WorkloadId> GetInstalledWorkloads(SdkFeatureBand sdkFeatureBand)
@@ -84,7 +83,7 @@ internal class RegistryWorkloadInstallationRecordRepository : InstallerBase, IWo
         return GetWorkloadInstallationRecordsFromRegistry(wrk);
     }
 
-    private static IEnumerable<WorkloadId> GetWorkloadInstallationRecordsFromRegistry(RegistryKey sdkFeatureBandWorkloadRegistry)
+    private IEnumerable<WorkloadId> GetWorkloadInstallationRecordsFromRegistry(RegistryKey sdkFeatureBandWorkloadRegistry)
     {
         // ToList() is needed to ensure deferred execution does not reference closed registry keys.
         return sdkFeatureBandWorkloadRegistry?.GetSubKeyNames().Select(id => new WorkloadId(id)).ToList() ?? Enumerable.Empty<WorkloadId>();

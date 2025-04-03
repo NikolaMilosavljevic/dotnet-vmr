@@ -3,9 +3,10 @@
 
 using System.Collections.Concurrent;
 using System.Globalization;
+using Microsoft.Testing.Platform.Helpers;
 using LocalizableStrings = Microsoft.DotNet.Tools.Test.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Test.Terminal;
+namespace Microsoft.Testing.Platform.OutputDevice.Terminal;
 
 internal sealed class TestNodeResultsState(long id)
 {
@@ -40,7 +41,7 @@ internal sealed class TestNodeResultsState(long id)
                     ? string.Format(CultureInfo.CurrentCulture, LocalizableStrings.ActiveTestsRunning_FullTestsCount, sortedDetails.Count)
                     // If itemsToTake is larger, then we show the project summary, active tests, and the number of active tests that are not shown.
                     : $"... {string.Format(CultureInfo.CurrentCulture, LocalizableStrings.ActiveTestsRunning_MoreTestsCount, sortedDetails.Count - itemsToTake)}";
-            sortedDetails = [.. sortedDetails.Take(itemsToTake)];
+            sortedDetails = sortedDetails.Take(itemsToTake).ToList();
         }
 
         foreach (TestDetailState? detail in sortedDetails)

@@ -72,6 +72,7 @@ public class AnsiConsole
         Writer.WriteLine();
     }
 
+
     public void Write(string message)
     {
         var escapeScan = 0;
@@ -105,7 +106,8 @@ public class AnsiConsole
                 switch (message[endIndex])
                 {
                     case 'm':
-                        if (int.TryParse(message.Substring(startIndex, endIndex - startIndex), out int value))
+                        int value;
+                        if (int.TryParse(message.Substring(startIndex, endIndex - startIndex), out value))
                         {
                             switch (value)
                             {

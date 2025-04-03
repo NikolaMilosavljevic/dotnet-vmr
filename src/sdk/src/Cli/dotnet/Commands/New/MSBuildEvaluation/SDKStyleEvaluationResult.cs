@@ -1,9 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using MSBuildProject = Microsoft.Build.Evaluation.Project;
+using Microsoft.Build.Evaluation;
 
-namespace Microsoft.DotNet.Cli.Commands.New.MSBuildEvaluation;
+namespace Microsoft.TemplateEngine.MSBuildEvaluation;
 
 /// <summary>
 /// Represents the result of evaluation for single-target SDK style project.
@@ -17,7 +17,7 @@ internal class SDKStyleEvaluationResult : MSBuildEvaluationResult
 
     internal string TargetFramework { get; }
 
-    internal static SDKStyleEvaluationResult CreateSuccess(string path, string targetFramework, MSBuildProject project)
+    internal static SDKStyleEvaluationResult CreateSuccess(string path, string targetFramework, Project project)
     {
         return new SDKStyleEvaluationResult(path, targetFramework)
         {

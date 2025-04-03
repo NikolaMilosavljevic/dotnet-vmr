@@ -10,18 +10,20 @@ parameters:
     - Linux
     - Darwin
 
-- name: reuseBuildArtifactsFrom
-  type: object
-  default: ''
-
 steps:
-- ${{ if ne(parameters.reuseBuildArtifactsFrom,'') }}:
-  - ${{ each reuseBuildArtifacts in parameters.reuseBuildArtifactsFrom }}:
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        artifactName: ${{ reuseBuildArtifacts }}_Artifacts
-        targetPath: $(Build.SourcesDirectory)/artifacts/
-      displayName: Download Previous Build (${{ reuseBuildArtifacts }})
+- task: DownloadBuildArtifacts@1
+  inputs:
+    artifactName: BlobArtifacts
+    downloadPath: $(Build.ArtifactStagingDirectory)
+    checkDownloadedFiles: true
+  displayName: Download Blob Artifacts
+
+- task: DownloadBuildArtifacts@1
+  inputs:
+    artifactName: PackageArtifacts
+    downloadPath: $(Build.ArtifactStagingDirectory)
+    checkDownloadedFiles: true
+  displayName: Download Package Artifacts
 
 # This is necessary whenever we want to publish/restore to an AzDO private feed
 # Since sdk-task.ps1 tries to restore packages we need to do this authentication here
@@ -41,6 +43,8 @@ steps:
       --ci \
       -t \
       --projects test/Microsoft.DotNet.Installer.Tests/Microsoft.DotNet.Installer.Tests.csproj \
+      /p:BlobArtifactsDir=$(Build.ArtifactStagingDirectory)/BlobArtifacts \
+      /p:PackageArtifactsDir=$(Build.ArtifactStagingDirectory)/PackageArtifacts \
       $extraBuildProperties
     displayName: Validate installer packages
     workingDirectory: $(Build.SourcesDirectory)

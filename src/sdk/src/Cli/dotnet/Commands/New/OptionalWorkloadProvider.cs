@@ -6,7 +6,7 @@ using Microsoft.DotNet.Configurer;
 using Microsoft.TemplateEngine.Abstractions;
 using Microsoft.TemplateEngine.Abstractions.TemplatePackage;
 
-namespace Microsoft.DotNet.Cli.Commands.New;
+namespace Microsoft.DotNet.Tools.New;
 
 internal class OptionalWorkloadProvider : ITemplatePackageProvider
 {

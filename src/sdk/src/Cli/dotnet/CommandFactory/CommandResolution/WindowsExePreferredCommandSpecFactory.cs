@@ -34,7 +34,7 @@ public class WindowsExePreferredCommandSpecFactory : IPlatformCommandSpecFactory
             : CreateCommandSpecFromExecutable(commandPath, args);
     }
 
-    private static CommandSpec CreateCommandSpecFromExecutable(
+    private CommandSpec CreateCommandSpecFromExecutable(
         string command,
         IEnumerable<string> args)
     {
@@ -42,7 +42,7 @@ public class WindowsExePreferredCommandSpecFactory : IPlatformCommandSpecFactory
         return new CommandSpec(command, escapedArgs);
     }
 
-    private static CommandSpec CreateCommandSpecWrappedWithCmd(
+    private CommandSpec CreateCommandSpecWrappedWithCmd(
         string command,
         IEnumerable<string> args)
     {

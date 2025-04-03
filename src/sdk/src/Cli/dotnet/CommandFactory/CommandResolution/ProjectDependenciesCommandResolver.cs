@@ -129,7 +129,7 @@ public class ProjectDependenciesCommandResolver : ICommandResolver
         return commandSpec;
     }
 
-    private static LockFileTargetLibrary GetToolLibraryForContext(
+    private LockFileTargetLibrary GetToolLibraryForContext(
         LockFile lockFile, string commandName, NuGetFramework targetFramework)
     {
         var toolLibraries = lockFile.Targets
@@ -153,7 +153,7 @@ public class ProjectDependenciesCommandResolver : ICommandResolver
         return toolLibraries?.FirstOrDefault();
     }
 
-    private static IEnumerable<string> GetAllowedCommandExtensionsFromEnvironment(IEnvironmentProvider environment)
+    private IEnumerable<string> GetAllowedCommandExtensionsFromEnvironment(IEnvironmentProvider environment)
     {
         var allowedCommandExtensions = new List<string>();
         allowedCommandExtensions.AddRange(environment.ExecutableExtensions);

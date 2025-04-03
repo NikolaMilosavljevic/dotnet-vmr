@@ -4,7 +4,7 @@
 using Microsoft.TemplateEngine.Abstractions;
 using Microsoft.TemplateEngine.Abstractions.TemplatePackage;
 
-namespace Microsoft.DotNet.Cli.Commands.New;
+namespace Microsoft.DotNet.Tools.New;
 
 /// <summary>
 /// TemplateEngine calls this when it wants to gather list of installed template packages.

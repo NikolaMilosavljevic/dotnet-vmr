@@ -2,13 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
-using Microsoft.DotNet.Cli.Commands.Reference.Add;
-using Microsoft.DotNet.Cli.Commands.Reference.List;
-using Microsoft.DotNet.Cli.Commands.Reference.Remove;
 using Microsoft.DotNet.Cli.Extensions;
 using LocalizableStrings = Microsoft.DotNet.Tools.Remove.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Reference;
+namespace Microsoft.DotNet.Cli;
 
 internal static class ReferenceCommandParser
 {

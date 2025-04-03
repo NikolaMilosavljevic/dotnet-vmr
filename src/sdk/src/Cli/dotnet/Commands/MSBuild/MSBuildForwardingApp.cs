@@ -3,20 +3,22 @@
 
 using System.Diagnostics;
 using System.Reflection;
+using Microsoft.DotNet.Cli;
+using Microsoft.DotNet.Cli.Telemetry;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.Cli.Utils.Extensions;
 
-namespace Microsoft.DotNet.Cli.Commands.MSBuild;
+namespace Microsoft.DotNet.Tools.MSBuild;
 
 public class MSBuildForwardingApp
 {
     internal const string TelemetrySessionIdEnvironmentVariableName = "DOTNET_CLI_TELEMETRY_SESSIONID";
 
-    private readonly MSBuildForwardingAppWithoutLogging _forwardingAppWithoutLogging;
+    private MSBuildForwardingAppWithoutLogging _forwardingAppWithoutLogging;
 
     private static IEnumerable<string> ConcatTelemetryLogger(IEnumerable<string> argsToForward)
     {
-        if (Telemetry.Telemetry.CurrentSessionId != null)
+        if (Telemetry.CurrentSessionId != null)
         {
             try
             {
@@ -64,7 +66,7 @@ public class MSBuildForwardingApp
 
     private void InitializeRequiredEnvironmentVariables()
     {
-        EnvironmentVariable(TelemetrySessionIdEnvironmentVariableName, Telemetry.Telemetry.CurrentSessionId);
+        EnvironmentVariable(TelemetrySessionIdEnvironmentVariableName, Telemetry.CurrentSessionId);
     }
 
     /// <summary>

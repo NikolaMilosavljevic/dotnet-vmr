@@ -26,7 +26,7 @@ public class RuntimeConfig
             {
                 if (runtimeOptionsRoot.TryGetProperty("framework", out var framework))
                 {
-                    _ = new RuntimeConfigFramework();
+                    var runtimeConfigFramework = new RuntimeConfigFramework();
                     string name = null;
                     string version = null;
                     foreach (var property in framework.EnumerateObject())

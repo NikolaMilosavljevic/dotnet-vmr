@@ -3,9 +3,10 @@
 
 using System.CommandLine;
 using Microsoft.DotNet.Cli.Extensions;
+using Microsoft.DotNet.Tools.Clean;
 using LocalizableStrings = Microsoft.DotNet.Tools.Clean.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.Clean;
+namespace Microsoft.DotNet.Cli;
 
 internal static class CleanCommandParser
 {

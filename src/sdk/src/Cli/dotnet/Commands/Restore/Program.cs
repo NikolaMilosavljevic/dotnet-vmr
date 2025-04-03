@@ -2,11 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
-using Microsoft.DotNet.Cli.Commands.MSBuild;
+using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Extensions;
 using Microsoft.DotNet.Cli.Utils;
+using Microsoft.DotNet.Tools.MSBuild;
+using Parser = Microsoft.DotNet.Cli.Parser;
 
-namespace Microsoft.DotNet.Cli.Commands.Restore;
+namespace Microsoft.DotNet.Tools.Restore;
 
 public class RestoreCommand : MSBuildForwardingApp
 {
@@ -33,7 +35,7 @@ public class RestoreCommand : MSBuildForwardingApp
 
         msbuildArgs.AddRange(result.OptionValuesToBeForwarded(RestoreCommandParser.GetCommand()));
 
-        msbuildArgs.AddRange(result.GetValue(RestoreCommandParser.SlnOrProjectArgument) ?? []);
+        msbuildArgs.AddRange(result.GetValue(RestoreCommandParser.SlnOrProjectArgument) ?? Array.Empty<string>());
 
         return new RestoreCommand(msbuildArgs, msbuildPath);
     }

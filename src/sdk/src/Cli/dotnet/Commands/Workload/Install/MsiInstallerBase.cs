@@ -4,16 +4,17 @@
 using System.Diagnostics;
 using System.Runtime.Versioning;
 using System.Text.Json;
-using Microsoft.DotNet.Cli.Commands.Workload.Install.WorkloadInstallRecords;
 using Microsoft.DotNet.Cli.Installer.Windows;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.Workloads.Workload;
+using Microsoft.DotNet.Workloads.Workload.History;
+using Microsoft.DotNet.Workloads.Workload.Install.InstallRecord;
 using Microsoft.NET.Sdk.WorkloadManifestReader;
 using Microsoft.Win32;
 using Microsoft.Win32.Msi;
 using static Microsoft.NET.Sdk.WorkloadManifestReader.WorkloadResolver;
 
-namespace Microsoft.DotNet.Cli.Commands.Workload.Install;
+namespace Microsoft.DotNet.Installer.Windows;
 
 /// <summary>
 /// Creates a new <see cref="MsiInstallerBase"/> instance.
@@ -28,14 +29,14 @@ internal abstract class MsiInstallerBase(InstallElevationContextBase elevationCo
     /// <summary>
     /// Track messages that should never be reported more than once.
     /// </summary>
-    private readonly HashSet<string> _reportedMessages = [];
+    private HashSet<string> _reportedMessages = [];
 
     /// <summary>
     /// Backing field for the install location of .NET
     /// </summary>
     private string _dotNetHome;
 
-    private readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions()
+    private JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions()
     {
         WriteIndented = true,
         DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
@@ -66,7 +67,7 @@ internal abstract class MsiInstallerBase(InstallElevationContextBase elevationCo
     /// <summary>
     /// Determines whether the parent process is still active.
     /// </summary>
-    protected static bool IsParentProcessRunning => Process.GetProcessById(ParentProcess.Id) != null;
+    protected bool IsParentProcessRunning => Process.GetProcessById(ParentProcess.Id) != null;
 
     /// <summary>
     /// Provides access to the underlying MSI cache.
@@ -145,6 +146,7 @@ internal abstract class MsiInstallerBase(InstallElevationContextBase elevationCo
     /// <param name="logFile">The path of the log file.</param>
     protected void ConfigureInstall(string logFile)
     {
+        uint error = Error.SUCCESS;
 
         // Turn off the MSI UI.
         _ = WindowsInstaller.SetInternalUI(InstallUILevel.None);
@@ -153,7 +155,7 @@ internal abstract class MsiInstallerBase(InstallElevationContextBase elevationCo
         // against it.
         FileStream logFileStream = File.Create(logFile);
         logFileStream.Close();
-        uint error = WindowsInstaller.EnableLog(InstallLogMode.DEFAULT | InstallLogMode.VERBOSE, logFile, InstallLogAttributes.NONE);
+        error = WindowsInstaller.EnableLog(InstallLogMode.DEFAULT | InstallLogMode.VERBOSE, logFile, InstallLogAttributes.NONE);
 
         // We can report issues with the log file creation, but shouldn't fail the workload operation.
         LogError(error, $"Failed to configure log file: {logFile}");
@@ -226,8 +228,8 @@ internal abstract class MsiInstallerBase(InstallElevationContextBase elevationCo
     {
         string path = Path.Combine(WorkloadInstallType.GetInstallStateFolder(sdkFeatureBand, DotNetHome), "default.json");
         var installStateContents = InstallStateContents.FromPath(path);
-        if (installStateContents.WorkloadVersion == null && workloadVersion == null ||
-            installStateContents.WorkloadVersion != null && installStateContents.WorkloadVersion.Equals(workloadVersion))
+        if ((installStateContents.WorkloadVersion == null && workloadVersion == null) ||
+            (installStateContents.WorkloadVersion != null && installStateContents.WorkloadVersion.Equals(workloadVersion)))
         {
             return;
         }
@@ -371,7 +373,7 @@ internal abstract class MsiInstallerBase(InstallElevationContextBase elevationCo
         throw new InvalidOperationException($"Invalid configuration: elevated: {IsElevated}, client: {IsClient}");
     }
 
-    protected internal static string GetWorkloadHistoryDirectory(string sdkFeatureBand)
+    internal protected string GetWorkloadHistoryDirectory(string sdkFeatureBand)
     {
         return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "dotnet", "workloads", RuntimeInformation.ProcessArchitecture.ToString(), sdkFeatureBand.ToString(), "history");
     }
@@ -381,7 +383,7 @@ internal abstract class MsiInstallerBase(InstallElevationContextBase elevationCo
         var historyDirectory = GetWorkloadHistoryDirectory(sdkFeatureBand);
         string logFile = Path.Combine(historyDirectory, $"{workloadHistoryRecord.TimeStarted:yyyy'-'MM'-'dd'T'HHmmss}_{workloadHistoryRecord.CommandName}.json");
         Directory.CreateDirectory(historyDirectory);
-        File.WriteAllText(logFile, JsonSerializer.Serialize(workloadHistoryRecord, new JsonSerializerOptions() { WriteIndented = true }));
+        File.WriteAllText(logFile, (JsonSerializer.Serialize(workloadHistoryRecord, new JsonSerializerOptions() { WriteIndented = true })));
     }
 
     /// <summary>
@@ -468,7 +470,7 @@ internal abstract class MsiInstallerBase(InstallElevationContextBase elevationCo
 
         if (hklm32 == null)
         {
-            return [];
+            return Enumerable.Empty<string>();
         }
 
         using RegistryKey installedSdkVersionsKey = hklm32.OpenSubKey(@$"SOFTWARE\dotnet\Setup\InstalledVersions\{HostArchitecture}\sdk");
@@ -603,7 +605,7 @@ internal abstract class MsiInstallerBase(InstallElevationContextBase elevationCo
         }
     }
 
-    private static void CreateSecureFileInDirectory(string path, string contents)
+    private void CreateSecureFileInDirectory(string path, string contents)
     {
         SecurityUtils.CreateSecureDirectory(Path.GetDirectoryName(path));
         File.WriteAllText(path, contents);

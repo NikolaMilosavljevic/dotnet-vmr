@@ -27,8 +27,7 @@ public class MergeStaticWebAssets : Task
     public override bool Execute()
     {
 
-        var assets = StaticWebAsset.FromTaskItemGroup(CandidateAssets);
-        Array.Sort(assets, (a, b) => string.CompareOrdinal(a.Identity, b.Identity));
+        var assets = CandidateAssets.OrderBy(a => a.GetMetadata("FullPath")).Select(StaticWebAsset.FromTaskItem);
 
         var assetsByTargetPath = assets
             .GroupBy(a => a.ComputeTargetPath("", '/'), StringComparer.OrdinalIgnoreCase)

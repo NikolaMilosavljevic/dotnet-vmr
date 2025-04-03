@@ -47,7 +47,10 @@ public class Command(Process? process, bool trimTrailingNewlines = false) : ICom
         using (var reaper = new ProcessReaper(_process))
         {
             _process.Start();
-            processStarted?.Invoke(_process);
+            if (processStarted != null)
+            {
+                processStarted(_process);
+            }
             reaper.NotifyProcessStarted();
 
             Reporter.Verbose.WriteLine(string.Format(

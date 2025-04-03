@@ -4,7 +4,6 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.CommandLine.StaticCompletions;
-using Microsoft.DotNet.Cli.Commands.Test;
 
 #nullable enable
 
@@ -25,7 +24,7 @@ public static class OptionForwardingExtensions
     /// </summary>
     /// <param name="option">The command line option</param>
     /// <param name="outputPropertyName">The property name for the output path (such as OutputPath or PublishDir)</param>
-    /// <param name="surroundWithDoubleQuotes">Whether the path should be surrounded with double quotes.  This may not be necessary but preserves the previous behavior of "dotnet test"</param>
+    /// <param name="surroundWithDoubleQuotes">Whether the path should be surrounded with double quotes.  This may not be necessary but preserves the provious behavior of "dotnet test"</param>
     /// <returns>The option</returns>
     public static ForwardedOption<string> ForwardAsOutputPath(this ForwardedOption<string> option, string outputPropertyName, bool surroundWithDoubleQuotes = false)
     {
@@ -64,7 +63,8 @@ public static class OptionForwardingExtensions
         command.Options
             .OfType<IForwardedOption>()
             .Select(o => o.GetForwardingFunction())
-            .SelectMany(f => f is not null ? f(parseResult) : []);
+            .SelectMany(f => f is not null ? f(parseResult) : Array.Empty<string>());
+
 
     public static IEnumerable<string> ForwardedOptionValues<T>(this ParseResult parseResult, CliCommand command, string alias)
     {
@@ -152,7 +152,7 @@ public class ForwardedOption<T> : CliOption<T>, IForwardedOption
     {
         ForwardingFunction = (ParseResult parseResult) =>
         {
-            if (parseResult.GetResult(this) is OptionResult argresult && argresult.GetValue(this) is T validValue)
+            if (parseResult.GetResult(this) is OptionResult argresult && argresult.GetValue<T>(this) is T validValue)
             {
                 return func(validValue, parseResult) ?? [];
             }
@@ -166,7 +166,7 @@ public class ForwardedOption<T> : CliOption<T>, IForwardedOption
 
     public Func<ParseResult, IEnumerable<string>> GetForwardingFunction(Func<T?, IEnumerable<string>> func)
     {
-        return (ParseResult parseResult) => parseResult.GetResult(this) is not null ? func(parseResult.GetValue(this)) : [];
+        return (ParseResult parseResult) => parseResult.GetResult(this) is not null ? func(parseResult.GetValue<T>(this)) : Array.Empty<string>();
     }
 
     public Func<ParseResult, IEnumerable<string>> GetForwardingFunction()

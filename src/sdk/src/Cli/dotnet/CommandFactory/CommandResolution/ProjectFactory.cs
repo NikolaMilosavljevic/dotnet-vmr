@@ -12,7 +12,7 @@ internal class ProjectFactory(IEnvironmentProvider environment)
 {
     private const string ProjectFactoryName = "projectfactory";
 
-    private readonly IEnvironmentProvider _environment = environment;
+    private IEnvironmentProvider _environment = environment;
 
     public IProject GetProject(
         string projectDirectory,
@@ -61,7 +61,7 @@ internal class ProjectFactory(IEnvironmentProvider environment)
         }
     }
 
-    private static string GetMSBuildProjPath(string projectDirectory)
+    private string GetMSBuildProjPath(string projectDirectory)
     {
         IEnumerable<string> projectFiles = Directory
             .GetFiles(projectDirectory, "*.*proj")

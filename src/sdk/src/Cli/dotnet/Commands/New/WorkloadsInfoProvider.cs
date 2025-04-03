@@ -1,11 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.DotNet.Cli.Commands.Workload.List;
-using Microsoft.DotNet.Tools.New;
+using Microsoft.DotNet.Workloads.Workload.List;
 using Microsoft.TemplateEngine.Abstractions.Components;
 
-namespace Microsoft.DotNet.Cli.Commands.New;
+namespace Microsoft.DotNet.Tools.New;
 
 internal class WorkloadsInfoProvider(Lazy<IWorkloadsRepositoryEnumerator> workloadsRepositoryEnumerator) : IWorkloadsInfoProvider
 {

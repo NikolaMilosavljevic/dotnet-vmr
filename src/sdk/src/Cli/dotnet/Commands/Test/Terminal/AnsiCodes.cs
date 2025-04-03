@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Microsoft.DotNet.Cli.Commands.Test.Terminal;
+namespace Microsoft.Testing.Platform.OutputDevice.Terminal;
 
 /// <summary>
 /// A collection of standard ANSI/VT100 control codes.
@@ -128,10 +128,10 @@ internal static class AnsiCodes
     public const string RemoveBusySpinner = $"{Esc}]9;4;0;{Esc}\\";
 
     public static string Colorize(string? s, TerminalColor color)
-        => string.IsNullOrWhiteSpace(s) ? s ?? string.Empty : $"{CSI}{(int)color}{SetColor}{s}{SetDefaultColor}";
+        => String.IsNullOrWhiteSpace(s) ? s ?? string.Empty : $"{CSI}{(int)color}{SetColor}{s}{SetDefaultColor}";
 
     public static string MakeBold(string? s)
-        => string.IsNullOrWhiteSpace(s) ? s ?? string.Empty : $"{CSI}{SetBold}{s}{SetDefaultColor}";
+        => String.IsNullOrWhiteSpace(s) ? s ?? string.Empty : $"{CSI}{SetBold}{s}{SetDefaultColor}";
 
     public static string MoveCursorBackward(int count) => $"{CSI}{count}{MoveBackward}";
 

@@ -4,10 +4,9 @@
 #nullable enable
 
 using System.CommandLine;
-using Microsoft.DotNet.Cli.Commands.Project.Convert;
 using Microsoft.DotNet.Cli.Extensions;
 
-namespace Microsoft.DotNet.Cli.Commands.Project;
+namespace Microsoft.DotNet.Cli;
 
 internal sealed class ProjectCommandParser
 {

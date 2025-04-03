@@ -11,7 +11,7 @@ public class ScriptCommandResolverPolicy
     {
         var environment = new EnvironmentProvider();
 
-        IPlatformCommandSpecFactory platformCommandSpecFactory;
+        var platformCommandSpecFactory = default(IPlatformCommandSpecFactory);
         if (OperatingSystem.IsWindows())
         {
             platformCommandSpecFactory = new WindowsExePreferredCommandSpecFactory();

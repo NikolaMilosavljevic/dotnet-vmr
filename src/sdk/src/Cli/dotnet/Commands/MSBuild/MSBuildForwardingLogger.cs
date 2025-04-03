@@ -3,7 +3,7 @@
 
 using Microsoft.Build.Framework;
 
-namespace Microsoft.DotNet.Cli.Commands.MSBuild;
+namespace Microsoft.DotNet.Tools.MSBuild;
 
 public sealed class MSBuildForwardingLogger : IForwardingLogger
 {

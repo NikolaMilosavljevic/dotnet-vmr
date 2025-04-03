@@ -6,9 +6,8 @@ using Microsoft.TemplateEngine.Abstractions;
 using Microsoft.TemplateEngine.Abstractions.PhysicalFileSystem;
 using Microsoft.TemplateEngine.Cli.PostActionProcessors;
 using Microsoft.TemplateEngine.Utils;
-using LocalizableStrings = Microsoft.DotNet.Tools.New.LocalizableStrings;
 
-namespace Microsoft.DotNet.Cli.Commands.New.PostActions;
+namespace Microsoft.DotNet.Tools.New.PostActionProcessors;
 
 internal class DotnetAddPostActionProcessor(
     Func<string, string, string?, bool>? addPackageReferenceCallback = null,
