@@ -49,7 +49,7 @@ internal static class HoverFactory
             owner = owner.Parent;
         }
 
-        var tagHelperContext = codeDocument.GetRequiredTagHelperContext();
+        var tagHelperDocumentContext = codeDocument.GetTagHelperContext();
 
         if (HtmlFacts.TryGetElementInfo(owner, out var containingTagNameToken, out var attributes, closingForwardSlashOrCloseAngleToken: out _) &&
             containingTagNameToken.Span.IntersectsWith(absoluteIndex))
@@ -73,7 +73,7 @@ internal static class HoverFactory
             var (parentTag, parentIsTagHelper) = TagHelperFacts.GetNearestAncestorTagInfo(ancestors);
             var stringifiedAttributes = TagHelperFacts.StringifyAttributes(attributes);
             var binding = TagHelperFacts.GetTagHelperBinding(
-                tagHelperContext,
+                tagHelperDocumentContext,
                 containingTagNameToken.Content,
                 stringifiedAttributes,
                 parentTag: parentTag,
@@ -111,7 +111,7 @@ internal static class HoverFactory
             var stringifiedAttributes = TagHelperFacts.StringifyAttributes(attributes);
 
             var binding = TagHelperFacts.GetTagHelperBinding(
-                tagHelperContext,
+                tagHelperDocumentContext,
                 containingTagNameToken.Content,
                 stringifiedAttributes,
                 parentTag: parentTag,
@@ -125,7 +125,7 @@ internal static class HoverFactory
 
             Debug.Assert(binding.Descriptors.Any());
             var tagHelperAttributes = TagHelperFacts.GetBoundTagHelperAttributes(
-                tagHelperContext,
+                tagHelperDocumentContext,
                 selectedAttributeName.AssumeNotNull(),
                 binding);
 

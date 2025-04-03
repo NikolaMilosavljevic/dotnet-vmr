@@ -44,6 +44,10 @@ internal class ExtractToComponentCodeActionResolver(
         }
 
         var componentDocument = await documentContext.GetCodeDocumentAsync(cancellationToken).ConfigureAwait(false);
+        if (componentDocument.IsUnsupported())
+        {
+            return null;
+        }
 
         var text = componentDocument.Source.Text;
         var path = FilePathNormalizer.Normalize(documentContext.Uri.GetAbsoluteOrUNCPath());

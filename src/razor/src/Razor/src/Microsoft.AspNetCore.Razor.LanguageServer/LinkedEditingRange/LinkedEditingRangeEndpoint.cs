@@ -43,6 +43,11 @@ internal class LinkedEditingRangeEndpoint(ILoggerFactory loggerFactory)
         }
 
         var codeDocument = await documentContext.GetCodeDocumentAsync(cancellationToken).ConfigureAwait(false);
+        if (codeDocument.IsUnsupported())
+        {
+            _logger.LogWarning($"FileKind {codeDocument.FileKind} is unsupported");
+            return null;
+        }
 
         if (LinkedEditingRangeHelper.GetLinkedSpans(request.Position.ToLinePosition(), codeDocument) is { } linkedSpans && linkedSpans.Length == 2)
         {

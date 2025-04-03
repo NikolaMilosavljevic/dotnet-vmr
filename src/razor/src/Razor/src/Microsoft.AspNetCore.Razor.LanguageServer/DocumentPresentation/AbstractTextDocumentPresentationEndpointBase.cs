@@ -57,9 +57,14 @@ internal abstract class AbstractTextDocumentPresentationEndpointBase<TParams>(
         cancellationToken.ThrowIfCancellationRequested();
 
         var codeDocument = await documentContext.GetCodeDocumentAsync(cancellationToken).ConfigureAwait(false);
-        var sourceText = codeDocument.Source.Text;
+        if (codeDocument.IsUnsupported())
+        {
+            _logger.LogWarning($"Failed to retrieve generated output for document {request.TextDocument.Uri}.");
+            return null;
+        }
 
-        if (!sourceText.TryGetAbsoluteIndex(request.Range.Start, out var hostDocumentIndex))
+        var sourceText = await documentContext.GetSourceTextAsync(cancellationToken).ConfigureAwait(false);
+        if (sourceText.TryGetAbsoluteIndex(request.Range.Start, out var hostDocumentIndex) != true)
         {
             return null;
         }
