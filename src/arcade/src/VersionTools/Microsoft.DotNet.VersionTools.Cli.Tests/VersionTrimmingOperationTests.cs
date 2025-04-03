@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using FluentAssertions;
-using Microsoft.Arcade.Common;
+using Microsoft.DotNet.VersionTools.Automation;
 using Moq;
 using NuGet.Versioning;
 using System.IO;

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>$(NetToolCurrent)</TargetFramework>
@@ -10,9 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Microsoft.Arcade.Common\Microsoft.Arcade.Common.csproj" />
+    <ProjectReference Include="..\Microsoft.DotNet.VersionTools\Microsoft.DotNet.VersionTools.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="System.CommandLine" />
   </ItemGroup>

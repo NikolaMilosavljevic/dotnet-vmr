@@ -18,7 +18,8 @@ using Microsoft.DotNet.DarcLib;
 using Microsoft.DotNet.DarcLib.Models.Darc;
 using Microsoft.DotNet.ProductConstructionService.Client;
 using Microsoft.DotNet.ProductConstructionService.Client.Models;
-using Microsoft.DotNet.Build.Manifest;
+using Microsoft.DotNet.VersionTools.Automation;
+using Microsoft.DotNet.VersionTools.BuildManifest.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MSBuild = Microsoft.Build.Utilities;
@@ -119,7 +120,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
                         return !Log.HasLoggedErrors;
                     }
 
-                    var mergedManifest = _buildModelFactory.CreateMergedModel(parsedManifests, ArtifactVisibility.All);
+                    var mergedManifest = _buildModelFactory.CreateMergedModel(parsedManifests);
 
                     // Update the merged manifest with any missing manifest build data based on the environment.
                     mergedManifest.Identity.AzureDevOpsAccount = mergedManifest.Identity.AzureDevOpsAccount ?? GetAzDevAccount();

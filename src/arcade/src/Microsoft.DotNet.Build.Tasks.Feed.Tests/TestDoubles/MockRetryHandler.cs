@@ -1,10 +1,11 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Arcade.Common;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Arcade.Common;
+using Microsoft.DotNet.VersionTools.Util;
 
 namespace Microsoft.DotNet.Build.Tasks.Feed.Tests.TestDoubles
 {

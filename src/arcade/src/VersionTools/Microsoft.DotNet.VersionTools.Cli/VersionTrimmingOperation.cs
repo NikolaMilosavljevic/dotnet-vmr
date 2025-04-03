@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using Microsoft.Arcade.Common;
+using Microsoft.DotNet.VersionTools.Automation;
 
 namespace Microsoft.DotNet.VersionTools.Cli;
 

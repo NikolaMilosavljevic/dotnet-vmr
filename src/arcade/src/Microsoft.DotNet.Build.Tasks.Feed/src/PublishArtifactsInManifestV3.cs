@@ -14,7 +14,7 @@ using Microsoft.DotNet.Build.Tasks.Feed.Model;
 #if !NET472_OR_GREATER
 using Microsoft.DotNet.ProductConstructionService.Client;
 using Microsoft.DotNet.ProductConstructionService.Client.Models;
-using Microsoft.DotNet.Build.Manifest;
+using Microsoft.DotNet.VersionTools.BuildManifest.Model;
 
 namespace Microsoft.DotNet.Build.Tasks.Feed
 {

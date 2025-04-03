@@ -12,7 +12,7 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Xunit;
 using Xunit.Abstractions;
-using Microsoft.DotNet.Build.Manifest;
+using Microsoft.DotNet.VersionTools.BuildManifest.Model;
 
 namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
 {

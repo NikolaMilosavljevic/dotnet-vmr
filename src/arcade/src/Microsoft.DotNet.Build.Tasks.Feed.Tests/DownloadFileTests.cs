@@ -7,11 +7,14 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
-using FluentAssertions;
+using Azure;
 using Microsoft.Arcade.Common;
 using Microsoft.Arcade.Test.Common;
-using Microsoft.DotNet.Build.Manifest.Tests;
+using Microsoft.DotNet.Arcade.Test.Common;
+using FluentAssertions;
 using Xunit;
 
 namespace Microsoft.DotNet.Build.Tasks.Feed.Tests
