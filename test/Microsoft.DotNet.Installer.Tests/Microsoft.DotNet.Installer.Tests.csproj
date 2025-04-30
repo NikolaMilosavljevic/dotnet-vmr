@@ -28,8 +28,8 @@
       <RuntimeHostConfigurationOption Include="$(MSBuildProjectName).ArtifactsTestResultsDirectory">
         <Value>$(ArtifactsTestResultsDir)</Value>
       </RuntimeHostConfigurationOption>
-      <RuntimeHostConfigurationOption Include="$(MSBuildProjectName).ScenarioTestsNuGetConfigPath">
-        <Value>$(RepoRoot)src\scenario-tests\NuGet.config</Value>
+      <RuntimeHostConfigurationOption Include="$(MSBuildProjectName).ScenarioTestsRepoRoot">
+        <Value>$(RepoRoot)src\scenario-tests\</Value>
       </RuntimeHostConfigurationOption>
       <RuntimeHostConfigurationOption Include="$(MSBuildProjectName).Architecture">
         <Value>$(HostArchitecture)</Value>

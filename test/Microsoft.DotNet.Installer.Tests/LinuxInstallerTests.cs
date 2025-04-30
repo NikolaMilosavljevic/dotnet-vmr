@@ -24,6 +24,7 @@ public class LinuxInstallerTests : IDisposable
     private readonly DockerHelper _dockerHelper;
     private readonly string _tmpDir;
     private readonly string _contextDir;
+    private readonly string _contextScenarioTestsDir;
     private readonly ITestOutputHelper _outputHelper;
     private readonly string _excludeLinuxArch;
 
@@ -35,6 +36,8 @@ public class LinuxInstallerTests : IDisposable
     private const string NetStandard21DebPackage = @"https://dotnetcli.blob.core.windows.net/dotnet/Runtime/3.1.0/netstandard-targeting-pack-2.1.0-x64.deb";
     private const string RuntimeDepsRepo = "mcr.microsoft.com/dotnet/runtime-deps";
     private const string RuntimeDepsVersion = "10.0-preview";
+    private const string ScenarioTestsBinary = "Microsoft.DotNet.ScenarioTests.SdkTemplateTests.dll";
+    private const string NuGetConfigFileName = "NuGet.config";
 
     public static bool IncludeRpmTests => Config.TestRpmPackages;
     public static bool IncludeDebTests => Config.TestDebPackages;
@@ -54,6 +57,8 @@ public class LinuxInstallerTests : IDisposable
         Directory.CreateDirectory(_tmpDir);
         _contextDir = Path.Combine(_tmpDir, Path.GetRandomFileName());
         Directory.CreateDirectory(_contextDir);
+        _contextScenarioTestsDir = Path.Combine(_contextDir, "scenario-tests");
+        Directory.CreateDirectory(_contextScenarioTestsDir);
 
         _excludeLinuxArch = Config.Architecture == Architecture.X64 ?
                                                    Architecture.Arm64.ToString().ToLower() :
@@ -154,18 +159,19 @@ public class LinuxInstallerTests : IDisposable
             }
 
             // Copy and update NuGet.config from scenario-tests repo
-            string newNuGetConfig = Path.Combine(_contextDir, "NuGet.config");
-            File.Copy(Config.ScenarioTestsNuGetConfigPath, newNuGetConfig);
+            string newNuGetConfig = Path.Combine(_contextDir, NuGetConfigFileName);
+            File.Copy(Path.Combine(Config.ScenarioTestsRepoRoot, NuGetConfigFileName), newNuGetConfig);
             InsertLocalPackagesPathToNuGetConfig(newNuGetConfig, "/packages");
 
-            // Find the scenario-tests package and unpack it to the context dir, subfolder "scenario-tests"
-            string? scenarioTestsPackage = Directory.GetFiles(nugetPackagesDir, "Microsoft.DotNet.ScenarioTests.SdkTemplateTests*.nupkg", SearchOption.AllDirectories).FirstOrDefault();
-            if (scenarioTestsPackage == null)
+            // Find the scenario-tests project layout in repo's 'bin' directory.
+            string? scenarioTestsBinary = Directory.GetFiles(Path.Combine(Config.ScenarioTestsRepoRoot, "artifacts/bin"), ScenarioTestsBinary, SearchOption.AllDirectories).FirstOrDefault();
+            if (scenarioTestsBinary == null)
             {
-                Assert.Fail("Scenario tests package not found");
+                Assert.Fail("Scenario tests binary not found");
             }
 
-            ZipFile.ExtractToDirectory(scenarioTestsPackage, Path.Combine(_contextDir, "scenario-tests"));
+            DirectoryCopy(Path.GetDirectoryName(scenarioTestsBinary)!, _contextScenarioTestsDir);
+
             _sharedContextInitialized = true;
         }
     }
@@ -269,7 +275,7 @@ public class LinuxInstallerTests : IDisposable
     private string GetScenarioTestsBinaryPath()
     {
         // Find scenario-tests binary in context/scenario-tests
-        string? scenarioTestsBinary = Directory.GetFiles(Path.Combine(_contextDir, "scenario-tests"), "Microsoft.DotNet.ScenarioTests.SdkTemplateTests.dll", SearchOption.AllDirectories).FirstOrDefault();
+        string? scenarioTestsBinary = Directory.GetFiles(_contextScenarioTestsDir, ScenarioTestsBinary, SearchOption.AllDirectories).FirstOrDefault();
         if (scenarioTestsBinary == null)
         {
             throw new Exception("Scenario tests binary not found");
@@ -313,8 +319,8 @@ public class LinuxInstallerTests : IDisposable
         StringBuilder sb = new();
         sb.AppendLine("FROM " + baseImage);
         sb.AppendLine("");
-        sb.AppendLine("# Copy NuGet.config");
-        sb.AppendLine($"COPY NuGet.config .");
+        sb.AppendLine($"# Copy {NuGetConfigFileName}");
+        sb.AppendLine($"COPY {NuGetConfigFileName} .");
 
         sb.AppendLine("");
         sb.AppendLine("# Copy scenario-tests content");
@@ -355,7 +361,7 @@ public class LinuxInstallerTests : IDisposable
         // Set environment for nuget.config
         sb.AppendLine("");
         sb.AppendLine("# Set custom nuget.config");
-        sb.AppendLine("ENV RestoreConfigFile=/NuGet.config");
+        sb.AppendLine($"ENV RestoreConfigFile=/{NuGetConfigFileName}");
 
         string dockerfile = Path.Combine(_contextDir, $"Dockerfile-{Path.GetRandomFileName()}");
         File.WriteAllText(dockerfile, sb.ToString());
@@ -420,6 +426,22 @@ public class LinuxInstallerTests : IDisposable
             {
                 await response.Content.CopyToAsync(fileStream);
             }
+        }
+    }
+
+    private static void DirectoryCopy(string sourceDir, string destDir)
+    {
+        if (!Directory.Exists(destDir))
+            Directory.CreateDirectory(destDir);
+
+        foreach (string file in Directory.GetFiles(sourceDir, "*", SearchOption.AllDirectories))
+        {
+            string relativePath = Path.GetRelativePath(sourceDir, file);
+            string? relativeDir = Path.GetDirectoryName(relativePath);
+            if (!string.IsNullOrEmpty(relativeDir))
+                Directory.CreateDirectory(Path.Combine(destDir, relativeDir));
+
+            File.Copy(file, Path.Combine(destDir, relativePath), true);
         }
     }
 }

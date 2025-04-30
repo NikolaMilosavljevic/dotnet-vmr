@@ -26,8 +26,8 @@ public static class Config
     public static string ArtifactsTestResultsDirectory { get; } = GetRuntimeConfig(ArtifactsTestResultsDirectorySwitch);
     const string ArtifactsTestResultsDirectorySwitch = RuntimeConfigSwitchPrefix + nameof(ArtifactsTestResultsDirectory);
 
-    public static string ScenarioTestsNuGetConfigPath { get; } = GetRuntimeConfig(ScenarioTestsNuGetConfigSwitch);
-    const string ScenarioTestsNuGetConfigSwitch = RuntimeConfigSwitchPrefix + nameof(ScenarioTestsNuGetConfigPath);
+    public static string ScenarioTestsRepoRoot { get; } = GetRuntimeConfig(ScenarioTestsRepoRootSwitch);
+    const string ScenarioTestsRepoRootSwitch = RuntimeConfigSwitchPrefix + nameof(ScenarioTestsRepoRoot);
 
     public static Architecture Architecture { get; } = GetArchitecture(GetRuntimeConfig(ArchitectureSwitch));
     const string ArchitectureSwitch = RuntimeConfigSwitchPrefix + nameof(Architecture);
