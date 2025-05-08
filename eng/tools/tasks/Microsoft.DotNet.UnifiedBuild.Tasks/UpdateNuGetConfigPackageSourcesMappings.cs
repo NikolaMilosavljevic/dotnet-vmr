@@ -338,6 +338,8 @@ namespace Microsoft.DotNet.UnifiedBuild.Tasks
                     }
                     else if (packageSource.Equals(ReferencePackagesSourceName))
                     {
+                        // Reference packages are also current packages, produced by SBRP repo
+                        AddToDictionary(currentPackages, id, version);
                         AddToDictionary(referencePackages, id, version);
                     }
                     else if (packageSource.Equals(PreviouslySourceBuiltSourceName))
