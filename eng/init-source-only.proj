@@ -179,23 +179,23 @@
     <ItemGroup>
       <ToolsetPackage Include="Microsoft.DotNet.Arcade.Sdk" SourceFolder="$(PreviouslySourceBuiltPackagesPath)" Version="$(ARCADE_BOOTSTRAP_VERSION)" />
 
-      <!-- Remove the entries referencing PreviouslySourceBuiltReferencePackagesDir after rebootstrapping to pick up https://github.com/dotnet/dotnet/pull/1132 -->
+      <!-- Remove the entries referencing PreviouslySourceBuiltAssetsDir after rebootstrapping to pick up https://github.com/dotnet/dotnet/pull/1132 -->
       <ToolsetPackage Include="Microsoft.Build.NoTargets" 
                       SourceFolder="$(PreviouslySourceBuiltPackagesPath)"
                       Version="$(NOTARGETS_BOOTSTRAP_VERSION)"
-                      Condition="!Exists('$(PreviouslySourceBuiltReferencePackagesDir)')" />
+                      Condition="!Exists('$(PreviouslySourceBuiltAssetsDir)')" />
       <ToolsetPackage Include="Microsoft.Build.Traversal"
                       SourceFolder="$(PreviouslySourceBuiltPackagesPath)"
                       Version="$(TRAVERSAL_BOOTSTRAP_VERSION)"
-                      Condition="!Exists('$(PreviouslySourceBuiltReferencePackagesDir)')" />
+                      Condition="!Exists('$(PreviouslySourceBuiltAssetsDir)')" />
       <ToolsetPackage Include="Microsoft.Build.NoTargets"
-                      SourceFolder="$(PreviouslySourceBuiltReferencePackagesDir)"
+                      SourceFolder="$(PreviouslySourceBuiltAssetsDir)"
                       Version="$(NOTARGETS_BOOTSTRAP_VERSION)"
-                      Condition="Exists('$(PreviouslySourceBuiltReferencePackagesDir)')" />
+                      Condition="Exists('$(PreviouslySourceBuiltAssetsDir)')" />
       <ToolsetPackage Include="Microsoft.Build.Traversal"
-                      SourceFolder="$(PreviouslySourceBuiltReferencePackagesDir)"
+                      SourceFolder="$(PreviouslySourceBuiltAssetsDir)"
                       Version="$(TRAVERSAL_BOOTSTRAP_VERSION)"
-                      Condition="Exists('$(PreviouslySourceBuiltReferencePackagesDir)')" />
+                      Condition="Exists('$(PreviouslySourceBuiltAssetsDir)')" />
     </ItemGroup>
 
     <ItemGroup>
